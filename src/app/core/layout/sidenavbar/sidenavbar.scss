@@ -1,6 +1,7 @@
 @use '../../../../styles/variables' as *;
 
 // SIDE NAVBAR
+
 .side-navbar {
   position: fixed;
   top: 0;
@@ -14,16 +15,25 @@
   box-sizing: border-box;
   color: $color-white;
   background: $color-primary;
+  overflow-y: auto;
+  overflow-x: hidden;
+
   // BRAND
+
   .brand {
+    flex-shrink: 0;
     padding: 0 $spacing-2;
     margin-bottom: $spacing-6;
+
     .brand-link {
       display: flex;
       align-items: center;
       gap: $spacing-3;
+      width: 100%;
       color: $color-white;
       text-decoration: none;
+      box-sizing: border-box;
+
       .brand-logo {
         display: flex;
         align-items: center;
@@ -37,49 +47,77 @@
         font-size: $font-size-md;
         font-weight: $font-weight-bold;
       }
+
       .brand-name {
+        overflow: hidden;
+        color: $color-white;
         font-size: $font-size-xl;
         font-weight: $font-weight-bold;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
   }
+
   // NAVIGATION
+
   .navigation {
     display: flex;
     flex-direction: column;
     gap: $spacing-1;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+
     .navigation-item {
       display: flex;
       align-items: center;
       gap: $spacing-3;
+      width: 100%;
       min-height: 2.625rem;
       padding: 0 $spacing-3;
+      box-sizing: border-box;
       border-radius: $radius-md;
       color: rgba(255, 255, 255, 0.85);
       font-size: $font-size-base;
       font-weight: $font-weight-medium;
       text-decoration: none;
+      white-space: nowrap;
       transition:
         background-color $transition-fast,
         color $transition-fast;
+
       i {
         width: 1rem;
+        min-width: 1rem;
         text-align: center;
         font-size: $font-size-lg;
       }
+
+      span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
       &:hover {
         color: $color-white;
         background: rgba(255, 255, 255, 0.08);
       }
+
       &.active {
         color: $color-white;
         background: $color-primary-button;
       }
     }
   }
+
   // FOOTER
+
   .sidebar-footer {
+    flex-shrink: 0;
+    width: 100%;
     margin-top: auto;
+    padding-top: $spacing-4;
 
     .logout-button {
       display: flex;
@@ -88,6 +126,7 @@
       width: 100%;
       min-height: 2.625rem;
       padding: 0 $spacing-3;
+      box-sizing: border-box;
       border: 0;
       border-radius: $radius-md;
       color: rgba(255, 255, 255, 0.85);
@@ -97,23 +136,56 @@
       font-weight: $font-weight-medium;
       cursor: pointer;
       text-align: left;
+      white-space: nowrap;
       transition:
         background-color $transition-fast,
         color $transition-fast;
+
       i {
         width: 1rem;
+        min-width: 1rem;
         text-align: center;
       }
+
       &:hover {
         color: $color-white;
         background: rgba(255, 255, 255, 0.08);
       }
     }
   }
+
+  // SCROLLBAR
+
+  &::-webkit-scrollbar {
+    width: 0.25rem;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: $radius-sm;
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 }
+
+// TABLET
+
+@media (max-width: 64rem) {
+  .side-navbar {
+    width: 10rem;
+  }
+}
+
 // MOBILE
+
 @media (max-width: 48rem) {
   .side-navbar {
-    transform: translateX(-100%);
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: auto;
+    padding: $spacing-3;
   }
 }
