@@ -1,0 +1,263 @@
+<div class="auth-page">
+  <!-- SUCCESS TOAST -->
+  @if (signUpSuccess) {
+    <div class="auth-toast auth-toast-success" role="alert">
+      <i class="fa-solid fa-circle-check"></i>
+      <span>{{ signUpSuccess }}</span>
+    </div>
+  }
+  <div class="auth-container">
+    <!-- LEFT BLUE AUTH PANEL -->
+    <app-cf-auth-side-panel [config]="sidePanelConfig" />
+    <!-- RIGHT SIGN UP SECTION -->
+    <section class="auth-form-section">
+      <div class="auth-form-wrapper">
+        <!-- HEADER -->
+        <header class="form-header">
+          <h1>Create Your Account</h1>
+          <p>Join CashFlow and take control of your finances</p>
+        </header>
+        <!-- SIGN UP FORM -->
+        <form [formGroup]="SignUpForm" (ngSubmit)="submit()">
+          <!-- FULL NAME -->
+          <div class="form-group">
+            <label for="fullname" class="form-label"> Full Name </label>
+
+            <div
+              class="input-wrapper"
+              [class.has-error]="
+                SignUpForm.controls.fullname.invalid && SignUpForm.controls.fullname.touched
+              "
+            >
+              <i class="fa-solid fa-user input-icon" aria-hidden="true"></i>
+
+              <input
+                id="fullname"
+                type="text"
+                class="form-control"
+                formControlName="fullname"
+                placeholder="Enter your full name"
+                autocomplete="name"
+              />
+            </div>
+            <!-- FULL NAME VALIDATION -->
+            @if (SignUpForm.controls.fullname.invalid && SignUpForm.controls.fullname.touched) {
+              <div class="form-error">
+                <i class="fa-solid fa-circle-exclamation error-icon" aria-hidden="true"></i>
+
+                @if (SignUpForm.controls.fullname.errors?.['required']) {
+                  <span> Full name is required. </span>
+                }
+                @if (SignUpForm.controls.fullname.errors?.['minlength']) {
+                  <span> Full name must be at least 2 characters. </span>
+                }
+              </div>
+            }
+          </div>
+          <!-- EMAIL -->
+          <div class="form-group">
+            <label for="email" class="form-label"> Email Address </label>
+            <div
+              class="input-wrapper"
+              [class.has-error]="
+                SignUpForm.controls.email.invalid && SignUpForm.controls.email.touched
+              "
+            >
+              <i class="fa-solid fa-envelope input-icon" aria-hidden="true"></i>
+              <input
+                id="email"
+                type="email"
+                class="form-control"
+                formControlName="email"
+                placeholder="Enter your email"
+                autocomplete="email"
+              />
+            </div>
+            <!-- EMAIL VALIDATION -->
+            @if (SignUpForm.controls.email.invalid && SignUpForm.controls.email.touched) {
+              <div class="form-error">
+                <i class="fa-solid fa-circle-exclamation error-icon" aria-hidden="true"></i>
+                @if (SignUpForm.controls.email.errors?.['required']) {
+                  <span> Email address is required. </span>
+                }
+                @if (SignUpForm.controls.email.errors?.['email']) {
+                  <span> Please enter a valid email address. </span>
+                }
+              </div>
+            }
+          </div>
+          <!-- PASSWORD -->
+          <div class="form-group">
+            <label for="password" class="form-label"> Password </label>
+            <div
+              class="input-wrapper"
+              [class.has-error]="
+                SignUpForm.controls.password.invalid && SignUpForm.controls.password.touched
+              "
+            >
+              <i class="fa-solid fa-lock input-icon" aria-hidden="true"></i>
+              <input
+                id="password"
+                class="form-control"
+                [type]="showPassword ? 'text' : 'password'"
+                formControlName="password"
+                placeholder="Create a password"
+                autocomplete="new-password"
+              />
+              <!-- PASSWORD VISIBILITY -->
+              <button
+                type="button"
+                class="password-toggle"
+                (click)="togglePassword()"
+                [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+              >
+                @if (showPassword) {
+                  <i class="fa-solid fa-eye-slash" aria-hidden="true"></i>
+                } @else {
+                  <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                }
+              </button>
+            </div>
+            <!-- PASSWORD VALIDATION -->
+            @if (SignUpForm.controls.password.invalid && SignUpForm.controls.password.touched) {
+              <div class="form-error">
+                <i class="fa-solid fa-circle-exclamation error-icon" aria-hidden="true"></i>
+                @if (SignUpForm.controls.password.errors?.['required']) {
+                  <span> Password is required. </span>
+                }
+                @if (SignUpForm.controls.password.errors?.['minlength']) {
+                  <span> Password must be at least 8 characters. </span>
+                }
+              </div>
+            }
+          </div>
+          <!-- CONFIRM PASSWORD -->
+          <div class="form-group">
+            <label for="confirmPassword" class="form-label"> Confirm Password </label>
+            <div
+              class="input-wrapper"
+              [class.has-error]="
+                SignUpForm.controls.confirmPassword.invalid &&
+                SignUpForm.controls.confirmPassword.touched
+              "
+            >
+              <i class="fa-solid fa-lock input-icon" aria-hidden="true"></i>
+              <input
+                id="confirmPassword"
+                class="form-control"
+                [type]="showConfirmPassword ? 'text' : 'password'"
+                formControlName="confirmPassword"
+                placeholder="Confirm your password"
+                autocomplete="new-password"
+              />
+              <!-- CONFIRM PASSWORD VISIBILITY -->
+              <button
+                type="button"
+                class="password-toggle"
+                (click)="toggleConfirmPassword()"
+                [attr.aria-label]="
+                  showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'
+                "
+              >
+                @if (showConfirmPassword) {
+                  <i class="fa-solid fa-eye-slash" aria-hidden="true"></i>
+                } @else {
+                  <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                }
+              </button>
+            </div>
+            <!-- CONFIRM PASSWORD VALIDATION -->
+            @if (
+              SignUpForm.controls.confirmPassword.invalid &&
+              SignUpForm.controls.confirmPassword.touched
+            ) {
+              <div class="form-error">
+                <i class="fa-solid fa-circle-exclamation error-icon" aria-hidden="true"></i>
+
+                @if (SignUpForm.controls.confirmPassword.errors?.['required']) {
+                  <span> Please confirm your password. </span>
+                }
+
+                @if (SignUpForm.controls.confirmPassword.errors?.['minlength']) {
+                  <span> Password must be at least 8 characters. </span>
+                }
+              </div>
+            }
+          </div>
+          <!-- TERMS & CONDITIONS -->
+          <div class="form-group">
+            <label class="terms-checkbox">
+              <input type="checkbox" formControlName="terms" />
+
+              <span>
+                I agree to the
+
+                <a href="#" (click)="$event.preventDefault()"> Terms & Conditions </a>
+                and
+                <a href="#" (click)="$event.preventDefault()"> Privacy Policy </a>.
+              </span>
+            </label>
+            <!-- TERMS VALIDATION -->
+            @if (SignUpForm.controls.terms.invalid && SignUpForm.controls.terms.touched) {
+              <div class="form-error">
+                <i class="fa-solid fa-circle-exclamation error-icon" aria-hidden="true"></i>
+
+                <span> You must accept the Terms & Conditions. </span>
+              </div>
+            }
+          </div>
+          <!-- SIGN UP ERROR -->
+          @if (signUpError) {
+            <div class="auth-error" role="alert">
+              <i class="fa-solid fa-circle-exclamation error-icon" aria-hidden="true"></i>
+
+              <span>
+                {{ signUpError }}
+              </span>
+            </div>
+          }
+          <!-- CREATE ACCOUNT BUTTON -->
+          <button
+            type="submit"
+            class="btn btn-primary submit-button"
+            [disabled]="SignUpForm.invalid || isSubmitting"
+          >
+            @if (isSubmitting) {
+              <span class="spinner"></span>
+              <span> Creating Account... </span>
+            } @else {
+              <span> Create Account </span>
+            }
+          </button>
+          <!-- DIVIDER -->
+          <div class="divider">
+            <span></span>
+            <small>or</small>
+            <span></span>
+          </div>
+          <!-- GOOGLE -->
+          <button type="button" class="social-button">
+            <span class="social-icon google-icon">
+              <img src="/assets/icons/google-icon.svg" alt="" aria-hidden="true" />
+            </span>
+
+            <span class="social-button-text"> Continue with Google </span>
+          </button>
+          <!-- APPLE -->
+          <button type="button" class="btn btn-secondary social-button">
+            <span class="social-icon apple-icon">
+              <i class="fa-brands fa-apple" aria-hidden="true"></i>
+            </span>
+            <span> Continue with Apple </span>
+          </button>
+          <!-- SIGN IN -->
+          <p class="signup-text">
+            Already have an account?
+
+            <a routerLink="/"> Sign In </a>
+          </p>
+        </form>
+      </div>
+    </section>
+  </div>
+</div>

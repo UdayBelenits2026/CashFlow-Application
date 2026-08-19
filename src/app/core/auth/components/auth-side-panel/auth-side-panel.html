@@ -1,0 +1,123 @@
+<aside class="auth-side-panel">
+
+  <!-- Decorative Elements -->
+
+  <div
+    class="background-glow"
+    aria-hidden="true"
+  ></div>
+
+  <div
+    class="background-dots"
+    aria-hidden="true"
+  ></div>
+
+
+  <!-- ==========================================
+       BRAND
+       ========================================== -->
+
+  <div class="brand">
+
+    <div class="brand-logo">
+      CF
+    </div>
+
+    <div class="brand-content">
+
+      <div class="brand-name">
+        CashFlow
+      </div>
+
+      <div class="brand-tagline">
+        Manage Your Money
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ==========================================
+       ILLUSTRATION
+       ========================================== -->
+
+  <div class="illustration-section">
+
+    <img
+      class="illustration"
+      [src]="config.image"
+      alt=""
+      aria-hidden="true"
+    />
+
+  </div>
+
+
+  <!-- ==========================================
+       TITLE / DESCRIPTION
+       ========================================== -->
+
+  <div class="side-content">
+
+    <h1>
+      {{ config.title }}
+    </h1>
+
+    <p>
+      {{ config.description }}
+    </p>
+
+  </div>
+
+  <!-- ==========================================
+       SECURITY
+       ========================================== -->
+
+  @if (config.showSecurityPoints) {
+
+    <div class="security-list">
+
+      <div class="security-item">
+
+        <span class="security-icon">
+          ✓
+        </span>
+
+        <span>
+          Secure &amp; Encrypted
+        </span>
+
+      </div>
+
+
+      <div class="security-item">
+
+        <span class="security-icon">
+          ✓
+        </span>
+
+        <span>
+          Bank-level Security
+        </span>
+
+      </div>
+
+
+      <div class="security-item">
+
+        <span class="security-icon">
+          ✓
+        </span>
+
+        <span>
+          Your Data is Safe
+        </span>
+
+      </div>
+
+    </div>
+
+  }
+
+</aside>

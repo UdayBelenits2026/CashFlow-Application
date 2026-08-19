@@ -1,0 +1,64 @@
+<header class="main-navbar">
+  <!-- LEFT -->
+  <div class="navbar-left">
+    <button
+      type="button"
+      class="menu-button"
+      (click)="toggleSidebar()"
+      aria-label="Toggle navigation"
+    >
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <h1 class="page-title">Dashboard</h1>
+  </div>
+  <!-- RIGHT -->
+  <div class="navbar-actions">
+    <!-- SEARCH -->
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+      <input type="search" placeholder="Search transactions, accounts, categories..." />
+    </div>
+    <!-- DATE FILTER -->
+    <button type="button" class="navbar-control date-control">
+      <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+      <span class="control-content">
+        <strong>This Month</strong>
+        <small>May 1 - May 31, 2026</small>
+      </span>
+      <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+    </button>
+    <!-- FILTER -->
+    <button type="button" class="navbar-control">
+      <i class="fa-solid fa-filter"></i>
+      <span>Filter</span>
+    </button>
+    <!-- CUSTOMIZE -->
+    <button type="button" class="navbar-control">
+      <i class="fa-solid fa-gear"></i>
+      <span>Customize</span>
+    </button>
+    <!-- REFRESH -->
+    <button type="button" class="navbar-control" (click)="refresh()">
+      <i class="fa-solid fa-arrows-rotate"></i>
+      <span>Refresh</span>
+    </button>
+    <!-- EXPORT -->
+    <button type="button" class="navbar-control">
+      <i class="fa-solid fa-download"></i>
+      <span>Export</span>
+    </button>
+    <!-- NOTIFICATION -->
+    <button type="button" class="notification-button" aria-label="Notifications">
+      <i class="fa-regular fa-bell"></i>
+      <span class="notification-badge"> 3 </span>
+    </button>
+    <!-- PROFILE -->
+    <button type="button" class="profile-button">
+      <span class="profile-image">
+        <img src="/assets/images/profile.jpg" alt="Neelima" />
+      </span>
+      <span class="profile-name"> Neelima </span>
+      <i class="fa-solid fa-chevron-down"></i>
+    </button>
+  </div>
+</header>

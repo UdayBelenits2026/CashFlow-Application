@@ -1,0 +1,85 @@
+// ============================================================
+// CashFlow Global Styles
+// ============================================================
+
+@use './styles/variables' as *;
+@use './styles/typography';
+@use './styles/buttons';
+@use './styles/forms';
+@use './styles/tables';
+
+
+// ============================================================
+// GLOBAL RESET
+// ============================================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+
+// ============================================================
+// HTML / BODY
+// ============================================================
+
+html,
+body {
+  min-height: 100%;
+}
+
+
+html {
+  font-size: 16px;
+}
+
+
+body {
+  margin: 0;
+
+  color: $color-text-primary;
+
+  background: $color-background;
+
+  font-family:
+    $font-family-base;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+// ============================================================
+// GLOBAL ELEMENTS
+// ============================================================
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+
+button {
+  border: 0;
+}
+
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+
+a {
+  text-decoration: none;
+}
+
+
+::selection {
+  color: $color-white;
+
+  background: $color-secondary;
+}

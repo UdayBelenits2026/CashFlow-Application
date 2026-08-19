@@ -1,0 +1,119 @@
+@use '../../../../styles/variables' as *;
+
+// SIDE NAVBAR
+.side-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: $z-index-fixed;
+  display: flex;
+  flex-direction: column;
+  width: 11.5rem;
+  height: 100vh;
+  padding: $spacing-5 $spacing-2;
+  box-sizing: border-box;
+  color: $color-white;
+  background: $color-primary;
+  // BRAND
+  .brand {
+    padding: 0 $spacing-2;
+    margin-bottom: $spacing-6;
+    .brand-link {
+      display: flex;
+      align-items: center;
+      gap: $spacing-3;
+      color: $color-white;
+      text-decoration: none;
+      .brand-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.875rem;
+        height: 1.875rem;
+        flex: 0 0 1.875rem;
+        border-radius: $radius-sm;
+        color: $color-white;
+        background: $color-primary-button;
+        font-size: $font-size-md;
+        font-weight: $font-weight-bold;
+      }
+      .brand-name {
+        font-size: $font-size-xl;
+        font-weight: $font-weight-bold;
+      }
+    }
+  }
+  // NAVIGATION
+  .navigation {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-1;
+    .navigation-item {
+      display: flex;
+      align-items: center;
+      gap: $spacing-3;
+      min-height: 2.625rem;
+      padding: 0 $spacing-3;
+      border-radius: $radius-md;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      text-decoration: none;
+      transition:
+        background-color $transition-fast,
+        color $transition-fast;
+      i {
+        width: 1rem;
+        text-align: center;
+        font-size: $font-size-lg;
+      }
+      &:hover {
+        color: $color-white;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      &.active {
+        color: $color-white;
+        background: $color-primary-button;
+      }
+    }
+  }
+  // FOOTER
+  .sidebar-footer {
+    margin-top: auto;
+
+    .logout-button {
+      display: flex;
+      align-items: center;
+      gap: $spacing-3;
+      width: 100%;
+      min-height: 2.625rem;
+      padding: 0 $spacing-3;
+      border: 0;
+      border-radius: $radius-md;
+      color: rgba(255, 255, 255, 0.85);
+      background: transparent;
+      font-family: inherit;
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      cursor: pointer;
+      text-align: left;
+      transition:
+        background-color $transition-fast,
+        color $transition-fast;
+      i {
+        width: 1rem;
+        text-align: center;
+      }
+      &:hover {
+        color: $color-white;
+        background: rgba(255, 255, 255, 0.08);
+      }
+    }
+  }
+}
+// MOBILE
+@media (max-width: 48rem) {
+  .side-navbar {
+    transform: translateX(-100%);
+  }
+}

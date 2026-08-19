@@ -1,0 +1,36 @@
+<aside class="side-navbar">
+    <!-- BRAND -->
+    <div class="brand">
+        <a routerLink="/dashboard" class="brand-link">
+            <span class="brand-logo">
+                CF
+            </span>
+            <span class="brand-name">
+                CashFlow
+            </span>
+        </a>
+    </div>
+    <!-- NAVIGATION -->
+    <nav class="navigation" aria-label="Main navigation">
+        @for (item of navigationItems; track item.route) {
+        <a class="navigation-item" [routerLink]="item.route" routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }">
+            <i [class]="item.icon" aria-hidden="true"></i>
+
+            <span>
+                {{ item.label }}
+            </span>
+        </a>
+        }
+    </nav>
+    <!-- LOGOUT -->
+    <div class="sidebar-footer">
+        <button type="button" class="logout-button">
+            <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+            <span>
+                Logout
+            </span>
+        </button>
+    </div>
+
+</aside>

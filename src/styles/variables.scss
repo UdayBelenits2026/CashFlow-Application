@@ -1,0 +1,117 @@
+// CashFlow Global Design Tokens
+// INTERACTIVE / BUTTON COLORS
+$color-primary-button: #1554e8;
+$color-primary-button-hover: #1046c7;
+// FORM / INPUT
+$input-height: 3rem;
+// ADDITIONAL UI COLORS
+$color-input-icon: #536783;
+$color-placeholder: #718096;
+$color-border-hover: #b7c3d2;
+$color-checkbox-border: #9caabc;
+$color-social-google: #4285f4;
+$color-social-apple: #000000;
+// BRAND COLORS
+$color-primary: #020e46;
+$color-secondary: #123b66;
+$color-accent: #19a974;
+// BACKGROUND COLORS
+$color-background: #f5f7fa;
+$color-card: #ffffff;
+$color-white: #ffffff;
+// TEXT COLORS
+$color-text-primary: #0b1f3a;
+$color-text-secondary: #475569;
+$color-text-muted: #64748b;
+$color-text-light: #94a3b8;
+// BORDER COLORS
+$color-border: #d9e1ea;
+$color-border-light: #e8edf3;
+// SEMANTIC COLORS
+$color-success: #19a974;
+$color-warning: #f59e0b;
+$color-danger: #dc2626;
+$color-info: #2563eb;
+// STATE BACKGROUNDS
+$color-success-bg: #ecfdf5;
+$color-warning-bg: #fffbeb;
+$color-danger-bg: #fef2f2;
+$color-info-bg: #eff6ff;
+// TYPOGRAPHY
+$font-family-base: Inter, 'Segoe UI', Roboto, Arial, sans-serif;
+// FONT SIZES
+$font-size-xs: 0.625rem;
+$font-size-sm: 0.6875rem;
+$font-size-md: 0.75rem;
+$font-size-base: 0.875rem;
+$font-size-lg: 1rem;
+$font-size-xl: 1.125rem;
+$font-size-2xl: 1.25rem;
+$font-size-3xl: 1.5rem;
+$font-size-4xl: 1.875rem;
+$font-size-5xl: 2rem;
+// FONT WEIGHT
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+// LINE HEIGHTS
+$line-height-tight: 1.2;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.6;
+// SPACING
+$spacing-1: 0.25rem;
+$spacing-2: 0.5rem;
+$spacing-3: 0.75rem;
+$spacing-4: 1rem;
+$spacing-5: 1.25rem;
+$spacing-6: 1.5rem;
+$spacing-7: 1.75rem;
+$spacing-8: 2rem;
+$spacing-10: 2.5rem;
+$spacing-12: 3rem;
+$spacing-16: 4rem;
+$spacing-20: 5rem;
+$spacing-24: 6rem;
+// BORDER RADIUS
+$radius-sm: 0.375rem;
+$radius-md: 0.5rem;
+$radius-lg: 0.75rem;
+$radius-xl: 1rem;
+// BORDER WIDTH
+$border-width-sm: 0.0625rem;
+$border-width-md: 0.125rem;
+// SHADOWS
+$shadow-sm: 0 0.125rem 0.5rem rgba(11, 31, 58, 0.06);
+$shadow-md: 0 0.5rem 1.5rem rgba(11, 31, 58, 0.1);
+$shadow-lg: 0 1rem 2.5rem rgba(11, 31, 58, 0.14);
+// TRANSITIONS
+$transition-fast: 0.15s ease;
+$transition-normal: 0.25s ease;
+$transition-slow: 0.35s ease;
+// FORM CONTROL SIZES
+$button-height-sm: 2.5rem;
+$button-height-md: 3rem;
+$button-height-lg: 3.25rem;
+$input-height-sm: 2.75rem;
+$input-height-md: 3rem;
+$input-height-lg: 3.25rem;
+// ICON SIZES
+$icon-xs: 0.625rem;
+$icon-sm: 0.75rem;
+$icon-md: 1rem;
+$icon-lg: 1.125rem;
+$icon-xl: 1.25rem;
+$icon-2xl: 1.5rem;
+// Z-INDEX
+$z-index-dropdown: 1000;
+$z-index-sticky: 1100;
+$z-index-fixed: 1200;
+$z-index-modal: 1300;
+$z-index-toast: 1400;
+
+//font weight
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;

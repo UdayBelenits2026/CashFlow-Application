@@ -1,0 +1,60 @@
+@use './variables' as *;
+
+
+// ============================================================
+// Table
+// ============================================================
+
+.table-wrapper {
+  width: 100%;
+
+  overflow-x: auto;
+
+  border: 1px solid $color-border;
+
+  border-radius: $radius-lg;
+
+  background: $color-card;
+}
+
+
+table {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+
+thead {
+  background: $color-background;
+}
+
+
+th {
+  padding: 13px 16px;
+
+  color: $color-text-primary;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-align: left;
+
+  white-space: nowrap;
+}
+
+
+td {
+  padding: 13px 16px;
+
+  border-top: 1px solid $color-border-light;
+
+  color: $color-text-secondary;
+
+  font-size: 12px;
+}
+
+
+tbody tr:hover {
+  background: #F8FAFC;
+}

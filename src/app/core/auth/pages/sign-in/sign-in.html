@@ -1,0 +1,175 @@
+<div class="auth-page">
+  @if (loginSuccess) {
+  <div class="auth-toast auth-toast-success" role="alert">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>{{ loginSuccess }}</span>
+  </div>
+  }
+  <div class="auth-container">
+    <!-- LEFT BLUE AUTH PANEL -->
+    <app-cf-auth-side-panel [config]="sidePanelConfig" />
+    <!-- RIGHT SIGN IN SECTION -->
+    <section class="auth-form-section">
+      <div class="auth-form-wrapper">
+        <!-- HEADER -->
+        <header class="form-header">
+          <h1>Welcome Back!</h1>
+          <p>Sign in to your account to continue</p>
+        </header>
+        <!-- SIGN IN FORM -->
+        <form [formGroup]="SignInform" (ngSubmit)="submit()">
+          <!-- EMAIL -->
+          <div class="form-group">
+            <label for="email" class="form-label">
+              Email Address
+            </label>
+            <div class="input-wrapper" [class.has-error]="
+                SignInform.controls.email.invalid &&
+                SignInform.controls.email.touched
+              ">
+              <i class="fa-solid fa-envelope input-icon" aria-hidden="true"></i>
+              <input id="email" type="email" class="form-control" formControlName="email" placeholder="Enter your email"
+                autocomplete="email" />
+            </div>
+            <!-- EMAIL VALIDATION -->
+            @if (
+            SignInform.controls.email.invalid &&
+            SignInform.controls.email.touched
+            ) {
+            <div class="form-error">
+              <i class="fa-solid fa-circle-exclamation error-icon" aria-hidden="true"></i>
+              @if (SignInform.controls.email.errors?.['required']) {
+              <span>
+                Email address is required.
+              </span>
+              }
+              @if (SignInform.controls.email.errors?.['email']) {
+              <span>
+                Please enter a valid email address.
+              </span>
+              }
+            </div>
+            }
+          </div>
+          <!-- PASSWORD -->
+          <div class="form-group">
+            <label for="password" class="form-label">
+              Password
+            </label>
+            <div class="input-wrapper" [class.has-error]="
+                SignInform.controls.password.invalid &&
+                SignInform.controls.password.touched
+              ">
+              <i class="fa-solid fa-lock input-icon" aria-hidden="true"></i>
+              <input id="password" class="form-control" [type]="showPassword ? 'text' : 'password'"
+                formControlName="password" placeholder="Enter your password" autocomplete="current-password" />
+              <!-- PASSWORD VISIBILITY -->
+              <button type="button" class="password-toggle" (click)="togglePassword()" [attr.aria-label]="
+                  showPassword
+                    ? 'Hide password'
+                    : 'Show password'
+                ">
+                @if (showPassword) {
+                <i class="fa-solid fa-eye-slash" aria-hidden="true"></i>
+                } @else {
+                <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                }
+              </button>
+            </div>
+            <!-- PASSWORD VALIDATION -->
+            @if (
+            SignInform.controls.password.invalid &&
+            SignInform.controls.password.touched
+            ) {
+            <div class="form-error">
+              <i class="fa-solid fa-circle-exclamation error-icon" aria-hidden="true"></i>
+              @if (SignInform.controls.password.errors?.['required']) {
+              <span>
+                Password is required.
+              </span>
+              }
+              @if (SignInform.controls.password.errors?.['minlength']) {
+              <span>
+                Password must be at least 8 characters.
+              </span>
+              }
+            </div>
+            }
+          </div>
+          <!-- REMEMBER ME / FORGOT PASSWORD -->
+          <div class="form-options">
+            <label class="remember-me">
+              <input type="checkbox" formControlName="rememberMe" />
+
+              <span>
+                Remember me
+              </span>
+            </label>
+            <a routerLink="/forgot-password" class="forgot-link">
+              Forgot Password?
+            </a>
+
+          </div>
+          <!-- LOGIN ERROR -->
+          @if (loginError) {
+          <div class="auth-error" role="alert">
+            <i class="fa-solid fa-circle-exclamation error-icon" aria-hidden="true"></i>
+            <span>
+              {{ loginError }}
+            </span>
+          </div>
+          }
+          <!-- SIGN IN BUTTON -->
+          <button type="submit" class="btn btn-primary submit-button" [disabled]="SignInform.invalid || isSubmitting">
+            @if (isSubmitting) {
+            <span class="spinner"></span>
+            <span>
+              Signing In...
+            </span>
+            } @else {
+            <span>
+              Sign In
+            </span>
+            }
+          </button>
+          <!-- DIVIDER -->
+          <div class="divider">
+            <span></span>
+            <small>or</small>
+            <span></span>
+          </div>
+          <!-- GOOGLE -->
+          <button type="button" class="social-button">
+            <span class="social-icon google-icon">
+              <img src="/assets/icons/google-icon.svg" alt="" aria-hidden="true" />
+            </span>
+            <span class="social-button-text">
+              Continue with Google
+            </span>
+          </button>
+
+          <!-- APPLE -->
+          <button type="button" class="btn btn-secondary social-button">
+            <span class="social-icon apple-icon">
+              <i class="fa-brands fa-apple" aria-hidden="true"></i>
+            </span>
+            <span>
+              Continue with Apple
+            </span>
+          </button>
+
+          <!-- SIGN UP -->
+
+          <p class="signup-text">
+            Don't have an account?
+
+            <a routerLink="/sign-up">
+              Sign Up
+            </a>
+          </p>
+
+        </form>
+      </div>
+    </section>
+  </div>
+</div>

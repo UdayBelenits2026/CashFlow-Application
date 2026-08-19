@@ -1,0 +1,279 @@
+@use '../../../../styles/variables' as *;
+// MAIN NAVBAR
+.main-navbar {
+  position: sticky;
+  top: 0;
+  z-index: $z-index-sticky;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 4.5rem;
+  padding: 0 $spacing-4;
+  border-bottom: $border-width-sm solid $color-border-light;
+  background: $color-white;
+  box-sizing: border-box;
+  // LEFT
+  .navbar-left {
+    display: flex;
+    align-items: center;
+    gap: $spacing-5;
+    // MENU BUTTON
+    .menu-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.25rem;
+      height: 2.25rem;
+      padding: 0;
+      border: 0;
+      color: $color-text-primary;
+      background: transparent;
+      font-size: $font-size-xl;
+      cursor: pointer;
+      border-radius: $radius-sm;
+      &:hover {
+        background: $color-background;
+      }
+    }
+    // PAGE TITLE
+    .page-title {
+      margin: 0;
+      color: $color-text-primary;
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-bold;
+    }
+  }
+  // NAVBAR ACTIONS
+  .navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    // SEARCH
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 19.375rem;
+      height: 2.375rem;
+      i {
+        position: absolute;
+        left: $spacing-3;
+        color: $color-text-muted;
+        font-size: $font-size-md;
+      }
+      input {
+        width: 100%;
+        height: 100%;
+        padding: 0 $spacing-3 0 2.375rem;
+        border: $border-width-sm solid $color-border;
+        border-radius: $radius-md;
+        outline: none;
+        color: $color-text-primary;
+        background: $color-white;
+        font-family: inherit;
+        font-size: $font-size-md;
+        box-sizing: border-box;
+        &::placeholder {
+          color: $color-placeholder;
+        }
+        &:focus {
+          border-color: $color-primary-button;
+          box-shadow: 0 0 0 0.1875rem rgba(21, 84, 232, 0.08);
+        }
+      }
+    }
+    // NAVBAR CONTROL
+    .navbar-control {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-2;
+      min-height: 2.375rem;
+      padding: 0 $spacing-3;
+      border: $border-width-sm solid $color-border;
+      border-radius: $radius-md;
+      color: $color-text-primary;
+      background: $color-white;
+      font-family: inherit;
+      font-size: $font-size-md;
+      font-weight: $font-weight-medium;
+      cursor: pointer;
+      white-space: nowrap;
+      transition:
+        border-color $transition-fast,
+        background-color $transition-fast;
+      i {
+        font-size: $font-size-md;
+      }
+      &:hover {
+        border-color: $color-border-hover;
+        background: $color-background;
+      }
+      // DATE CONTROL
+      &.date-control {
+        justify-content: flex-start;
+        gap: $spacing-2;
+        > i:first-child {
+          color: $color-primary-button;
+          font-size: $font-size-lg;
+        }
+        .control-content {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.0625rem;
+
+          strong {
+            color: $color-text-primary;
+            font-size: $font-size-md;
+            font-weight: $font-weight-semibold;
+          }
+          small {
+            color: $color-text-muted;
+            font-size: $font-size-xs;
+          }
+        }
+        > i:last-child {
+          margin-left: $spacing-2;
+          font-size: $font-size-xs;
+        }
+      }
+    }
+    // NOTIFICATION
+    .notification-button {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.375rem;
+      height: 2.375rem;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      color: $color-text-primary;
+      background: transparent;
+      font-size: $font-size-xl;
+      cursor: pointer;
+
+      &:hover {
+        background: $color-background;
+      }
+      .notification-badge {
+        position: absolute;
+        top: -0.0625rem;
+        right: -0.0625rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1rem;
+        height: 1rem;
+        padding: 0 0.1875rem;
+        border: $border-width-sm solid $color-white;
+        border-radius: 50%;
+        color: $color-white;
+        background: $color-danger;
+        font-size: 0.5rem;
+        font-weight: $font-weight-bold;
+        box-sizing: border-box;
+      }
+    }
+    // PROFILE
+    .profile-button {
+      display: flex;
+      align-items: center;
+      gap: $spacing-2;
+      padding: 0;
+      border: 0;
+      color: $color-text-primary;
+      background: transparent;
+      font-family: inherit;
+      cursor: pointer;
+      .profile-image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        overflow: hidden;
+        border-radius: 50%;
+        background: $color-background;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+      .profile-name {
+        font-size: $font-size-md;
+        font-weight: $font-weight-semibold;
+      }
+      > i {
+        color: $color-text-muted;
+        font-size: $font-size-xs;
+      }
+    }
+  }
+}
+// LAPTOP
+@media (max-width: 75rem) {
+  .main-navbar {
+    .navbar-actions {
+      gap: $spacing-2;
+      .search-box {
+        width: 15.625rem;
+      }
+      .navbar-control {
+        span {
+          display: none;
+        }
+
+        &.date-control {
+          span {
+            display: flex;
+          }
+        }
+      }
+    }
+  }
+}
+
+// TABLET
+@media (max-width: 64rem) {
+  .main-navbar {
+    .navbar-actions {
+      .search-box {
+        display: none;
+      }
+    }
+  }
+}
+// MOBILE
+@media (max-width: 48rem) {
+  .main-navbar {
+    min-height: 4rem;
+    padding: 0 $spacing-3;
+    .navbar-left {
+      gap: $spacing-2;
+      .page-title {
+        font-size: $font-size-xl;
+      }
+    }
+    .navbar-actions {
+      gap: $spacing-1;
+
+      .navbar-control {
+        display: none;
+      }
+      .notification-button {
+        width: 2.125rem;
+        height: 2.125rem;
+      }
+      .profile-button {
+        .profile-name,
+        > i {
+          display: none;
+        }
+      }
+    }
+  }
+}

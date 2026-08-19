@@ -1,0 +1,47 @@
+@use '../../../../styles/variables' as *;
+// APP LAYOUT
+.app-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  background: $color-background;
+  // APP CONTENT
+  .app-content {
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 11.5rem);
+    min-width: 0;
+    min-height: 100vh;
+    margin-left: 11.5rem;
+    overflow: hidden;
+    // PAGE CONTENT
+    .page-content {
+      flex: 1;
+      width: 100%;
+      min-width: 0;
+      padding: $spacing-4;
+      overflow-y: auto;
+      box-sizing: border-box;
+    }
+  }
+}
+// TABLET
+@media (max-width: 64rem) {
+  .app-layout {
+    .app-content {
+      width: 100%;
+      margin-left: 0;
+    }
+  }
+}
+// MOBILE
+@media (max-width: 48rem) {
+  .app-layout {
+    .app-content {
+      .page-content {
+        padding: $spacing-3;
+      }
+    }
+  }
+}

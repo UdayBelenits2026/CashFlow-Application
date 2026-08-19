@@ -1,0 +1,610 @@
+@use '../../../../../styles/variables' as *;
+
+// MAIN PANEL
+
+.auth-side-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 1.75rem 1.875rem;
+  overflow: hidden;
+  color: $color-white;
+  background: linear-gradient(155deg, #061b42 0%, #061b45 45%, #04183c 100%);
+
+  // BLUE BACKGROUND GLOW
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 12%;
+    left: -10.625rem;
+    width: 26.875rem;
+    height: 26.875rem;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(37, 99, 235, 0.18) 0%,
+      rgba(37, 99, 235, 0.07) 38%,
+      transparent 72%
+    );
+    pointer-events: none;
+  }
+
+  // GREEN BACKGROUND GLOW
+
+  .background-glow {
+    position: absolute;
+    right: -8.75rem;
+    bottom: -10rem;
+    width: 25rem;
+    height: 25rem;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(25, 169, 116, 0.18) 0%,
+      rgba(25, 169, 116, 0.06) 40%,
+      transparent 72%
+    );
+    pointer-events: none;
+  }
+
+  // DOT PATTERN
+
+  .background-dots {
+    position: absolute;
+    right: 0.9375rem;
+    bottom: 1.25rem;
+    width: 5.9375rem;
+    height: 11.875rem;
+    opacity: 0.5;
+    background-image: radial-gradient(rgba(25, 169, 116, 0.85) 0.0625rem, transparent 0.0625rem);
+    background-size: 0.625rem 0.625rem;
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 25%, #000 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 25%, #000 100%);
+    pointer-events: none;
+  }
+
+  // BRAND
+
+  .brand {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-shrink: 0;
+    width: fit-content;
+
+    // BRAND LOGO
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.75rem;
+      height: 2.75rem;
+      flex: 0 0 2.75rem;
+      border-radius: 0.625rem;
+      color: $color-white;
+      background: linear-gradient(135deg, $color-primary-button 0%, $color-info 100%);
+      box-shadow: 0 0.5rem 1.375rem rgba(0, 0, 0, 0.28);
+      font-size: 1.125rem;
+      font-weight: $font-weight-bold;
+    }
+
+    // BRAND CONTENT
+
+    .brand-content {
+      display: flex;
+      flex-direction: column;
+
+      .brand-name {
+        margin: 0;
+        color: $color-white;
+        font-size: 1.125rem;
+        line-height: 1.15;
+        font-weight: $font-weight-bold;
+        letter-spacing: -0.0125rem;
+      }
+
+      .brand-tagline {
+        margin-top: 0.25rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.625rem;
+        line-height: 1.2;
+        font-weight: $font-weight-regular;
+      }
+    }
+  }
+
+ // ILLUSTRATION SECTION
+
+.illustration-section {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 22.5rem;
+  width: 100%;
+  padding: 1.125rem 0 0.75rem;
+  box-sizing: border-box;
+  // ILLUSTRATION
+  .illustration {
+    display: block;
+    width: min(100%, 40.5rem);
+    max-width: 40.5rem;
+    max-height: 40.375rem;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    filter: drop-shadow(0 1.375rem 2rem rgba(0, 0, 0, 0.32));
+    transition:
+      width 0.25s ease,
+      max-height 0.25s ease,
+      transform 0.25s ease;
+  }
+}
+  // LOWER CONTENT WRAPPE
+  .side-content {
+    position: relative;
+    z-index: 4;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 24.375rem;
+    margin: 0 auto;
+    padding: 0;
+    box-sizing: border-box;
+
+    // SIDE HEADING
+
+    h1 {
+      max-width: 21.25rem;
+      margin: 0;
+      color: $color-white;
+      font-size: 1.5rem;
+      line-height: 1.25;
+      font-weight: $font-weight-bold;
+      letter-spacing: -0.03125rem;
+    }
+
+    // SIDE DESCRIPTION
+
+    p {
+      max-width: 21.25rem;
+      margin: 0.5rem 0 0;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 0.75rem;
+      line-height: 1.55;
+      font-weight: $font-weight-regular;
+    }
+  }
+
+  // CASH FLOW CARD
+
+  .cash-flow-card {
+    position: relative;
+    z-index: 4;
+    width: 100%;
+    margin: 1rem auto 0;
+    padding: 1.0625rem 1.125rem;
+    box-sizing: border-box;
+    border: 0.0625rem solid rgba(255, 255, 255, 0.14);
+    border-radius: $radius-lg;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
+    box-shadow:
+      0 0.625rem 1.875rem rgba(0, 0, 0, 0.14),
+      inset 0 0.0625rem 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(0.625rem);
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease;
+
+    &:hover {
+      transform: translateY(-0.125rem);
+      border-color: rgba(25, 169, 116, 0.3);
+    }
+
+    // CASH FLOW LABEL
+
+    .cash-flow-label {
+      display: block;
+      margin-bottom: 0.375rem;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 0.625rem;
+      line-height: 1.2;
+      font-weight: $font-weight-medium;
+      letter-spacing: 0.00625rem;
+    }
+
+    // CASH FLOW AMOUNT
+
+    .cash-flow-amount {
+      display: block;
+      color: $color-white;
+      font-size: 1.5625rem;
+      line-height: 1.2;
+      font-weight: $font-weight-bold;
+      letter-spacing: -0.03125rem;
+    }
+
+    // CASH FLOW META
+
+    .cash-flow-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.4375rem;
+
+      // GROWTH
+
+      .growth {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.1875rem;
+        color: $color-accent;
+        font-size: 0.625rem;
+        line-height: 1.2;
+        font-weight: $font-weight-bold;
+
+        // GROWTH ARROW
+
+        .growth-arrow {
+          font-size: 0.8125rem;
+          line-height: 1;
+        }
+      }
+
+      // PERIOD
+
+      .period {
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 0.5625rem;
+        line-height: 1.2;
+        font-weight: $font-weight-regular;
+      }
+    }
+  }
+
+  // SECURITY LIST
+
+  .security-list {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    width: 100%;
+    max-width: 24.375rem;
+    margin: 1rem auto 0.25rem;
+    padding: 0;
+
+    // SECURITY ITEM
+
+    .security-item {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      min-height: 1.3125rem;
+      color: rgba(255, 255, 255, 0.93);
+      font-size: 0.6875rem;
+      line-height: 1.3;
+      font-weight: $font-weight-medium;
+
+      // SECURITY ICON
+
+      .security-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.1875rem;
+        height: 1.1875rem;
+        flex: 0 0 1.1875rem;
+        border: 0.0625rem solid rgba(25, 169, 116, 0.65);
+        border-radius: 50%;
+        color: $color-accent;
+        background: rgba(25, 169, 116, 0.08);
+        font-size: 0.625rem;
+        font-weight: $font-weight-bold;
+        box-shadow: 0 0 0.625rem rgba(25, 169, 116, 0.1);
+      }
+    }
+  }
+}
+
+// LARGE DESKTOP
+
+@media (min-width: 90rem) {
+  .auth-side-panel {
+    padding: 1.875rem 2.125rem;
+
+    .brand {
+      .brand-logo {
+        width: 2.875rem;
+        height: 2.875rem;
+        flex-basis: 2.875rem;
+      }
+
+      .brand-content {
+        .brand-name {
+          font-size: 1.1875rem;
+        }
+      }
+    }
+
+    .illustration-section {
+      min-height: 25rem;
+      padding-top: 1.25rem;
+
+      .illustration {
+        width: min(100%, 31.25rem);
+        max-width: 31.25rem;
+        max-height: 32.5rem;
+      }
+    }
+
+    .side-content {
+      max-width: 26.25rem;
+
+      h1 {
+        font-size: 1.5625rem;
+      }
+
+      p {
+        font-size: 0.75rem;
+      }
+    }
+
+    .cash-flow-card {
+      padding: 1.125rem 1.25rem;
+
+      .cash-flow-amount {
+        font-size: 1.625rem;
+      }
+    }
+
+    .security-list {
+      max-width: 26.25rem;
+    }
+
+    .security-item {
+      font-size: 0.6875rem;
+    }
+  }
+}
+
+// NORMAL LAPTOP
+
+@media (max-width: 75rem) {
+  .auth-side-panel {
+    padding: 1.5rem 1.5rem;
+
+    .illustration-section {
+      min-height: 20rem;
+
+      .illustration {
+        width: min(100%, 25rem);
+        max-width: 25rem;
+        max-height: 26.25rem;
+      }
+    }
+
+    .side-content {
+      max-width: 21.875rem;
+
+      h1 {
+        font-size: 1.3125rem;
+      }
+    }
+
+    .cash-flow-card {
+      .cash-flow-amount {
+        font-size: 1.375rem;
+      }
+    }
+  }
+}
+
+// TABLET LANDSCAPE
+
+@media (max-width: 64rem) {
+  .auth-side-panel {
+    padding: 1.25rem 1.1875rem;
+
+    .brand {
+      .brand-logo {
+        width: 2.375rem;
+        height: 2.375rem;
+        flex-basis: 2.375rem;
+        font-size: 1rem;
+      }
+
+      .brand-content {
+        .brand-name {
+          font-size: 1rem;
+        }
+
+        .brand-tagline {
+          font-size: 0.5rem;
+        }
+      }
+    }
+
+    .illustration-section {
+      min-height: 16.875rem;
+      padding: 0.625rem 0;
+
+      .illustration {
+        width: min(100%, 20rem);
+        max-width: 20rem;
+        max-height: 20.625rem;
+      }
+    }
+
+    .side-content {
+      max-width: 17.5rem;
+
+      h1 {
+        max-width: 16.25rem;
+        font-size: 1.1875rem;
+      }
+
+      p {
+        max-width: 16.25rem;
+        font-size: 0.5625rem;
+      }
+    }
+
+    .cash-flow-card {
+      padding: 0.8125rem 0.875rem;
+
+      .cash-flow-amount {
+        font-size: 1.25rem;
+      }
+    }
+
+    .security-list {
+      gap: 0.5rem;
+      margin-top: 0.8125rem;
+
+      .security-item {
+        font-size: 0.5625rem;
+      }
+    }
+  }
+}
+
+// HEIGHT-CONSTRAINED LAPTOP
+
+@media (max-height: 50rem) and (min-width: 48.0625rem) {
+  .auth-side-panel {
+    padding-top: 1.125rem;
+    padding-bottom: 1rem;
+
+    .illustration-section {
+      min-height: 14.6875rem;
+      padding: 0.3125rem 0;
+
+      .illustration {
+        width: min(100%, 40rem);
+        max-width: 40rem;
+        max-height: 20rem;
+      }
+    }
+
+    .side-content {
+      h1 {
+        font-size: 1.125rem;
+      }
+
+      p {
+        margin-top: 0.3125rem;
+        font-size: 0.5625rem;
+      }
+    }
+
+    .cash-flow-card {
+      margin-top: 0.625rem;
+      padding: 0.6875rem 0.8125rem;
+
+      .cash-flow-amount {
+        font-size: 1.1875rem;
+      }
+    }
+
+    .security-list {
+      gap: 0.375rem;
+      margin-top: 0.625rem;
+
+      .security-item {
+        min-height: 1.125rem;
+        font-size: 0.5rem;
+
+        .security-icon {
+          width: 1rem;
+          height: 1rem;
+          flex-basis: 1rem;
+          font-size: 0.5rem;
+        }
+      }
+    }
+  }
+}
+
+// MOBILE
+
+@media (max-width: 48rem) {
+  .auth-side-panel {
+    width: 100%;
+    height: 6.5625rem;
+    min-height: 6.5625rem;
+    padding: 1rem 1.25rem;
+    box-sizing: border-box;
+
+    .illustration-section,
+    .side-content,
+    .cash-flow-card,
+    .security-list,
+    .background-glow,
+    .background-dots {
+      display: none;
+    }
+
+    .brand {
+      width: 100%;
+
+      .brand-logo {
+        width: 2.25rem;
+        height: 2.25rem;
+        flex-basis: 2.25rem;
+      }
+
+      .brand-content {
+        .brand-name {
+          font-size: 0.9375rem;
+        }
+
+        .brand-tagline {
+          font-size: 0.5625rem;
+        }
+      }
+    }
+  }
+}
+
+// SMALL MOBILE
+
+@media (max-width: 30rem) {
+  .auth-side-panel {
+    height: 6rem;
+    min-height: 6rem;
+    padding: 0.875rem 1.125rem;
+
+    .brand {
+      .brand-logo {
+        width: 2.125rem;
+        height: 2.125rem;
+        flex-basis: 2.125rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .brand-content {
+        .brand-name {
+          font-size: 0.875rem;
+        }
+
+        .brand-tagline {
+          margin-top: 0.1875rem;
+          font-size: 0.5rem;
+        }
+      }
+    }
+  }
+}
