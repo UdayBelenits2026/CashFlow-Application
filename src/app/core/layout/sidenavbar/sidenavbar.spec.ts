@@ -4,6 +4,7 @@ import { Sidenavbar } from './sidenavbar';
 import { provideStore } from '@ngrx/store';
 import { authReducer } from '../../auth/store/auth.reducer';
 import { provideRouter } from '@angular/router';
+import { navigationList } from '../data/navigation.data';
 
 describe('Sidenavbar', () => {
   let component: Sidenavbar;
@@ -23,5 +24,20 @@ describe('Sidenavbar', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should toggle spending submenu open and closed on parent click', () => {
+    const spendingItem = navigationList.find(item => item.label === 'Spending');
+
+    expect(spendingItem).toBeTruthy();
+    if (!spendingItem) {
+      return;
+    }
+
+    component.onParentItemClick(spendingItem);
+    expect(component.isExpanded(spendingItem)).toBeTrue();
+
+    component.onParentItemClick(spendingItem);
+    expect(component.isExpanded(spendingItem)).toBeFalse();
   });
 });

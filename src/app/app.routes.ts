@@ -10,8 +10,8 @@ export const routes: Routes = [
   {
     path: 'dashboard', loadComponent: () => import('./core/layout/main-layout/main-layout').then((m) => m.MainLayout),
   },
-  {
-    path: '**',
-    redirectTo: '',
-  },
+  // {
+  //   path: '**',
+  //   redirectTo: '',
+  // },
 ];

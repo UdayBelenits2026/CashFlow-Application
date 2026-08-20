@@ -1,0 +1,148 @@
+<div class="date-picker">
+  <!-- Trigger button that shows the selected range -->
+  <button
+    type="button"
+    class="date-picker-trigger"
+    [class.active]="isOpen()"
+    (click)="toggle()"
+    aria-label="Select date range"
+    [attr.aria-expanded]="isOpen()"
+  >
+    <span class="calendar-icon">
+      <i class="fa-regular fa-calendar-days" aria-hidden="true"></i>
+    </span>
+    <span class="date-content">
+      <span class="date-title">{{ getDisplayTitle() }}</span>
+      @if (getDisplaySubtitle()) {
+        <span class="date-subtitle">{{ getDisplaySubtitle() }}</span>
+      }
+    </span>
+    <i
+      class="fa-solid fa-chevron-down arrow"
+      [class.rotate]="isOpen()"
+      aria-hidden="true"
+    ></i>
+  </button>
+
+  <!-- Popup with month navigation and range selection -->
+  @if (isOpen()) {
+    <div class="calendar-popup">
+      <div class="calendar-header">
+        <div class="calendar-title">
+          <span>{{ monthName() }}</span>
+        </div>
+        <div class="calendar-navigation">
+          <button
+            type="button"
+            class="navigation-button"
+            (click)="previousMonth()"
+            aria-label="Previous month"
+          >
+            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+          </button>
+          <button
+            type="button"
+            class="navigation-button"
+            (click)="nextMonth()"
+            aria-label="Next month"
+          >
+            <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <button
+          type="button"
+          class="quick-action"
+          (click)="setThisMonth()"
+        >
+          <i class="fa-solid fa-calendar" aria-hidden="true"></i>
+          This Month
+        </button>
+      </div>
+
+      <div class="selected-range">
+        <div class="range-item">
+          <span class="range-label">FROM</span>
+          <span class="range-value">
+            @if (tempStart()) {
+              {{ tempStart() | date }}
+            } @else {
+              Select date
+            }
+          </span>
+        </div>
+        <div class="range-arrow">
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </div>
+        <div class="range-item">
+          <span class="range-label">TO</span>
+          <span class="range-value">
+            @if (tempEnd()) {
+              {{ tempEnd() | date }}
+            } @else {
+              Select date
+            }
+          </span>
+        </div>
+      </div>
+
+      <div class="calendar">
+        <div class="week-days">
+          <span>Su</span>
+          <span>Mo</span>
+          <span>Tu</span>
+          <span>We</span>
+          <span>Th</span>
+          <span>Fr</span>
+          <span>Sa</span>
+        </div>
+
+        <div class="calendar-grid">
+          @for (calendarDay of calendarDays(); track calendarDay.date.getTime()) {
+            <button
+              type="button"
+              class="calendar-day"
+              [class.other-month]="!calendarDay.currentMonth"
+              [class.today]="isToday(calendarDay.date)"
+              [class.selected-start]="isSelectedStart(calendarDay.date)"
+              [class.selected-end]="isSelectedEnd(calendarDay.date)"
+              [class.in-range]="isInRange(calendarDay.date)"
+              (click)="selectDate(calendarDay.date)"
+            >
+              <span class="day-number">{{ calendarDay.day }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="calendar-footer">
+        <button
+          type="button"
+          class="clear-button"
+          (click)="clear()"
+        >
+          Clear
+        </button>
+        <div class="footer-actions">
+          <button
+            type="button"
+            class="cancel-button"
+            (click)="close()"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="apply-button"
+            [disabled]="!tempStart() || !tempEnd()"
+            (click)="apply()"
+          >
+            Apply
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

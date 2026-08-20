@@ -37,12 +37,8 @@ export class Sidenavbar {
     return this.expandedItems().has(item.label);
   }
   onParentItemClick(item: SideNavItem): void {
-    if (!this.isParentRouteActive(item)) {
-      this.updateExpandedItems(item, true);
-      this.closeMobileMenu();
-      void this.router.navigateByUrl(item.route);
-      return;
-    }
+    // Parent entries with children behave as accordion toggles.
+    // Navigation happens on child click to avoid broken toggle state when parent route does not exist.
     this.toggleExpand(item);
   }
   toggleExpand(item: SideNavItem): void {
