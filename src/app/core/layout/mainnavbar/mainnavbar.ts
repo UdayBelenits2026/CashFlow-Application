@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { LayoutService } from '../services/layout';
 
 @Component({
   selector: 'app-cf-mainnavbar',
@@ -7,21 +7,16 @@ import { Router } from '@angular/router';
   templateUrl: './mainnavbar.html',
   styleUrl: './mainnavbar.scss',
 })
-export class Mainnavbar{
-  isSidebarOpen = false;
-
-  constructor(private readonly router: Router) {}
-
+export class Mainnavbar {
+  readonly layoutService = inject(LayoutService);
   toggleSidebar(): void {
-    this.isSidebarOpen = !this.isSidebarOpen;
+    this.layoutService.toggleSidebar();
+    this.layoutService.closeMobileMenu();
   }
-
+  toggleMobileMenu(): void {
+    this.layoutService.toggleMobileMenu();
+  }
   refresh(): void {
     window.location.reload();
-  }
-
-  logout(): void {
-    // Add logout logic later
-    this.router.navigate(['/']);
   }
 }

@@ -1,9 +1,9 @@
 <div class="auth-page">
   <!-- SUCCESS TOAST -->
-  @if (signUpSuccess) {
+  @if (successMessage$ | async; as successMessage) {
     <div class="auth-toast auth-toast-success" role="alert">
       <i class="fa-solid fa-circle-check"></i>
-      <span>{{ signUpSuccess }}</span>
+      <span>{{ successMessage }}</span>
     </div>
   }
   <div class="auth-container">
@@ -21,34 +21,33 @@
         <form [formGroup]="SignUpForm" (ngSubmit)="submit()">
           <!-- FULL NAME -->
           <div class="form-group">
-            <label for="fullname" class="form-label"> Full Name </label>
+            <label for="fullName" class="form-label"> Full Name </label>
 
             <div
               class="input-wrapper"
               [class.has-error]="
-                SignUpForm.controls.fullname.invalid && SignUpForm.controls.fullname.touched
+                SignUpForm.controls.fullName.invalid && SignUpForm.controls.fullName.touched
               "
             >
               <i class="fa-solid fa-user input-icon" aria-hidden="true"></i>
-
               <input
-                id="fullname"
+                id="fullName"
                 type="text"
                 class="form-control"
-                formControlName="fullname"
+                formControlName="fullName"
                 placeholder="Enter your full name"
                 autocomplete="name"
               />
             </div>
             <!-- FULL NAME VALIDATION -->
-            @if (SignUpForm.controls.fullname.invalid && SignUpForm.controls.fullname.touched) {
+            @if (SignUpForm.controls.fullName.invalid && SignUpForm.controls.fullName.touched) {
               <div class="form-error">
                 <i class="fa-solid fa-circle-exclamation error-icon" aria-hidden="true"></i>
 
-                @if (SignUpForm.controls.fullname.errors?.['required']) {
+                @if (SignUpForm.controls.fullName.errors?.['required']) {
                   <span> Full name is required. </span>
                 }
-                @if (SignUpForm.controls.fullname.errors?.['minlength']) {
+                @if (SignUpForm.controls.fullName.errors?.['minlength']) {
                   <span> Full name must be at least 2 characters. </span>
                 }
               </div>
@@ -187,7 +186,7 @@
           <!-- TERMS & CONDITIONS -->
           <div class="form-group">
             <label class="terms-checkbox">
-              <input type="checkbox" formControlName="terms" />
+              <input type="checkbox" formControlName="termsAccepted" />
 
               <span>
                 I agree to the
@@ -198,7 +197,7 @@
               </span>
             </label>
             <!-- TERMS VALIDATION -->
-            @if (SignUpForm.controls.terms.invalid && SignUpForm.controls.terms.touched) {
+            @if (SignUpForm.controls.termsAccepted.invalid && SignUpForm.controls.termsAccepted.touched) {
               <div class="form-error">
                 <i class="fa-solid fa-circle-exclamation error-icon" aria-hidden="true"></i>
 
@@ -207,12 +206,12 @@
             }
           </div>
           <!-- SIGN UP ERROR -->
-          @if (signUpError) {
+          @if (error$ | async; as error) {
             <div class="auth-error" role="alert">
               <i class="fa-solid fa-circle-exclamation error-icon" aria-hidden="true"></i>
 
               <span>
-                {{ signUpError }}
+                {{ error.message }}
               </span>
             </div>
           }
@@ -220,9 +219,9 @@
           <button
             type="submit"
             class="btn btn-primary submit-button"
-            [disabled]="SignUpForm.invalid || isSubmitting"
+            [disabled]="SignUpForm.invalid || (loading$ | async)"
           >
-            @if (isSubmitting) {
+            @if (loading$ | async) {
               <span class="spinner"></span>
               <span> Creating Account... </span>
             } @else {

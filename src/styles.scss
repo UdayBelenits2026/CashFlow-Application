@@ -1,17 +1,24 @@
-// ============================================================
-// CashFlow Global Styles
-// ============================================================
-
+@use '@angular/material' as mat;
 @use './styles/variables' as *;
 @use './styles/typography';
 @use './styles/buttons';
 @use './styles/forms';
 @use './styles/tables';
 
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
 
-// ============================================================
-// GLOBAL RESET
-// ============================================================
+html {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
 
 *,
 *::before,
@@ -19,40 +26,24 @@
   box-sizing: border-box;
 }
 
-
-// ============================================================
-// HTML / BODY
-// ============================================================
-
 html,
 body {
+  width: 100%;
   min-height: 100%;
 }
-
 
 html {
   font-size: 16px;
 }
 
-
 body {
   margin: 0;
-
   color: $color-text-primary;
-
   background: $color-background;
-
-  font-family:
-    $font-family-base;
-
+  font-family: $font-family-base;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-
-// ============================================================
-// GLOBAL ELEMENTS
-// ============================================================
 
 button,
 input,
@@ -61,25 +52,20 @@ select {
   font: inherit;
 }
 
-
 button {
   border: 0;
 }
-
 
 img {
   max-width: 100%;
   height: auto;
 }
 
-
 a {
   text-decoration: none;
 }
 
-
 ::selection {
   color: $color-white;
-
   background: $color-secondary;
 }

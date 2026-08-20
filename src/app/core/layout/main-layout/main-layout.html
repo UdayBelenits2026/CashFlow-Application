@@ -1,9 +1,10 @@
-<div class="app-layout">
+<div
+  class="app-layout"
+  [class.sidebar-collapsed]="layoutService.isSidebarCollapsed()"
+>
   <app-cf-sidenavbar />
-
   <div class="app-content">
     <app-cf-mainnavbar />
-
     <main class="page-content">
       <router-outlet />
     </main>

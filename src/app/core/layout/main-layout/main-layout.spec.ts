@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MainLayout } from './main-layout';
+import { provideStore } from '@ngrx/store';
+import { authReducer } from '../../auth/store/auth.reducer';
+import { provideRouter } from '@angular/router';
 
 describe('MainLayout', () => {
   let component: MainLayout;
@@ -8,7 +11,8 @@ describe('MainLayout', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MainLayout]
+      imports: [MainLayout],
+      providers: [provideStore({ auth: authReducer }), provideRouter([])]
     })
     .compileComponents();
 

@@ -1,36 +1,89 @@
-<aside class="side-navbar">
-    <!-- BRAND -->
-    <div class="brand">
-        <a routerLink="/dashboard" class="brand-link">
-            <span class="brand-logo">
-                CF
-            </span>
-            <span class="brand-name">
-                CashFlow
-            </span>
-        </a>
-    </div>
-    <!-- NAVIGATION -->
-    <nav class="navigation" aria-label="Main navigation">
-        @for (item of navigationItems; track item.route) {
-        <a class="navigation-item" [routerLink]="item.route" routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }">
+<aside class="side-navbar"
+  [class.sidebar-collapsed]="layoutService.isSidebarCollapsed()"
+  [class.mobile-menu-open]="layoutService.isMobileMenuOpen()">
+  <!-- Brand -->
+  <div class="brand">
+    <a routerLink="/dashboard" class="brand-link" (click)="closeMobileMenu()">
+      <span class="brand-logo">CF</span>
+      <span class="brand-name">CashFlow</span>
+    </a>
+  </div>
+  <!-- Main navigation -->
+  <nav class="navigation" aria-label="Main navigation">
+    @for (item of navigationItems; track item.route) {
+      @if (item.children?.length) {
+        <div class="nav-group"
+          [class.expanded]="isExpanded(item)"
+          [class.active-parent]="isParentRouteActive(item)">
+          <button
+            type="button"
+            class="navigation-item parent-item"
+            [class.active]="isParentRouteActive(item)"
+            [attr.aria-expanded]="isExpanded(item)"
+            [attr.aria-label]="item.label"
+            [attr.title]="layoutService.isSidebarCollapsed() ? item.label : null"
+            (click)="onParentItemClick(item)">
             <i [class]="item.icon" aria-hidden="true"></i>
-
-            <span>
-                {{ item.label }}
-            </span>
+            <span class="nav-label">{{ item.label }}</span>
+            <i
+              class="chevron-icon fa-solid"
+              [ngClass]="isExpanded(item) ? 'fa-chevron-down' : 'fa-chevron-right'"
+              aria-hidden="true">
+            </i>
+          </button>
+          @if (isExpanded(item)) {
+            <div class="sub-navigation">
+              @for (child of item.children; track child.route) {
+                <a
+                  class="sub-navigation-item"
+                  [routerLink]="child.route"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: child.exact ?? true }"
+                  [attr.title]="layoutService.isSidebarCollapsed() ? child.label : null"
+                  (click)="closeMobileMenu()">
+                  @if (child.icon) {
+                    <i [class]="child.icon" aria-hidden="true"></i>
+                  } @else {
+                    <span class="sub-nav-indicator"></span>
+                  }
+                  <span class="sub-nav-label">{{ child.label }}</span>
+                </a>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <a
+          class="navigation-item"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.route === '/' || item.route === '/dashboard' }"
+          [attr.title]="layoutService.isSidebarCollapsed() ? item.label : null"
+          (click)="closeMobileMenu()">
+          <i [class]="item.icon" aria-hidden="true"></i>
+          <span class="nav-label">{{ item.label }}</span>
         </a>
-        }
-    </nav>
-    <!-- LOGOUT -->
-    <div class="sidebar-footer">
-        <button type="button" class="logout-button">
-            <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
-            <span>
-                Logout
-            </span>
-        </button>
-    </div>
-
+      }
+    }
+  </nav>
+  <!-- Logout -->
+  <div class="sidebar-footer">
+    <button
+      type="button"
+      class="logout-button"
+      [attr.title]="layoutService.isSidebarCollapsed() ? 'Logout' : null"
+      (click)="closeMobileMenu()">
+      <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+      <span>Logout</span>
+    </button>
+  </div>
 </aside>
+<!-- Mobile backdrop -->
+@if (layoutService.isMobileMenuOpen()) {
+  <button
+    type="button"
+    class="mobile-menu-backdrop"
+    aria-label="Close navigation"
+    (click)="layoutService.closeMobileMenu()">
+  </button>
+}

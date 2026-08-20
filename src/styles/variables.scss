@@ -38,7 +38,7 @@ $color-warning-bg: #fffbeb;
 $color-danger-bg: #fef2f2;
 $color-info-bg: #eff6ff;
 // TYPOGRAPHY
-$font-family-base: Inter, 'Segoe UI', Roboto, Arial, sans-serif;
+$font-family-base: Roboto, 'Segoe UI', Arial, sans-serif;
 // FONT SIZES
 $font-size-xs: 0.625rem;
 $font-size-sm: 0.6875rem;
@@ -115,3 +115,11 @@ $font-weight-regular: 400;
 $font-weight-medium: 500;
 $font-weight-semibold: 600;
 $font-weight-bold: 700;
+
+// Z-INDEX
+$z-index-base: 1;
+$z-index-sticky: 100;
+$z-index-fixed: 200;
+$z-index-overlay: 300;
+$z-index-modal: 400;
+$z-index-toast: 500;

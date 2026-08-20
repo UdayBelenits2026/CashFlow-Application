@@ -1,19 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AuthSidePanel } from './auth-side-panel';
+import { AuthSidePanelComponent } from './auth-side-panel';
+import { sidePanelConfig } from '../../data/auth-page.data';
 
-describe('AuthSidePanel', () => {
-  let component: AuthSidePanel;
-  let fixture: ComponentFixture<AuthSidePanel>;
+describe('AuthSidePanelComponent', () => {
+  let component: AuthSidePanelComponent;
+  let fixture: ComponentFixture<AuthSidePanelComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AuthSidePanel]
+      imports: [AuthSidePanelComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AuthSidePanel);
+    fixture = TestBed.createComponent(AuthSidePanelComponent);
     component = fixture.componentInstance;
+    component.config = sidePanelConfig;
     fixture.detectChanges();
   });
 

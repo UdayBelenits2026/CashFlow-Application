@@ -1,10 +1,4 @@
 <div class="auth-page">
-  @if (loginSuccess) {
-  <div class="auth-toast auth-toast-success" role="alert">
-    <i class="fa-solid fa-circle-check"></i>
-    <span>{{ loginSuccess }}</span>
-  </div>
-  }
   <div class="auth-container">
     <!-- LEFT BLUE AUTH PANEL -->
     <app-cf-auth-side-panel [config]="sidePanelConfig" />
@@ -105,23 +99,22 @@
                 Remember me
               </span>
             </label>
-            <a routerLink="/forgot-password" class="forgot-link">
+            <a href="#" class="forgot-link" (click)="$event.preventDefault()">
               Forgot Password?
             </a>
-
           </div>
           <!-- LOGIN ERROR -->
-          @if (loginError) {
+          @if (error$ | async; as error) {
           <div class="auth-error" role="alert">
             <i class="fa-solid fa-circle-exclamation error-icon" aria-hidden="true"></i>
             <span>
-              {{ loginError }}
+              {{ error.message }}
             </span>
           </div>
           }
           <!-- SIGN IN BUTTON -->
-          <button type="submit" class="btn btn-primary submit-button" [disabled]="SignInform.invalid || isSubmitting">
-            @if (isSubmitting) {
+          <button type="submit" class="btn btn-primary submit-button" [disabled]="SignInform.invalid || (loading$ | async)">
+            @if (loading$ | async) {
             <span class="spinner"></span>
             <span>
               Signing In...

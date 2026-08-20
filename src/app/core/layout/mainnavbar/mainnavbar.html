@@ -1,64 +1,71 @@
 <header class="main-navbar">
   <!-- LEFT -->
   <div class="navbar-left">
-    <button
-      type="button"
-      class="menu-button"
-      (click)="toggleSidebar()"
-      aria-label="Toggle navigation"
-    >
-      <i class="fa-solid fa-bars"></i>
+    <!-- DESKTOP / TABLET MENU -->
+    <button type="button" class="menu-button desktop-menu-button" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+      <i class="fa-solid fa-bars" aria-hidden="true"></i>
     </button>
-   
+    <!-- MOBILE MENU -->
+    <button type="button" class="menu-button mobile-menu-button" (click)="toggleMobileMenu()"
+      [attr.aria-expanded]="layoutService.isMobileMenuOpen()" aria-label="Toggle navigation menu">
+      @if (layoutService.isMobileMenuOpen()) {
+      <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      } @else {
+      <i class="fa-solid fa-bars" aria-hidden="true"></i>
+      }
+    </button>
   </div>
   <!-- RIGHT -->
   <div class="navbar-actions">
     <!-- SEARCH -->
     <div class="search-box">
       <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-      <input type="search" placeholder="Search transactions, accounts, categories..." />
+      <input type="search" placeholder="Search transactions, accounts, categories..." aria-label="Search" />
     </div>
-    <!-- DATE FILTER -->
-    <button type="button" class="navbar-control date-control">
-      <i class="fa-regular fa-calendar" aria-hidden="true"></i>
-      <span class="control-content">
-        <strong>This Month</strong>
-        <small>May 1 - May 31, 2026</small>
-      </span>
-      <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
-    </button>
     <!-- FILTER -->
-    <button type="button" class="navbar-control">
-      <i class="fa-solid fa-filter"></i>
-      <span>Filter</span>
+    <button type="button" class="navbar-control" aria-label="Filter">
+      <i class="fa-solid fa-filter" aria-hidden="true"></i>
+      <span>
+        Filter
+      </span>
     </button>
     <!-- CUSTOMIZE -->
-    <button type="button" class="navbar-control">
-      <i class="fa-solid fa-gear"></i>
-      <span>Customize</span>
+    <button type="button" class="navbar-control" aria-label="Customize dashboard">
+      <i class="fa-solid fa-gear" aria-hidden="true"></i>
+      <span>
+        Customize
+      </span>
     </button>
     <!-- REFRESH -->
-    <button type="button" class="navbar-control" (click)="refresh()">
-      <i class="fa-solid fa-arrows-rotate"></i>
-      <span>Refresh</span>
+    <button type="button" class="navbar-control" (click)="refresh()" aria-label="Refresh">
+      <i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>
+      <span>
+        Refresh
+      </span>
     </button>
     <!-- EXPORT -->
-    <button type="button" class="navbar-control">
-      <i class="fa-solid fa-download"></i>
-      <span>Export</span>
+    <button type="button" class="navbar-control" aria-label="Export">
+      <i class="fa-solid fa-download" aria-hidden="true"></i>
+      <span>
+        Export
+      </span>
     </button>
-    <!-- NOTIFICATION -->
+    <!-- NOTIFICATIONS -->
     <button type="button" class="notification-button" aria-label="Notifications">
-      <i class="fa-regular fa-bell"></i>
-      <span class="notification-badge"> 3 </span>
+      <i class="fa-regular fa-bell" aria-hidden="true"></i>
+      <span class="notification-badge" aria-label="3 notifications">
+        3
+      </span>
     </button>
     <!-- PROFILE -->
-    <button type="button" class="profile-button">
+    <button type="button" class="profile-button" aria-label="Open profile menu">
       <span class="profile-image">
-        <img src="/assets/images/profile.jpg" alt="Neelima" />
+        <img src="/assets/images/profile.png" alt="Profile" />
       </span>
-      <span class="profile-name"> Neelima </span>
-      <i class="fa-solid fa-chevron-down"></i>
+      <span class="profile-name">
+        Neelima
+      </span>
+      <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
     </button>
   </div>
 </header>

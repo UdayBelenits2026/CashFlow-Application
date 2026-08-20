@@ -1,4 +1,41 @@
-// Auth Side Panel
+export type AuthOperation = 'LOGIN' | 'REGISTER' | null;
+
+export interface ApiResponse<T> {
+  success: boolean;
+  code: string;
+  message: string;
+  data: T;
+  correlationId: string;
+}
+
+export interface RegisteredUser {
+  publicId: string;
+  fullName: string;
+  email: string;
+  accountStatus: string;
+  role: string;
+}
+
+export interface AuthUser {
+  publicId: string;
+  fullName: string;
+  email: string;
+  accountStatus: string;
+  roles: string[];
+  permissions: string[];
+}
+
+export interface LoginData {
+  accessToken: string;
+  tokenType: string;
+  expiresIn: number;
+  user: AuthUser;
+}
+
+export type LoginResponse = ApiResponse<LoginData>;
+export type RegisterResponse = ApiResponse<RegisteredUser>;
+export interface AuthError { code: string; message: string; correlationId?: string; }
+
 export interface AuthSidePanelConfig {
   image: string;
   title: string;
@@ -6,17 +43,15 @@ export interface AuthSidePanelConfig {
   showCashFlowStats?: boolean;
   showSecurityPoints?: boolean;
 }
-// Login Request
 export interface LoginRequest {
   email: string;
   password: string;
-  rememberMe: boolean;
 }
-//SignUp Request
-export interface SignUpRequest{
-  fullname:string;
-  email:string;
-  password:string;
-  confirmPassword:string;
-  terms:boolean;
+export interface RegisterRequest {
+  fullName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  termsAccepted: boolean;
 }
+

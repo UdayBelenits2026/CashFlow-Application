@@ -1,9 +1,17 @@
+export interface SideNavChildItem {
+  label: string;
+  route: string;
+  icon?: string;
+  exact?: boolean;
+}
+ 
 export interface SideNavItem {
   label: string;
   icon: string;
   route: string;
+  children?: SideNavChildItem[];
 }
-
+ 
 export const navigationList: SideNavItem[] = [
   {
     label: 'Dashboard',
@@ -24,6 +32,33 @@ export const navigationList: SideNavItem[] = [
     label: 'Spending',
     icon: 'fa-solid fa-money-bill-transfer',
     route: '/spending',
+    children: [
+      {
+        label: 'Overview',
+        route: '/spending/dashboard',
+        exact: true,
+      },
+      {
+        label: 'Expenses',
+        route: '/spending/expenses',
+        exact: true,
+      },
+      {
+        label: 'Calendar',
+        route: '/spending/calendar',
+        exact: true,
+      },
+      {
+        label: 'Recurring',
+        route: '/spending/recurring',
+        exact: true,
+      },
+      {
+        label: 'Tags',
+        route: '/spending/tags',
+        exact: true,
+      },
+    ],
   },
   {
     label: 'Cash Flow',
@@ -56,3 +91,4 @@ export const navigationList: SideNavItem[] = [
     route: '/settings',
   },
 ];
+ 

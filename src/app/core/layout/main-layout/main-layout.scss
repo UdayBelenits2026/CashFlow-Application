@@ -1,29 +1,32 @@
 @use '../../../../styles/variables' as *;
-
-// APP LAYOUT
 .app-layout {
   display: flex;
   width: 100%;
   min-height: 100vh;
-  overflow: hidden;
   background: $color-background;
-  // APP CONTENT
   .app-content {
     display: flex;
+    flex: 1;
     flex-direction: column;
-    width: 100%;
     min-width: 0;
     min-height: 100vh;
-    padding-left: 11.5rem;
-    overflow: hidden;
-    // PAGE CONTENT
+    margin-left: 11.5rem;
+    box-sizing: border-box;
+    transition: margin-left $transition-normal;
     .page-content {
       flex: 1;
       width: 100%;
       min-width: 0;
+      margin: 0;
       padding: $spacing-4;
-      overflow-y: auto;
       box-sizing: border-box;
+      overflow-y: auto;
+    }
+  }
+  // COLLAPSED SIDEBAR
+  &.sidebar-collapsed {
+    .app-content {
+      margin-left: 4.5rem;
     }
   }
 }
@@ -31,7 +34,13 @@
 @media (max-width: 64rem) {
   .app-layout {
     .app-content {
-      padding-left: 0;
+      margin-left: 10rem;
+    }
+
+    &.sidebar-collapsed {
+      .app-content {
+        margin-left: 4.5rem;
+      }
     }
   }
 }
@@ -39,8 +48,16 @@
 @media (max-width: 48rem) {
   .app-layout {
     .app-content {
+      margin-left: 0;
+      padding-bottom: 4.25rem;
+
       .page-content {
         padding: $spacing-3;
+      }
+    }
+    &.sidebar-collapsed {
+      .app-content {
+        margin-left: 0;
       }
     }
   }
