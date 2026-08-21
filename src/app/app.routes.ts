@@ -105,9 +105,9 @@ export const routes: Routes = [
       },
       {
         path: 'accounts',
-        loadComponent: () =>
-          import('./features/accounts/accounts.component').then(
-            (m) => m.AccountsComponent,
+        loadChildren: () =>
+          import('./features/accounts/accounts.routes').then(
+            (m) => m.ACCOUNTS_ROUTES,
           ),
       },
       {

@@ -1,0 +1,117 @@
+﻿<!-- File purpose: Renders UI markup for app\features\accounts\pages\account-details\account-details.html. -->
+<main class="account-details-page">
+  <!-- Loading/error/content state switch for the details page. -->
+  @if (loading) {
+    <p class="state-message">Loading account details...</p>
+  } @else if (error) {
+    <p class="state-message error">{{ error }}</p>
+  } @else if (account) {
+    <!-- Account header with status and actions dropdown. -->
+    <header class="page-header">
+      <div>
+        <h1>{{ account.accountName }} ({{ account.accountNumber | accountNumber }})</h1>
+        <p>{{ account.accountType }}</p>
+      </div>
+      <div class="header-actions">
+        <span class="status"><span class="status-dot"></span>{{ account.status }}</span>
+        <div class="actions-menu">
+          <button
+            type="button"
+            class="actions-button"
+            aria-haspopup="menu"
+            [attr.aria-expanded]="actionsOpen"
+            (click)="toggleActions()">
+            Actions <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+          </button>
+          @if (actionsOpen) {
+            <div class="actions-dropdown" role="menu">
+              <button type="button" role="menuitem" (click)="selectAction('edit')">
+                <i class="fa-solid fa-pen action-icon" aria-hidden="true"></i> Edit Account
+              </button>
+              <button type="button" role="menuitem" (click)="selectAction('balanceHistory')">
+                <i class="fa-solid fa-chart-line action-icon" aria-hidden="true"></i> Account Balance History
+              </button>
+              <button type="button" role="menuitem" (click)="selectAction('deactivate')">
+                <i class="fa-solid fa-pause action-icon" aria-hidden="true"></i> Deactivate Account
+              </button>
+              <button type="button" class="delete-action" role="menuitem" (click)="selectAction('delete')">
+                <i class="fa-solid fa-trash action-icon" aria-hidden="true"></i> Delete Account
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </header>
+    @if (historyNotice) {
+      <p class="notice-message">{{ historyNotice }}</p>
+    }
+
+    <!-- Balance snapshot card with quick account status context. -->
+    <section class="balance-card">
+      <div>
+        <span class="balance-label">Current Balance</span>
+        <strong>{{ account.balance | currency: account.currency }}</strong>
+        <span class="available-label">Available Balance</span>
+        <span class="available-value">{{ account.availableBalance | currency: account.currency }}</span>
+        @if (account.overdraftLimit) {
+          <small>(Includes Overdraft)</small>
+        }
+      </div>
+      <button type="button" class="refresh-button">
+        <i class="fa-solid fa-rotate" aria-hidden="true"></i> Refresh
+      </button>
+      <span class="account-type-icon" aria-hidden="true">
+        @if (account.accountType === 'Bank Account') {
+          <i class="fa-solid fa-building-columns"></i>
+        } @else if (account.accountType === 'Credit Card') {
+          <i class="fa-solid fa-credit-card"></i>
+        } @else if (account.accountType === 'Cash / Wallet') {
+          <i class="fa-solid fa-wallet"></i>
+        } @else if (account.accountType === 'Investment') {
+          <i class="fa-solid fa-chart-line"></i>
+        } @else if (account.accountType === 'Loan' || account.accountType === 'LOAN') {
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+        } @else {
+          <i class="fa-solid fa-building"></i>
+        }
+      </span>
+    </section>
+
+    <!-- Static account metadata section. -->
+    <section class="information-section">
+      <h2>Account Information</h2>
+      <div class="information-card">
+        <div><span>Account Type</span><strong>{{ account.accountType }}</strong></div>
+        <div><span>Bank Name</span><strong>{{ account.bankName || 'N/A' }}</strong></div>
+        <div><span>Account Number</span><strong>{{ account.accountNumber | accountNumber }}</strong></div>
+        <div><span>Routing Number</span><strong>{{ account.routingNumber || 'N/A' }}</strong></div>
+        <div><span>Currency</span><strong>{{ account.currency }}</strong></div>
+        <div><span>Open Date</span><strong>{{ account.openDate | date: 'MMM d, y' }}</strong></div>
+        <div><span>Status</span><strong>{{ account.status }}</strong></div>
+      </div>
+    </section>
+
+    <!-- Recent transaction activity list for the selected account. -->
+    <section class="transactions-section">
+      <div class="section-header">
+        <h2>Recent Transactions</h2>
+        @if (hasMoreTransactions && !showAllTransactions) {
+          <button type="button" class="view-all" (click)="viewAllTransactions()">View All</button>
+        }
+      </div>
+      <div class="transactions-card">
+        @for (transaction of visibleTransactions; track transaction.id) {
+          <div class="transaction-row">
+            <span>{{ transaction.date | date: 'MMM d, y' }}</span>
+            <span class="transaction-description">{{ transaction.description }}</span>
+            <strong [class.credit]="transaction.amount >= 0">
+              {{ transaction.amount | currency: transaction.currency:'symbol':'1.2-2' }}
+            </strong>
+          </div>
+        } @empty {
+          <p class="state-message">No transactions found for this account.</p>
+        }
+      </div>
+    </section>
+  }
+</main>

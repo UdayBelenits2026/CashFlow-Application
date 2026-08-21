@@ -27,6 +27,24 @@
   }
 }
 
+.chart-card.embedded {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.chart-card.embedded:hover {
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.chart-card.embedded .chart-container {
+  min-height: 220px;
+}
+
 .chart-header {
   margin-bottom: $spacing-3;
 }
@@ -73,6 +91,19 @@
 
 .doughnut-container {
   position: relative;
+}
+
+.doughnut-container canvas {
+  width: min(220px, 100%) !important;
+  height: 220px !important;
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
+}
+
+.chart-card.embedded .doughnut-container canvas {
+  width: min(200px, 100%) !important;
+  height: 200px !important;
 }
 
 

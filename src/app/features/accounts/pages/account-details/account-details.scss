@@ -1,0 +1,298 @@
+﻿/* File purpose: Defines styles for app\features\accounts\pages\account-details\account-details.scss. */
+@use '../../../../../styles/variables' as *;
+
+// Main page layout container.
+.account-details-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $space-5;
+  color: $text-primary;
+}
+
+// Shared alignment pattern for top-level section headers.
+.page-header,
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// Account title and subtitle block.
+.page-header {
+  margin-bottom: $space-4;
+
+  h1 {
+    margin: 0;
+    font-size: $font-md;
+    font-weight: $font-bold;
+  }
+
+  p {
+    margin: $space-1 0 0;
+    color: $text-muted;
+    font-size: 12px;
+  }
+}
+
+// Action controls in the header.
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+// Informational note shown for balance history placeholder.
+.notice-message {
+  margin: 0 0 $space-3;
+  padding: $space-2 $space-3;
+  border: 1px solid #b9d0ff;
+  border-radius: $radius-md;
+  background: #f1f6ff;
+  color: $primary-dark;
+  font-size: 12px;
+}
+
+// Actions dropdown and status badge styles.
+.actions-menu {
+  position: relative;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: 12px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #35b779;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.actions-button {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  background: $background;
+  color: $text-primary;
+  font-size: 12px;
+
+  .fa-chevron-down {
+    font-size: 11px;
+  }
+}
+
+.actions-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 5;
+  width: 175px;
+  padding: $space-1 0;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  background: $background;
+  box-shadow: 0 8px 20px rgba(16, 24, 40, .12);
+
+  button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: $space-2;
+    padding: $space-2 $space-3;
+    background: transparent;
+    color: $text-primary;
+    text-align: left;
+    font-size: 12px;
+
+    &:hover {
+      background: #f8faff;
+    }
+  }
+
+  .action-icon {
+    width: 16px;
+    color: $text-muted;
+    text-align: center;
+  }
+
+  .delete-action {
+    color: $danger;
+    border-top: 1px solid $border-light;
+
+    .action-icon {
+      color: $danger;
+    }
+  }
+}
+
+// Primary balance summary card.
+.balance-card {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  min-height: 112px;
+  padding: $space-4;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: $radius-md;
+  background: linear-gradient(120deg, #1557e8, #245cf4);
+  color: $text-white;
+
+  strong {
+    display: block;
+    margin: $space-1 0 $space-2;
+    font-size: 26px;
+  }
+
+  small,
+  .balance-label,
+  .available-label,
+  .available-value {
+    display: block;
+  }
+
+  .balance-label,
+  .available-label,
+  small {
+    font-size: 12px;
+  }
+
+  .available-value {
+    margin: $space-1 0;
+    font-size: $font-sm;
+  }
+}
+
+.refresh-button {
+  align-self: flex-start;
+  z-index: 1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #b8f5e0;
+  color: #12644f;
+  font-size: 11px;
+}
+
+.account-type-icon {
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  color: rgba(255, 255, 255, .9);
+  font-size: 30px;
+}
+
+// Supplementary sections below the balance card.
+.information-section,
+.transactions-section {
+  margin-top: $space-4;
+}
+
+.transactions-section {
+  margin-bottom: $space-2;
+}
+
+h2 {
+  margin: 0 0 $space-3;
+  font-size: 14px;
+  font-weight: $font-bold;
+}
+
+.information-card,
+.transactions-card {
+  overflow: hidden;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  background: $background;
+}
+
+.information-card > div,
+.transaction-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-2;
+  padding: 8px 10px;
+  border-bottom: 1px solid $border-light;
+  font-size: 11px;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.information-card strong {
+  text-align: right;
+  font-weight: $font-medium;
+}
+
+.transaction-row {
+  grid-template-columns: 100px 1fr auto;
+  align-items: center;
+
+  strong {
+    color: $danger;
+    font-weight: $font-semibold;
+  }
+
+  strong.credit {
+    color: #16a05d;
+  }
+}
+
+.view-all {
+  margin-bottom: $space-2;
+  padding: 0;
+  background: transparent;
+  color: $primary;
+  font-size: 11px;
+  font-weight: $font-semibold;
+}
+
+.state-message {
+  margin: 0;
+  padding: $space-3;
+  color: $text-muted;
+}
+
+.error {
+  color: $danger;
+}
+
+// Responsive behavior for smaller screens.
+@media (max-width: 600px) {
+  .account-details-page {
+    padding: $space-4;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    gap: $space-3;
+    flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .transaction-row {
+    grid-template-columns: 1fr auto;
+
+    .transaction-description {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+}

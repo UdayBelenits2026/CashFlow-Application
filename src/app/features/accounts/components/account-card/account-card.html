@@ -1,0 +1,56 @@
+﻿<!-- File purpose: Renders UI markup for app\features\accounts\components\account-card\account-card.html. -->
+<div
+  class="account-card"
+  (click)="onAccountClick()">
+  <!-- Account-type icon block. -->
+  <div class="account-icon">
+    @if (account.accountType === 'Bank Account') {
+      <i class="fa-solid fa-building-columns"></i>
+    } @else if (account.accountType === 'Savings Account') {
+      <i class="fa-solid fa-piggy-bank"></i>
+    } @else if (account.accountType === 'Checking Account') {
+      <i class="fa-solid fa-money-check"></i>
+    } @else if (account.accountType === 'Business Account') {
+      <i class="fa-solid fa-briefcase"></i>
+    } @else if (account.accountType === 'Credit Card') {
+      <i class="fa-solid fa-credit-card"></i>
+    } @else if (account.accountType === 'Cash / Wallet') {
+      <i class="fa-solid fa-wallet"></i>
+    } @else if (account.accountType === 'Investment') {
+      <i class="fa-solid fa-chart-line"></i>
+    } @else if (account.accountType === 'Loan' || account.accountType === 'LOAN') {
+      <i class="fa-solid fa-file-invoice-dollar"></i>
+    } @else {
+      <i class="fa-solid fa-building"></i>
+    }
+  </div>
+  <!-- Account identity details. -->
+  <div class="account-info">
+    <h3>
+      {{ account.accountName }}
+      <span class="account-number">
+        ({{ account.accountNumber | accountNumber }})
+      </span>
+    </h3>
+
+    <p>
+      {{ account.accountType }}
+    </p>
+
+  </div>
+
+
+  <!-- Current balance summary. -->
+  <div
+    class="account-balance"
+    [class.negative]="account.balance < 0">
+
+    <p>Balance</p>
+
+    <h3>
+      {{ account.balance | currency:'USD' }}
+    </h3>
+
+  </div>
+
+</div>

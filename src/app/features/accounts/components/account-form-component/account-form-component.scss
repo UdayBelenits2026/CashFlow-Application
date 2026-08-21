@@ -1,0 +1,303 @@
+@use '../../../../../styles/variables' as *;
+
+.account-form-page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: $space-8;
+  color: $text-primary;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: $font-xl;
+}
+
+.page-header p {
+  margin: $space-1 0 0;
+  color: $text-muted;
+  font-size: $font-sm;
+}
+
+.form-card {
+  margin-top: $space-6;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  background: $background;
+  overflow: hidden;
+}
+
+.message {
+  margin: $space-4 $space-6 0;
+  padding: $space-3 $space-4;
+  border-radius: $radius-sm;
+  font-size: $font-sm;
+}
+
+.message.success {
+  border: 1px solid #b2ebd5;
+  background: #ecfdf5;
+  color: #0b7a4f;
+}
+
+.message.error {
+  border: 1px solid #f1b6b6;
+  background: #fef2f2;
+  color: $danger;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  padding: $space-4 $space-6;
+  border-bottom: 1px solid $border-light;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: $text-muted;
+  cursor: pointer;
+  font: inherit;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  span {
+    display: grid;
+    width: 26px;
+    height: 26px;
+    place-items: center;
+    border: 1px solid $border;
+    border-radius: 50%;
+    font-size: 12px;
+  }
+
+  strong {
+    font-size: 12px;
+    font-weight: $font-medium;
+  }
+
+  &.active,
+  &.complete {
+    color: $primary;
+
+    span {
+      border-color: $primary;
+      background: $primary;
+      color: $text-white;
+    }
+  }
+}
+
+.step-divider {
+  flex: 1;
+  height: 1px;
+  margin: 0 $space-3;
+  background: $border;
+}
+
+.form-step {
+  padding: $space-6;
+
+  h3 {
+    margin: 0 0 $space-4;
+    font-size: $font-md;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-4;
+}
+
+label {
+ display: block;
+  color: $text-secondary;
+  font-size: 12px;
+  font-weight: $font-semibold;
+
+  span {
+    color: $danger;
+     margin-left: 2px;
+  }
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid $border;
+  border-radius: 7px;
+  background: $background;
+  color: $text-primary;
+  font: inherit;
+  font-weight: $font-medium;
+  margin-top: $space-1;
+
+  &:focus {
+    outline: 2px solid rgba(21, 87, 232, 0.18);
+    border-color: $primary;
+  }
+}
+
+input[readonly] {
+  background: #f4f6f8;
+  cursor: not-allowed;
+}
+
+textarea {
+  resize: vertical;
+}
+
+label small {
+  color: $danger;
+  font-weight: $font-medium;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.review-actions {
+  display: flex;
+  gap: $space-4;
+  margin-bottom: $space-4;
+}
+
+.text-button {
+  border: 0;
+  background: transparent;
+  color: $primary;
+  cursor: pointer;
+  font-size: $font-sm;
+  font-weight: $font-semibold;
+  padding: 0;
+}
+
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-3;
+  border: 1px solid $border-light;
+  border-radius: $radius-sm;
+  padding: $space-4;
+}
+
+.review-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.review-grid span {
+  color: $text-muted;
+  font-size: 12px;
+}
+
+.review-grid strong {
+  color: $text-primary;
+  font-weight: $font-medium;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-3;
+  padding: $space-4 $space-6 $space-6;
+}
+
+.primary-button,
+.secondary-button {
+  padding: 10px $space-4;
+  border-radius: 7px;
+  font: inherit;
+  font-size: $font-sm;
+  font-weight: $font-semibold;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+.primary-button {
+  border: 1px solid $primary;
+  background: $primary;
+  color: $text-white;
+}
+
+.secondary-button {
+  border: 1px solid $border;
+  background: $background;
+  color: $text-secondary;
+}
+
+.skeleton-line,
+.skeleton-field {
+  border-radius: $radius-sm;
+  background: linear-gradient(90deg, #eceff3 0%, #f5f7fa 40%, #eceff3 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+.skeleton-line {
+  height: 24px;
+  margin: $space-6;
+}
+
+.skeleton-grid {
+  display: grid;
+  gap: $space-4;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 0 $space-6 $space-6;
+}
+
+.skeleton-field {
+  height: 44px;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .account-form-page {
+    padding: $space-4;
+  }
+
+  .stepper,
+  .form-step,
+  .form-footer {
+    padding-left: $space-4;
+    padding-right: $space-4;
+  }
+
+  .step strong {
+    display: none;
+  }
+
+  .form-grid,
+  .review-grid,
+  .skeleton-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .full-width {
+    grid-column: auto;
+  }
+}

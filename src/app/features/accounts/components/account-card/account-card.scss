@@ -1,0 +1,141 @@
+﻿/* File purpose: Defines styles for app\features\accounts\components\account-card\account-card.scss. */
+@use '../../../../../styles/variables' as *;
+
+// Account card
+.account-card {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 60px;
+  padding: 8px $space-3;
+
+  box-sizing: border-box;
+  background: $background;
+
+  border-bottom: 1px solid $border-light;
+
+  transition: $transition-fast;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: #f8faff;
+  }
+}
+
+// Account icon
+.account-icon {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-right: $space-3;
+
+  background: #edf4ff;
+  border: 1px solid #d7e5ff;
+  border-radius: $radius-md;
+
+  color: $primary;
+
+  span {
+    font-size: $font-md;
+    font-weight: $font-bold;
+  }
+}
+
+// Account information
+.account-info {
+  flex: 1;
+  min-width: 0;
+
+  h3 {
+    margin: 0;
+
+    color: $text-primary;
+    font-size: 13px;
+    font-weight: $font-semibold;
+
+    line-height: 1.3;
+  }
+
+  p {
+    margin: 2px 0 0;
+
+    color: $text-secondary;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+}
+
+// Masked account number
+.account-number {
+  font-weight: $font-medium;
+}
+
+// Balance
+.account-balance {
+  min-width: 105px;
+
+  text-align: right;
+
+  p {
+    margin: 0;
+
+    color: $text-muted;
+    font-size: 10px;
+    line-height: 1.1;
+  }
+
+  h3 {
+    margin: 2px 0 0;
+
+    color: $text-primary;
+    font-size: 13px;
+    font-weight: $font-semibold;
+    line-height: 1.2;
+  }
+
+  // Negative balance
+  &.negative {
+    h3 {
+      color: $danger;
+    }
+  }
+}
+
+// Mobile
+@media (max-width: 600px) {
+  .account-card {
+    padding: 8px;
+  }
+
+  .account-icon {
+    width: 32px;
+    height: 32px;
+    margin-right: $space-2;
+  }
+
+  .account-info {
+    h3 {
+      font-size: 12px;
+    }
+
+    p {
+      font-size: 11px;
+    }
+  }
+
+  .account-balance {
+    min-width: 88px;
+
+    h3 {
+      font-size: 12px;
+    }
+  }
+}

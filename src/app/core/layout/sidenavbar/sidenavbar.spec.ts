@@ -37,7 +37,23 @@ describe('Sidenavbar', () => {
     component.onParentItemClick(spendingItem);
     expect(component.isExpanded(spendingItem)).toBeTrue();
 
+    // When route is outside the item, parent click keeps submenu expanded.
     component.onParentItemClick(spendingItem);
+    expect(component.isExpanded(spendingItem)).toBeTrue();
+  });
+
+  it('should collapse submenu when toggled directly', () => {
+    const spendingItem = navigationList.find(item => item.label === 'Spending');
+
+    expect(spendingItem).toBeTruthy();
+    if (!spendingItem) {
+      return;
+    }
+
+    component.toggleExpand(spendingItem);
+    expect(component.isExpanded(spendingItem)).toBeTrue();
+
+    component.toggleExpand(spendingItem);
     expect(component.isExpanded(spendingItem)).toBeFalse();
   });
 });

@@ -1,0 +1,321 @@
+﻿/* File purpose: Defines styles for app\features\accounts\pages\account-list\account-list.scss. */
+@use '../../../../../styles/variables' as *;
+
+// Main container
+.account-list {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $space-5;
+  background: $background;
+  color: $text-primary;
+  box-sizing: border-box;
+}
+
+// Page header
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-5;
+
+  .header-content {
+    h1 {
+      margin: 0;
+      font-size: $font-xl;
+      font-weight: $font-bold;
+    }
+
+    p {
+      margin: $space-1 0 0;
+      color: $text-muted;
+      font-size: 13px;
+    }
+  }
+}
+
+// Add account button
+.add-account-button {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+
+  padding: 8px 14px;
+
+  border: none;
+  border-radius: $radius-md;
+
+  background: $primary;
+  color: $text-white;
+
+  font-size: 13px;
+  font-weight: $font-semibold;
+
+  cursor: pointer;
+  transition: $transition-fast;
+
+  span {
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  &:hover {
+    background: $primary-dark;
+  }
+}
+
+// Common section spacing
+.summary-section,
+.account-type-section,
+.accounts-section {
+  margin-bottom: $space-5;
+}
+
+// Summary cards
+.summary-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $space-3;
+}
+
+.summary-card {
+  padding: $space-4;
+
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+
+  background: $background;
+  box-shadow: $shadow-sm;
+
+  .summary-label {
+    display: block;
+    margin-bottom: $space-1;
+
+    color: $text-secondary;
+    font-size: 12px;
+  }
+
+  .summary-value {
+    display: block;
+    margin-bottom: $space-1;
+
+    color: $text-primary;
+    font-size: 24px;
+    font-weight: $font-bold;
+  }
+
+  .summary-description {
+    display: block;
+
+    color: $text-muted;
+    font-size: 12px;
+  }
+}
+
+// Section headers
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: $space-3;
+
+  h2 {
+    margin: 0;
+    font-size: $font-md;
+    font-weight: $font-bold;
+  }
+
+  > span {
+    color: $text-muted;
+    font-size: 12px;
+  }
+}
+
+// Accounts by type
+.account-type-card {
+  padding: $space-3;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  background: $background;
+  box-shadow: $shadow-sm;
+}
+
+.account-type-content {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  align-items: center;
+  gap: $space-4;
+}
+
+.account-type-chart {
+  position: relative;
+  width: 280px;
+  min-width: 280px;
+  box-sizing: border-box;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 28px 0 52px;
+}
+
+.account-type-chart::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 46px;
+  background: $background;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.account-type-state {
+  margin: 0;
+  padding: $space-3;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  background: $background;
+  color: $text-muted;
+  font-size: $font-sm;
+}
+
+.account-type-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.account-type-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $space-2;
+  padding: 6px 0;
+
+  color: $text-secondary;
+  font-size: 12px;
+  border-bottom: 1px solid $border-light;
+}
+
+.account-type-item:last-child {
+  border-bottom: 0;
+}
+
+.account-type-label {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.account-type-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $bank-color;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.account-type-value {
+  color: $text-primary;
+  font-weight: $font-semibold;
+}
+
+// Account list
+.accounts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+
+  background: $background;
+  overflow: hidden;
+}
+
+// Loading / error message
+.accounts-grid > p {
+  margin: 0;
+  padding: $space-3;
+
+  color: $text-muted;
+  font-size: $font-sm;
+}
+
+// View all
+.view-all-accounts {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  margin-top: $space-2;
+
+  color: $primary;
+  font-size: 12px;
+  font-weight: $font-semibold;
+
+  text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    color: $primary-dark;
+  }
+}
+
+// Tablet
+@media (max-width: 900px) {
+  .account-list {
+    padding: $space-4;
+  }
+
+  .account-type-content {
+    grid-template-columns: 240px minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .account-type-chart {
+    width: 240px;
+    min-width: 240px;
+    padding: 0 16px 0 32px;
+  }
+}
+
+// Mobile
+@media (max-width: 600px) {
+  .account-list {
+    padding: $space-4;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-4;
+  }
+
+  .add-account-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .summary-section {
+    grid-template-columns: 1fr;
+  }
+
+  .account-type-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .account-type-chart {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+  }
+}

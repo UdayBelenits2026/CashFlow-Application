@@ -1,0 +1,277 @@
+<main class="account-form-page">
+  <header class="page-header">
+    <div>
+      <h1>{{ isAddMode ? 'Add Account' : 'Edit Account' }}</h1>
+      <p>
+        {{
+          isAddMode
+            ? 'Complete the 3-step flow to add a new account.'
+            : 'Update account details and save your changes.'
+        }}
+      </p>
+    </div>
+  </header>
+
+  @if (accountLoading) {
+    <section class="form-card">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-grid">
+        <div class="skeleton-field"></div>
+        <div class="skeleton-field"></div>
+        <div class="skeleton-field"></div>
+        <div class="skeleton-field"></div>
+      </div>
+    </section>
+  } @else if (loadError) {
+    <p class="message error">{{ loadError }}</p>
+  } @else {
+    <section class="form-card">
+      @if (submissionMessage) {
+        <p class="message" [class.success]="submissionMessage.type === 'success'" [class.error]="submissionMessage.type === 'error'">
+          {{ submissionMessage.text }}
+        </p>
+      }
+
+      @if (requiredDetailsError) {
+        <p class="message error">{{ requiredDetailsError }}</p>
+      }
+
+      @if (isAddMode) {
+        <div class="stepper" aria-label="Form progress">
+          @for (step of [1, 2, 3]; track step) {
+            <button
+              type="button"
+              class="step"
+              [class.active]="currentStep === step"
+              [class.complete]="currentStep > step"
+              [disabled]="isSubmitting || storeLoading"
+              [attr.aria-current]="currentStep === step ? 'step' : null"
+              (click)="goToStep(step)">
+              <span>{{ step }}</span>
+              <strong>{{ stepLabels[step - 1] }}</strong>
+            </button>
+            @if (step < 3) {
+              <i class="step-divider" aria-hidden="true"></i>
+            }
+          }
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        @if (isEditMode || currentStep === 1) {
+          <div class="form-step">
+            <h3>Account information</h3>
+            <div class="form-grid">
+              <label>
+                Account Type <span>*</span>
+                <select formControlName="accountType">
+                  <option value="">Select account type</option>
+                  @for (type of accountTypes; track type) {
+                    <option [value]="type">{{ type }}</option>
+                  }
+                </select>
+                @if (isInvalid('accountType')) { <small>{{ fieldError('accountType') }}</small> }
+              </label>
+
+              @if (showBankFields) {
+                <label>
+                  Bank Name <span>*</span>
+                  <select formControlName="bankName">
+                    <option value="">Select bank</option>
+                    @for (bank of banks; track bank) {
+                      <option [value]="bank">{{ bank }}</option>
+                    }
+                  </select>
+                  @if (isInvalid('bankName')) { <small>{{ fieldError('bankName') }}</small> }
+                </label>
+              }
+
+              <label>
+                Account Nickname <span>*</span>
+                <input formControlName="accountNickname" type="text" maxlength="50" autocomplete="off">
+                @if (isInvalid('accountNickname')) { <small>{{ fieldError('accountNickname') }}</small> }
+              </label>
+
+              <label>
+                Account Number <span>*</span>
+                <input formControlName="accountNumber" type="text" autocomplete="off" [readonly]="isEditMode">
+                @if (isInvalid('accountNumber')) { <small>{{ fieldError('accountNumber') }}</small> }
+              </label>
+
+              @if (showBankFields) {
+                <label>
+                  Routing Number @if (control('currency').value === 'USD') { <span>*</span> }
+                  <input formControlName="routingNumber" type="text" autocomplete="off">
+                  @if (isInvalid('routingNumber')) { <small>{{ fieldError('routingNumber') }}</small> }
+                </label>
+              }
+
+              <label>
+                Currency <span>*</span>
+                <select formControlName="currency">
+                  <option value="">Select currency</option>
+                  @for (currency of currencies; track currency) {
+                    <option [value]="currency">{{ currency }}</option>
+                  }
+                </select>
+                @if (isInvalid('currency')) { <small>{{ fieldError('currency') }}</small> }
+              </label>
+
+              <label>
+                Opening Balance <span>*</span>
+                <input formControlName="openingBalance" type="number" step="0.01">
+                @if (isInvalid('openingBalance')) { <small>{{ fieldError('openingBalance') }}</small> }
+              </label>
+            </div>
+          </div>
+        }
+
+        @if (isEditMode || currentStep === 2) {
+          <div class="form-step">
+            <h3>Additional information</h3>
+            <div class="form-grid">
+              <label>
+                Open Date <span>*</span>
+                <input formControlName="openDate" type="date">
+              </label>
+
+              <label>
+                Account Status <span>*</span>
+                <select formControlName="accountStatus">
+                  @for (status of accountStatuses; track status) {
+                    <option [value]="status">{{ status }}</option>
+                  }
+                </select>
+              </label>
+
+              <label class="full-width">
+                Description
+                <textarea formControlName="description" rows="3" maxlength="300"></textarea>
+              </label>
+
+              @if (showInstitutionName) {
+                <label>
+                  Institution Name <span>*</span>
+                  <input formControlName="institutionName" type="text">
+                </label>
+              }
+
+              @if (isCreditCardType) {
+                <label>
+                  Credit Limit <span>*</span>
+                  <input formControlName="creditLimit" type="number" min="0" step="0.01">
+                  @if (isInvalid('creditLimit')) { <small>{{ fieldError('creditLimit') }}</small> }
+                </label>
+              }
+
+              @if (isLoanType) {
+                <label>
+                  Loan Type <span>*</span>
+                  <select formControlName="loanType">
+                    <option value="">Select loan type</option>
+                    @for (loanType of loanTypes; track loanType) {
+                      <option [value]="loanType">{{ loanType }}</option>
+                    }
+                  </select>
+                  @if (isInvalid('loanType')) { <small>{{ fieldError('loanType') }}</small> }
+                </label>
+              }
+
+              @if (isLoanType) {
+                <label>
+                  Loan Balance <span>*</span>
+                  <input formControlName="loanBalance" type="number" min="0" step="0.01">
+                  @if (isInvalid('loanBalance')) { <small>{{ fieldError('loanBalance') }}</small> }
+                </label>
+              }
+
+              @if (isLoanType) {
+                <label>
+                  Interest Rate
+                  <input formControlName="interestRate" type="number" min="0" max="100" step="0.01">
+                </label>
+              }
+
+              <label>
+                Account Category <span>*</span>
+                <select formControlName="accountCategory">
+                  <option value="">Select category</option>
+                  @for (category of accountCategories; track category) {
+                    <option [value]="category">{{ category }}</option>
+                  }
+                </select>
+              </label>
+
+              <label class="full-width">
+                Notes
+                <textarea formControlName="notes" rows="3" maxlength="500"></textarea>
+              </label>
+            </div>
+          </div>
+        }
+
+        @if (isAddMode && currentStep === 3) {
+          <div class="form-step">
+            <h3>Review & Save</h3>
+            <div class="review-actions">
+              <button type="button" class="text-button" (click)="goToStep(1)">Edit Account Info</button>
+              <button type="button" class="text-button" (click)="goToStep(2)">Edit Additional Info</button>
+            </div>
+            <div class="review-grid">
+              <div><span>Account Type</span><strong>{{ control('accountType').value || '-' }}</strong></div>
+              <div><span>Bank Name</span><strong>{{ control('bankName').value || '-' }}</strong></div>
+              <div><span>Account Nickname</span><strong>{{ control('accountNickname').value || '-' }}</strong></div>
+              <div><span>Account Number</span><strong>{{ control('accountNumber').value || '-' }}</strong></div>
+              <div><span>Routing Number</span><strong>{{ control('routingNumber').value || '-' }}</strong></div>
+              <div><span>Currency</span><strong>{{ control('currency').value || '-' }}</strong></div>
+              <div><span>Opening Balance</span><strong>{{ control('openingBalance').value ?? '-' }}</strong></div>
+              <div><span>Open Date</span><strong>{{ control('openDate').value || '-' }}</strong></div>
+              <div><span>Account Status</span><strong>{{ control('accountStatus').value || '-' }}</strong></div>
+              <div><span>Institution Name</span><strong>{{ control('institutionName').value || '-' }}</strong></div>
+              <div><span>Credit Limit</span><strong>{{ control('creditLimit').value ?? '-' }}</strong></div>
+              <div><span>Loan Type</span><strong>{{ control('loanType').value || '-' }}</strong></div>
+              <div><span>Loan Balance</span><strong>{{ control('loanBalance').value ?? '-' }}</strong></div>
+              <div><span>Interest Rate</span><strong>{{ control('interestRate').value ?? '-' }}</strong></div>
+              <div><span>Account Category</span><strong>{{ control('accountCategory').value || '-' }}</strong></div>
+              <div class="full-width"><span>Description</span><strong>{{ control('description').value || '-' }}</strong></div>
+              <div class="full-width"><span>Notes</span><strong>{{ control('notes').value || '-' }}</strong></div>
+            </div>
+          </div>
+        }
+
+        <footer class="form-footer">
+          @if (isAddMode) {
+            <button
+              type="button"
+              class="secondary-button"
+              [disabled]="isSubmitting || storeLoading"
+              (click)="currentStep === 1 ? cancel() : previousStep()">
+              {{ currentStep === 1 ? 'Cancel' : 'Back' }}
+            </button>
+
+            @if (currentStep < 3) {
+              <button
+                type="button"
+                class="primary-button"
+                [disabled]="isSubmitting || storeLoading"
+                (click)="nextStep()">
+                Next
+              </button>
+            } @else {
+              <button type="submit" class="primary-button" [disabled]="isSubmitting || storeLoading">
+                {{ isSubmitting || storeLoading ? 'Saving...' : 'Save Account' }}
+              </button>
+            }
+          } @else {
+            <button type="button" class="secondary-button" [disabled]="isSubmitting || storeLoading" (click)="cancel()">
+              Cancel
+            </button>
+            <button type="submit" class="primary-button" [disabled]="isSubmitting || storeLoading">
+              {{ isSubmitting || storeLoading ? 'Saving...' : 'Save Changes' }}
+            </button>
+          }
+        </footer>
+      </form>
+    </section>
+  }
+</main>
