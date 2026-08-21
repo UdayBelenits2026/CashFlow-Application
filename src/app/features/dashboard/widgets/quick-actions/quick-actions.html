@@ -1,0 +1,13 @@
+<section class="quick-actions">
+  <h3>{{ title() }}</h3>
+  <div class="actions-grid">
+    @for (action of actions(); track action.id) {
+      <button class="action-item">
+        <div class="action-icon">
+          <fa-icon [icon]="icons[action.icon]"></fa-icon>
+        </div>
+        <span>{{ action.title }}</span>
+      </button>
+    }
+  </div>
+</section>

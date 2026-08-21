@@ -9,10 +9,7 @@ import { provideRouter } from '@angular/router';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 
-import {
-  provideHttpClient,
-  withInterceptors,
-} from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
@@ -24,6 +21,8 @@ import { routes } from './app.routes';
 import { authReducer } from './core/auth/store/auth.reducer';
 import { AuthEffects } from './core/auth/store/auth.effects';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { DashboardEffects } from './features/dashboard/store/dashboard.effects';
+import { dashboardReducer } from './features/dashboard/store/dashboard.reducer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -37,17 +36,12 @@ export const appConfig: ApplicationConfig = {
 
     provideStore({
       auth: authReducer,
+      dashboard: dashboardReducer,
     }),
 
-    provideEffects([
-      AuthEffects,
-    ]),
+    provideEffects([AuthEffects, DashboardEffects]),
 
-    provideHttpClient(
-      withInterceptors([
-        authInterceptor,
-      ]),
-    ),
+    provideHttpClient(withInterceptors([authInterceptor])),
 
     // PrimeNG animations
     provideAnimationsAsync(),

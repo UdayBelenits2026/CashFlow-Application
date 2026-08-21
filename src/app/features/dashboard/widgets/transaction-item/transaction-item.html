@@ -1,0 +1,31 @@
+<div class="transaction-item">
+  <div class="item-icon" [class]="item().type">
+    <fa-icon [icon]="icons[item().icon] || fallbackIcon"></fa-icon>
+  </div>
+
+  <div class="item-details">
+    <p class="item-title">
+      {{ item().title }}
+    </p>
+
+    <span class="item-date">
+      {{ item().date }}
+    </span>
+  </div>
+
+  <div
+    class="item-amount"
+    [class.income]="item().type === 'income'"
+    [class.expense]="item().type === 'expense'"
+  >
+    @if (item().type === 'income') {
+      +
+    }
+
+    @if (item().type === 'expense') {
+      -
+    }
+
+    ${{ item().amount | number: '1.2-2' }}
+  </div>
+</div>
