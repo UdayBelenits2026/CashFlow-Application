@@ -1,0 +1,75 @@
+<div class="modal-backdrop" (click)="onClose()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title">Receipt Lightbox</h2>
+        <span class="modal-sub">{{ expense()?.merchantName }} • ${{ expense()?.amount | number:'1.2-2' }}</span>
+      </div>
+      <button class="btn-close" (click)="onClose()" title="Close viewer">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      @if (expense()?.receiptUrl) {
+        <div class="receipt-image-wrapper">
+          <img [src]="expense()?.receiptUrl" alt="Receipt preview" class="receipt-img" />
+        </div>
+
+        <!-- Metadata info -->
+        <div class="meta-card">
+          <div class="meta-item">
+            <span class="meta-k">File Name</span>
+            <span class="meta-v">{{ expense()?.receiptFileName || 'receipt_scanned.pdf' }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-k">Upload Date</span>
+            <span class="meta-v">{{ (expense()?.createdAt || today) | date:'mediumDate' }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-k">File Size</span>
+            <span class="meta-v">485 KB</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-k">File Type</span>
+            <span class="meta-v">PDF / Image Document</span>
+          </div>
+        </div>
+      } @else {
+        <div class="upload-dropzone">
+          <div class="drop-icon">📤</div>
+          <h4>No receipt currently uploaded</h4>
+          <p>Upload a receipt document (PNG, JPG, or PDF) for digital audit trails.</p>
+          <label class="btn-file-select">
+            Select File to Upload
+            <input type="file" class="hidden-input" (change)="onFileSelected($event)" accept="image/*,.pdf" />
+          </label>
+        </div>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      @if (expense()?.receiptUrl) {
+        <button type="button" class="btn-destructive" (click)="onRemoveReceipt()">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+          Delete Receipt
+        </button>
+        <label class="btn-secondary file-label">
+          Replace Receipt
+          <input type="file" class="hidden-input" (change)="onFileSelected($event)" accept="image/*,.pdf" />
+        </label>
+      } @else {
+        <button type="button" class="btn-secondary" (click)="onClose()">Close</button>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,283 @@
+<div class="all-expenses-page">
+  <!-- Breadcrumb & Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Expenses</h1>
+      <p class="page-subtitle">Search, filter, and audit full transaction history</p>
+    </div>
+
+    <div class="header-buttons">
+      <button
+        type="button"
+        class="btn-secondary btn-export"
+        (click)="exportToCsv()"
+        title="Export filtered transactions as CSV"
+      >
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Export CSV
+      </button>
+
+      <button type="button" class="btn-primary" (click)="showAddModal = true">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add Expense
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Card -->
+  <div class="filters-card">
+    <div class="search-bar">
+      <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input
+        type="text"
+        placeholder="Search by merchant, note, or transaction ID..."
+        class="search-input"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onFilterChange()"
+      />
+      @if (searchTerm) {
+        <button class="btn-clear-search" (click)="searchTerm = ''; onFilterChange()">✕</button>
+      }
+    </div>
+
+    <div class="filters-row">
+      <!-- Category Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Category</label>
+        <select class="filter-select" [(ngModel)]="selectedCategory" (ngModelChange)="onFilterChange()">
+          <option value="ALL">All Categories</option>
+          @for (cat of categories$ | async; track cat.id) {
+            <option [value]="cat.id">{{ cat.name }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Account Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Account</label>
+        <select class="filter-select" [(ngModel)]="selectedAccount" (ngModelChange)="onFilterChange()">
+          <option value="ALL">All Accounts</option>
+          <option value="Main Checking">Main Checking</option>
+          <option value="Chase Sapphire">Chase Sapphire</option>
+          <option value="Amex Gold">Amex Gold</option>
+          <option value="Cash Wallet">Cash Wallet</option>
+        </select>
+      </div>
+
+      <!-- Sort By -->
+      <div class="filter-group">
+        <label class="filter-label">Sort Order</label>
+        <select class="filter-select" [(ngModel)]="sortBy" (ngModelChange)="onFilterChange()">
+          <option value="NEWEST">Date: Newest First</option>
+          <option value="OLDEST">Date: Oldest First</option>
+          <option value="AMOUNT_DESC">Amount: High to Low</option>
+          <option value="AMOUNT_ASC">Amount: Low to High</option>
+        </select>
+      </div>
+
+      <!-- Reset Action -->
+      <div class="filter-group filter-actions">
+        <button type="button" class="btn-reset" (click)="resetFilters()" title="Reset search and filters">
+          Reset Filters
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expenses Table & Pagination Card -->
+  <div class="table-card">
+    @if (isLoading$ | async) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading expenses catalog...</p>
+      </div>
+    } @else {
+      @if (filteredExpenses$ | async; as expenses) {
+        @if (expenses && expenses.length > 0) {
+          <div class="table-responsive">
+            <table class="expenses-table">
+              <thead>
+                <tr>
+                  <th>Merchant / Payee</th>
+                  <th>Category</th>
+                  <th>Account</th>
+                  <th>Payment Method</th>
+                  <th>Date</th>
+                  <th class="text-right">Amount</th>
+                  <th class="text-center">Receipt</th>
+                  <th class="text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (exp of getPaginatedExpenses(expenses); track exp.id) {
+                  <tr class="table-row" (click)="onSelectExpense(exp)">
+                    <td class="merchant-cell">
+                      <div class="merchant-avatar">{{ (exp.merchantName || 'E').charAt(0).toUpperCase() }}</div>
+                      <div class="merchant-details">
+                        <span class="m-name">{{ exp.merchantName }}</span>
+                        @if (exp.notes) {
+                          <span class="m-notes">{{ exp.notes }}</span>
+                        }
+                      </div>
+                    </td>
+                    <td>
+                      <span class="category-pill" [style.backgroundColor]="(exp.categoryColor || '#475569') + '15'" [style.color]="exp.categoryColor || '#0F172A'">
+                        {{ exp.categoryName }}
+                      </span>
+                    </td>
+                    <td class="account-cell">
+                      <span>{{ exp.accountName }}</span>
+                    </td>
+                    <td class="method-cell">
+                      <span>{{ formatPayment(exp.paymentMethod) }}</span>
+                    </td>
+                    <td class="date-cell">
+                      {{ exp.date | date:'mediumDate' }}
+                    </td>
+                    <td class="amount-cell text-right">
+                      -${{ exp.amount | number:'1.2-2' }}
+                    </td>
+                    <td class="receipt-cell text-center">
+                      @if (exp.receiptUrl) {
+                        <span class="receipt-indicator has" title="Receipt attached">📄</span>
+                      } @else {
+                        <span class="receipt-indicator none" title="No receipt">-</span>
+                      }
+                    </td>
+                    <td class="status-cell text-center">
+                      <span class="status-badge" [ngClass]="(exp.status || 'CLEARED').toLowerCase()">
+                        {{ exp.status || 'CLEARED' }}
+                      </span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Pagination & Counter Footer -->
+          <div class="table-footer-pagination">
+            <div class="pagination-info">
+              <span>
+                Showing
+                <strong>{{ ((currentPage - 1) * pageSize) + 1 }}</strong>
+                -
+                <strong>{{ ((currentPage * pageSize) > expenses.length ? expenses.length : (currentPage * pageSize)) }}</strong>
+                of
+                <strong>{{ expenses.length }}</strong> expenses
+              </span>
+
+              <div class="page-size-selector">
+                <label for="pageSizeSelect">Rows:</label>
+                <select id="pageSizeSelect" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+                  @for (opt of pageSizeOptions; track opt) {
+                    <option [value]="opt">{{ opt }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            <!-- Page Navigation Controls -->
+            <div class="pagination-controls">
+              <button
+                type="button"
+                class="btn-page"
+                [disabled]="currentPage === 1"
+                (click)="setPage(currentPage - 1, expenses.length)"
+              >
+                &larr; Previous
+              </button>
+
+              <span class="page-current">Page {{ currentPage }} of {{ getTotalPages(expenses.length) }}</span>
+
+              <button
+                type="button"
+                class="btn-page"
+                [disabled]="currentPage >= getTotalPages(expenses.length)"
+                (click)="setPage(currentPage + 1, expenses.length)"
+              >
+                Next &rarr;
+              </button>
+            </div>
+          </div>
+        } @else {
+          <div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <h3>No expenses matched your filter</h3>
+            <p>Try resetting the search terms or category selection.</p>
+            <button class="btn-primary" (click)="resetFilters()">Reset All Filters</button>
+          </div>
+        }
+      }
+    }
+  </div>
+
+  <!-- Modals & Drawers -->
+  @if (showAddModal) {
+    <app-add-expense-modal
+      [categories]="(categories$ | async) || []"
+      (close)="showAddModal = false"
+      (save)="onSaveNewExpense($event)"
+    ></app-add-expense-modal>
+  }
+
+  @if (showDetailsDrawer && activeExpense) {
+    <app-expense-details-drawer
+      [expense]="activeExpense"
+      (close)="showDetailsDrawer = false"
+      (edit)="openEditModal($event)"
+      (delete)="openDeleteDialog($event)"
+      (viewReceipt)="openReceiptViewer($event)"
+      (uploadReceipt)="openReceiptViewer($event)"
+      (split)="openSplitModal($event)"
+    ></app-expense-details-drawer>
+  }
+
+  <!-- Edit Modal (Uses the reusable 3-step wizard!) -->
+  @if (showEditModal && activeExpense) {
+    <app-add-expense-modal
+      [expense]="activeExpense"
+      [categories]="(categories$ | async) || []"
+      (close)="showEditModal = false"
+      (update)="onUpdateExpense($event)"
+      (save)="onUpdateExpense($event)"
+    ></app-add-expense-modal>
+  }
+
+  <!-- Split Expense Modal -->
+  @if (showSplitModal && activeExpense) {
+    <app-split-expense-modal
+      [expense]="activeExpense"
+      [categories]="(categories$ | async) || []"
+      (close)="showSplitModal = false"
+      (splitSaved)="onSaveSplits($event)"
+    ></app-split-expense-modal>
+  }
+
+  @if (showDeleteDialog && activeExpense) {
+    <app-delete-confirm-dialog
+      [expense]="activeExpense"
+      (cancel)="showDeleteDialog = false"
+      (confirm)="onConfirmDeleteExpense($event)"
+    ></app-delete-confirm-dialog>
+  }
+
+  @if (showReceiptViewer && activeExpense) {
+    <app-receipt-viewer-modal
+      [expense]="activeExpense"
+      (close)="showReceiptViewer = false"
+      (updateReceipt)="onUpdateReceipt($event)"
+      (removeReceipt)="onRemoveReceipt($event)"
+    ></app-receipt-viewer-modal>
+  }
+</div>

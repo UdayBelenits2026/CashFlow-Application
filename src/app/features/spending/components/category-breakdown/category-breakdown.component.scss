@@ -1,0 +1,160 @@
+.category-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 22px 24px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.01em;
+}
+
+.card-subtitle {
+  font-size: 12px;
+  color: #64748B;
+  margin: 0;
+}
+
+.period-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2563EB;
+  background: #EFF6FF;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.breakdown-body {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 20px;
+  align-items: center;
+  flex: 1;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}
+
+.donut-container {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.donut-center-label {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.center-sub {
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.center-val {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.categories-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.category-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.cat-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cat-name {
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.cat-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cat-amt {
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.cat-pct {
+  font-size: 11px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.bar-track {
+  width: 100%;
+  height: 5px;
+  background: #F1F5F9;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}

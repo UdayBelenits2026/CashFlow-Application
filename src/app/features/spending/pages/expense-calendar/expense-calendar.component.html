@@ -1,0 +1,128 @@
+<div class="calendar-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Expense Calendar</h1>
+      <p class="page-subtitle">Track chronological spending patterns and daily outflow totals</p>
+    </div>
+
+    <!-- Month Switcher Controls -->
+    <div class="month-controls">
+      <button class="btn-nav" (click)="changeMonth(-1)" title="Previous month">&larr;</button>
+      <span class="current-month-label">{{ currentYearMonthLabel }}</span>
+      <button class="btn-nav" (click)="changeMonth(1)" title="Next month">&rarr;</button>
+    </div>
+  </div>
+
+  <!-- Main Calendar Grid and Day Details Layout -->
+  <div class="calendar-layout">
+    <!-- Calendar Grid (Left / Center) -->
+    <div class="calendar-card">
+      <!-- Weekday Headers -->
+      <div class="weekdays-grid">
+        <span class="weekday">Sun</span>
+        <span class="weekday">Mon</span>
+        <span class="weekday">Tue</span>
+        <span class="weekday">Wed</span>
+        <span class="weekday">Thu</span>
+        <span class="weekday">Fri</span>
+        <span class="weekday">Sat</span>
+      </div>
+
+      <!-- Days Grid -->
+      <div class="days-grid">
+        @for (day of calendarDays; track day.dateString) {
+          <div
+            class="day-cell" 
+            [ngClass]="{
+              'not-current-month': !day.isCurrentMonth,
+              'today': day.isToday,
+              'selected': selectedDay?.dateString === day.dateString,
+              'has-expenses': day.expenses.length > 0
+            }"
+            (click)="selectDay(day)"
+          >
+            <div class="day-header">
+              <span class="day-num">{{ day.dayNumber }}</span>
+              @if (day.expenses.length > 0) {
+                <span class="expense-count-dot" [title]="day.expenses.length + ' transactions'">
+                  {{ day.expenses.length }}
+                </span>
+              }
+            </div>
+
+            @if (day.totalSpending > 0) {
+              <div class="day-spending-badge">
+                -${{ day.totalSpending | number:'1.0-0' }}
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Day Expense Detail Panel (Right Side) -->
+    <div class="day-details-card">
+      <div class="details-header">
+        <div class="d-header-top">
+          <h3 class="d-title">{{ selectedDay?.date | date:'fullDate' }}</h3>
+          <button
+            type="button"
+            class="btn-export-day"
+            [disabled]="!selectedDay?.expenses?.length"
+            (click)="exportDayReport()"
+            title="Download day transactions as CSV"
+          >
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Export Day Report
+          </button>
+        </div>
+
+        <div class="daily-total-banner">
+          <span class="dt-label">Daily Outflow</span>
+          <span class="dt-amount">${{ (selectedDay?.totalSpending || 0) | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <div class="day-expenses-list">
+        @if (selectedDay && selectedDay.expenses.length > 0) {
+          <div class="list-container">
+            @for (exp of selectedDay.expenses; track exp.id) {
+              <div class="day-expense-item" (click)="openExpenseDetails(exp)">
+                <div class="de-left">
+                  <div class="de-avatar">{{ (exp.merchantName || 'E').charAt(0).toUpperCase() }}</div>
+                  <div class="de-info">
+                    <span class="de-merchant">{{ exp.merchantName || 'Unnamed Expense' }}</span>
+                    <span class="de-cat">{{ exp.categoryName }} • {{ exp.accountName }}</span>
+                  </div>
+                </div>
+                <div class="de-right">
+                  <span class="de-amt">-${{ exp.amount | number:'1.2-2' }}</span>
+                  <span class="arrow-icon">&rarr;</span>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-day">
+            <div class="empty-day-icon">🌿</div>
+            <h4>Zero expenses recorded</h4>
+            <p>No transactions were made on this day.</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Details Drawer -->
+  @if (showDetailsDrawer && activeExpense) {
+    <app-expense-details-drawer
+      [expense]="activeExpense"
+      (close)="showDetailsDrawer = false"
+    ></app-expense-details-drawer>
+  }
+</div>

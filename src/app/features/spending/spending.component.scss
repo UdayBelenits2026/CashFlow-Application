@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  min-height: 100%;
+  width: 100%;
+  background-color: #f8fafc;
+  box-sizing: border-box;
+}
+
+.spending-routed-workspace {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}

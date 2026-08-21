@@ -1,0 +1,60 @@
+<div class="drawer-backdrop" (click)="onClose()">
+  <div class="drawer-panel" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="drawer-header">
+      <div class="header-left">
+        <div class="bell-icon">🔔</div>
+        <div>
+          <h2 class="drawer-title">Spending Alerts</h2>
+          <span class="drawer-sub">Budget threshold & anomalous spend alerts</span>
+        </div>
+      </div>
+      <button class="btn-close" (click)="onClose()" title="Close">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="drawer-body">
+      @if (alerts() && alerts().length > 0) {
+        <div class="alerts-list">
+          @for (alt of alerts(); track alt.id) {
+            <div class="alert-card" [ngClass]="[alt.severity, alt.isRead ? 'read' : 'unread']">
+              <div class="alert-top">
+                <span class="alert-severity-badge">{{ alt.severity }}</span>
+                <span class="alert-date">{{ alt.date }}</span>
+              </div>
+              <h4 class="alert-title">{{ alt.title }}</h4>
+              <p class="alert-msg">{{ alt.message }}</p>
+
+              <div class="alert-actions">
+                @if (!alt.isRead) {
+                  <button class="btn-mark-read" (click)="onMarkAsRead(alt.id)">
+                    Mark as Read
+                  </button>
+                }
+                <button class="btn-dismiss" (click)="onDismiss(alt.id)">
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-alerts">
+          <div class="check-icon">✓</div>
+          <h4>All caught up!</h4>
+          <p>No active alerts or budget warnings at this time.</p>
+        </div>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="drawer-footer">
+      <button type="button" class="btn-secondary w-full" (click)="onClose()">Close Alerts</button>
+    </div>
+  </div>
+</div>

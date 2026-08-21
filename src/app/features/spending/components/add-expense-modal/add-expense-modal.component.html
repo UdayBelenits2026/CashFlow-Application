@@ -1,0 +1,218 @@
+<div class="modal-backdrop" (click)="onClose()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="header-left">
+        <h2 class="modal-title">{{ isEditMode() ? '✏️ Edit Expense' : '+ Add New Expense' }}</h2>
+        <span class="step-indicator">Step {{ currentStep() }} of 3</span>
+      </div>
+      <button class="btn-close" (click)="onClose()" title="Close modal">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Wizard Progress Bar -->
+    <div class="wizard-progress">
+      <div class="progress-step" [ngClass]="{ active: currentStep() >= 1, current: currentStep() === 1 }">
+        <span class="step-num">1</span>
+        <span class="step-label">Details</span>
+      </div>
+      <div class="progress-bar" [ngClass]="{ filled: currentStep() >= 2 }"></div>
+      <div class="progress-step" [ngClass]="{ active: currentStep() >= 2, current: currentStep() === 2 }">
+        <span class="step-num">2</span>
+        <span class="step-label">Category</span>
+      </div>
+      <div class="progress-bar" [ngClass]="{ filled: currentStep() >= 3 }"></div>
+      <div class="progress-step" [ngClass]="{ active: currentStep() >= 3, current: currentStep() === 3 }">
+        <span class="step-num">3</span>
+        <span class="step-label">Review</span>
+      </div>
+    </div>
+
+    <!-- Form Body -->
+    <form [formGroup]="expenseForm" class="modal-body">
+      <!-- ================= STEP 1: DETAILS ================= -->
+      @if (currentStep() === 1) {
+        <div class="step-content">
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label class="form-label">Amount ($) *</label>
+              <div class="input-with-icon">
+                <span class="currency-symbol">$</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  class="form-input text-lg font-bold"
+                  formControlName="amount"
+                />
+              </div>
+              @if (expenseForm.get('amount')?.touched && expenseForm.get('amount')?.errors?.['required']) {
+                <span class="error-text">Amount is required.</span>
+              }
+              @if (expenseForm.get('amount')?.touched && expenseForm.get('amount')?.errors?.['min']) {
+                <span class="error-text">Enter an amount greater than 0.</span>
+              }
+            </div>
+
+            <div class="form-group flex-1">
+              <label class="form-label">Transaction Date *</label>
+              <input type="date" class="form-input" formControlName="date" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Merchant / Payee Name *</label>
+            <input
+              type="text"
+              placeholder="e.g. Whole Foods, Uber, Starbucks"
+              class="form-input"
+              formControlName="merchantName"
+            />
+            @if (expenseForm.get('merchantName')?.touched && expenseForm.get('merchantName')?.invalid) {
+              <span class="error-text">Merchant / Payee is required.</span>
+            }
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label class="form-label">Account *</label>
+              <select class="form-select" formControlName="accountName">
+                <option value="Main Checking">Main Checking (••1234)</option>
+                <option value="Chase Sapphire">Chase Sapphire (••8899)</option>
+                <option value="Amex Gold">Amex Gold (••4501)</option>
+                <option value="Cash Wallet">Cash Wallet</option>
+              </select>
+            </div>
+
+            <div class="form-group flex-1">
+              <label class="form-label">Payment Method *</label>
+              <select class="form-select" formControlName="paymentMethod">
+                <option value="DEBIT_CARD">Debit Card</option>
+                <option value="CREDIT_CARD">Credit Card</option>
+                <option value="BANK_TRANSFER">Bank Transfer</option>
+                <option value="CASH">Cash</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Notes & Description</label>
+            <textarea
+              rows="2"
+              placeholder="Add context or details about this purchase..."
+              class="form-textarea"
+              formControlName="notes"
+            ></textarea>
+          </div>
+        </div>
+      }
+
+      <!-- ================= STEP 2: CATEGORY ================= -->
+      @if (currentStep() === 2) {
+        <div class="step-content">
+          <label class="form-label mb-2">Select Primary Expense Category *</label>
+          @if (!selectedCategoryId()) {
+            <div class="category-alert-box mb-2">
+              <span class="error-text">Please select a category to continue.</span>
+            </div>
+          }
+          <div class="categories-grid">
+            @for (cat of availableCategories(); track cat.id) {
+              <div
+                class="category-option-card"
+                [ngClass]="{ selected: selectedCategoryId() === cat.id }"
+                (click)="selectCategory(cat)"
+              >
+                <div class="cat-card-icon" [style.backgroundColor]="cat.color + '20'" [style.color]="cat.color">
+                  <span class="icon-dot" [style.backgroundColor]="cat.color"></span>
+                </div>
+                <span class="cat-card-name">{{ cat.name }}</span>
+                @if (selectedCategoryId() === cat.id) {
+                  <span class="check-badge">✓</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ================= STEP 3: REVIEW ================= -->
+      @if (currentStep() === 3) {
+        <div class="step-content review-step">
+          <div class="review-amount-box">
+            <span class="review-sub">{{ isEditMode() ? 'Updated Amount' : 'Total Amount to Record' }}</span>
+            <span class="review-total">${{ expenseForm.get('amount')?.value | number:'1.2-2' }}</span>
+          </div>
+
+          <div class="review-summary-table">
+            <div class="review-row">
+              <span class="r-label">Merchant / Payee</span>
+              <span class="r-val">{{ expenseForm.get('merchantName')?.value }}</span>
+            </div>
+            <div class="review-row">
+              <span class="r-label">Category</span>
+              <span class="r-val category-badge" [style.backgroundColor]="selectedCategoryColor() + '20'" [style.color]="selectedCategoryColor()">
+                {{ selectedCategoryName() }}
+              </span>
+            </div>
+            <div class="review-row">
+              <span class="r-label">Date</span>
+              <span class="r-val">{{ expenseForm.get('date')?.value }}</span>
+            </div>
+            <div class="review-row">
+              <span class="r-label">Account</span>
+              <span class="r-val">{{ expenseForm.get('accountName')?.value }}</span>
+            </div>
+            <div class="review-row">
+              <span class="r-label">Payment Method</span>
+              <span class="r-val">{{ expenseForm.get('paymentMethod')?.value }}</span>
+            </div>
+            @if (expenseForm.get('notes')?.value) {
+              <div class="review-row">
+                <span class="r-label">Notes</span>
+                <span class="r-val">{{ expenseForm.get('notes')?.value }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </form>
+
+    <!-- Modal Footer Actions -->
+    <div class="modal-footer">
+      @if (currentStep() === 1) {
+        <button type="button" class="btn-secondary" (click)="onClose()">Cancel</button>
+        <button
+          type="button"
+          class="btn-primary"
+          [disabled]="!isStep1Valid()"
+          (click)="nextStep()"
+        >
+          Next: Select Category &rarr;
+        </button>
+      } @else if (currentStep() === 2) {
+        <button type="button" class="btn-secondary" (click)="prevStep()">&larr; Back</button>
+        <button
+          type="button"
+          class="btn-primary"
+          [disabled]="!selectedCategoryId()"
+          (click)="nextStep()"
+        >
+          Next: Review Expense &rarr;
+        </button>
+      } @else if (currentStep() === 3) {
+        <button type="button" class="btn-secondary" (click)="prevStep()">&larr; Back</button>
+        <button type="button" class="btn-primary-success" (click)="onSaveExpense()">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          {{ isEditMode() ? 'Update Expense' : 'Save Expense' }}
+        </button>
+      }
+    </div>
+  </div>
+</div>

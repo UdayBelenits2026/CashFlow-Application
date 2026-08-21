@@ -1,0 +1,202 @@
+<div class="tags-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">Spending Tags</h1>
+      <p class="page-subtitle">Organize and label expenses with custom tags for personalized reporting</p>
+    </div>
+
+    <button type="button" class="btn-primary" (click)="openCreateModal()">
+      <i class="fa-solid fa-plus" aria-hidden="true"></i>
+      <span>Create Tag</span>
+    </button>
+  </div>
+
+  @if (tags$ | async; as tags) {
+    <!-- Stats Cards Summary -->
+    <div class="tags-stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon icon-blue">
+          <i class="fa-solid fa-tags" aria-hidden="true"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Total Tags</span>
+          <strong class="stat-value">{{ tags.length }}</strong>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-green">
+          <i class="fa-solid fa-receipt" aria-hidden="true"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Tagged Transactions</span>
+          <strong class="stat-value">{{ getTotalUsage(tags) }}</strong>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-purple">
+          <i class="fa-solid fa-palette" aria-hidden="true"></i>
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">Color Themes</span>
+          <strong class="stat-value">{{ presetColors.length }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tags Control & Search Bar -->
+    <div class="tags-toolbar">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Search tags by name or description..."
+          class="search-input"
+        />
+        @if (searchTerm) {
+          <button class="btn-clear-search" (click)="searchTerm = ''">✕</button>
+        }
+      </div>
+      <span class="tags-count">Showing {{ filterTags(tags).length }} of {{ tags.length }} tags</span>
+    </div>
+
+    <!-- Tags Grid -->
+    @if (filterTags(tags).length > 0) {
+      <div class="tags-grid">
+        @for (tag of filterTags(tags); track tag.id) {
+          <div class="tag-card">
+            <div class="tag-card-top">
+              <div class="tag-badge" [style.background-color]="tag.color ? tag.color + '18' : '#EFF6FF'" [style.color]="tag.color || '#2563EB'" [style.border-color]="tag.color ? tag.color + '40' : '#BFDBFE'">
+                <span class="tag-color-dot" [style.background-color]="tag.color || '#2563EB'"></span>
+                <span class="tag-name">{{ tag.name }}</span>
+              </div>
+              <div class="tag-actions">
+                <button type="button" class="btn-icon" (click)="openEditModal(tag)" title="Edit Tag">
+                  <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn-icon btn-danger" (click)="onDeleteTag(tag.id, tag.name)" title="Delete Tag">
+                  <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+
+            @if (tag.description) {
+              <p class="tag-desc">{{ tag.description }}</p>
+            } @else {
+              <p class="tag-desc empty-desc">No description added</p>
+            }
+
+            <div class="tag-card-footer">
+              <span class="tag-count-pill">
+                <i class="fa-solid fa-receipt" aria-hidden="true"></i>
+                {{ tag.count || 0 }} transactions
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="empty-state-card">
+        <div class="empty-icon">
+          <i class="fa-solid fa-tags" aria-hidden="true"></i>
+        </div>
+        <h3>No tags found</h3>
+        <p>Create your first custom tag to organize and label expenses seamlessly.</p>
+        <button type="button" class="btn-primary" (click)="openCreateModal()">
+          <i class="fa-solid fa-plus" aria-hidden="true"></i>
+          <span>Create Tag</span>
+        </button>
+      </div>
+    }
+  }
+
+  <!-- Create / Edit Tag Modal -->
+  @if (showCreateModal) {
+    <div class="modal-backdrop" (click)="closeModal()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <div class="modal-icon">
+              <i class="fa-solid fa-tag" aria-hidden="true"></i>
+            </div>
+            <div>
+              <h3 class="modal-title">{{ editingTag ? 'Edit Tag' : 'Create New Tag' }}</h3>
+              <p class="modal-subtitle">Configure label name, color theme, and description</p>
+            </div>
+          </div>
+          <button type="button" class="btn-close-modal" (click)="closeModal()">✕</button>
+        </div>
+
+        <form [formGroup]="tagForm" (ngSubmit)="onSaveTag()" class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Tag Name <span class="required">*</span></label>
+            <input
+              type="text"
+              formControlName="name"
+              placeholder="e.g. Vacation, Tax Deductible, Urgent"
+              class="form-control"
+              autofocus
+            />
+            @if (tagForm.get('name')?.touched && tagForm.get('name')?.invalid) {
+              <span class="form-error">Tag name is required (min 2 characters).</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description (Optional)</label>
+            <textarea
+              formControlName="description"
+              placeholder="Brief description or purpose for this tag..."
+              class="form-control textarea"
+              rows="2"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Color Theme</label>
+            <div class="color-palette">
+              @for (color of presetColors; track color) {
+                <button
+                  type="button"
+                  class="color-dot-btn"
+                  [style.background-color]="color"
+                  [class.selected]="tagForm.get('color')?.value === color"
+                  (click)="selectColor(color)"
+                  [attr.aria-label]="'Color ' + color"
+                >
+                  @if (tagForm.get('color')?.value === color) {
+                    <i class="fa-solid fa-check" aria-hidden="true"></i>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- Tag Preview -->
+          <div class="preview-box">
+            <span class="preview-label">Live Preview:</span>
+            <div
+              class="tag-badge preview-badge"
+              [style.background-color]="tagForm.get('color')?.value + '18'"
+              [style.color]="tagForm.get('color')?.value"
+              [style.border-color]="tagForm.get('color')?.value + '40'"
+            >
+              <span class="tag-color-dot" [style.background-color]="tagForm.get('color')?.value"></span>
+              <span>{{ tagForm.get('name')?.value || 'Tag Name' }}</span>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn-primary" [disabled]="tagForm.invalid">
+              {{ editingTag ? 'Save Changes' : 'Create Tag' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

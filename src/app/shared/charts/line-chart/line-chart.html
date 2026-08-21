@@ -1,0 +1,30 @@
+<section class="chart-card" [class.empty-state]="emptyState()">
+  <header>
+    <h3>{{ title() }}</h3>
+  </header>
+  <div class="chart-container">
+    <canvas #chartCanvas></canvas>
+    @if (emptyState()) {
+      <div class="empty-chart-state" role="status" aria-label="No cash flow data yet">
+        <div class="empty-chart-legend">
+          <span class="legend-item income"><i></i>Income</span>
+          <span class="legend-item expense"><i></i>Expenses</span>
+          <span class="legend-item net"><i></i>Net Cash Flow</span>
+        </div>
+        <div class="empty-chart-plot">
+          <div class="empty-chart-y-axis">
+            <span>$3K</span><span>$2K</span><span>$1K</span><span>$0</span> <span>-$1K</span
+            ><span>-$2K</span><span>-$3K</span>
+          </div>
+          <div class="empty-chart-grid"></div>
+          <div class="empty-chart-x-axis">
+            @for (label of labels(); track label) {
+              <span>{{ label }}</span>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
