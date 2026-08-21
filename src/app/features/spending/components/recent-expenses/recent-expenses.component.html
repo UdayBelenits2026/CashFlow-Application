@@ -1,0 +1,73 @@
+<div class="recent-card">
+  <div class="card-header">
+    <div>
+      <h3 class="card-title">Recent Expenses</h3>
+      <p class="card-subtitle">Latest recorded transactions across all accounts</p>
+    </div>
+    <a routerLink="/spending/expenses" class="btn-view-all">
+      View All Expenses
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </a>
+  </div>
+
+  @if (expenses() && expenses().length > 0) {
+    <div class="table-container">
+      <table class="expenses-table">
+        <thead>
+          <tr>
+            <th>Merchant</th>
+            <th>Category</th>
+            <th>Account</th>
+            <th>Date</th>
+            <th class="text-right">Amount</th>
+            <th class="text-center">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (exp of expenses(); track exp.id) {
+            <tr class="expense-row" (click)="onSelect(exp)">
+              <td class="merchant-cell">
+                <div class="merchant-avatar">
+                  {{ (exp.merchantName || 'E').charAt(0).toUpperCase() }}
+                </div>
+                <div class="merchant-info">
+                  <span class="merchant-name">{{ exp.merchantName || 'Unnamed Expense' }}</span>
+                  @if (exp.notes) {
+                    <span class="merchant-note">{{ exp.notes }}</span>
+                  }
+                </div>
+              </td>
+              <td>
+                <span class="category-pill" [style.borderColor]="exp.categoryColor || '#CBD5E1'">
+                  {{ exp.categoryName }}
+                </span>
+              </td>
+              <td class="account-cell">
+                <span class="account-badge">{{ exp.accountName }}</span>
+              </td>
+              <td class="date-cell">
+                {{ exp.date | date:'mediumDate' }}
+              </td>
+              <td class="amount-cell text-right">
+                -${{ exp.amount | number:'1.2-2' }}
+              </td>
+              <td class="status-cell text-center">
+                <span class="status-badge" [ngClass]="exp.status === 'CLEARED' ? 'cleared' : 'pending'">
+                  {{ exp.status || 'CLEARED' }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <div class="empty-icon">💸</div>
+      <h4>No expenses found</h4>
+      <p>Start recording your daily spending to see transactions here.</p>
+    </div>
+  }
+</div>

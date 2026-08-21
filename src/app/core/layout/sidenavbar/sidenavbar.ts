@@ -37,9 +37,18 @@ export class Sidenavbar {
     return this.expandedItems().has(item.label);
   }
   onParentItemClick(item: SideNavItem): void {
-    // Parent entries with children behave as accordion toggles.
-    // Navigation happens on child click to avoid broken toggle state when parent route does not exist.
-    this.toggleExpand(item);
+    const isCurrentlyExpanded = this.isExpanded(item);
+    const isInsideRoute = this.isRouteInsideItem(this.router.url, item);
+
+    if (!isCurrentlyExpanded) {
+      this.updateExpandedItems(item, true);
+    }
+
+    if (!isInsideRoute && item.route) {
+      void this.router.navigateByUrl(item.route);
+    } else if (isCurrentlyExpanded && isInsideRoute) {
+      this.updateExpandedItems(item, false);
+    }
   }
   toggleExpand(item: SideNavItem): void {
     this.updateExpandedItems(item, !this.isExpanded(item));

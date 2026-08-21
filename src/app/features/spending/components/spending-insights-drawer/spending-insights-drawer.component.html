@@ -1,0 +1,41 @@
+<div class="drawer-backdrop" (click)="onClose()">
+  <div class="drawer-panel" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="drawer-header">
+      <div class="header-left">
+        <div class="sparkle-icon">✨</div>
+        <div>
+          <h2 class="drawer-title">Spending Insights</h2>
+          <span class="drawer-sub">Automated financial telemetry & intelligence</span>
+        </div>
+      </div>
+      <button class="btn-close" (click)="onClose()" title="Close">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="drawer-body">
+      <div class="insights-list">
+        @for (ins of insights(); track ins.id) {
+          <div class="insight-card" [ngClass]="ins.type">
+            <div class="card-top">
+              <span class="insight-badge">{{ ins.badge || 'Insight' }}</span>
+              <span class="insight-type-label">{{ ins.type }}</span>
+            </div>
+            <h4 class="insight-title">{{ ins.title }}</h4>
+            <p class="insight-msg">{{ ins.message }}</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="drawer-footer">
+      <button type="button" class="btn-secondary w-full" (click)="onClose()">Close Insights</button>
+    </div>
+  </div>
+</div>

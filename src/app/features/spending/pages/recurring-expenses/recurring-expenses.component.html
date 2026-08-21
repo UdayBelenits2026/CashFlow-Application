@@ -1,0 +1,150 @@
+<div class="recurring-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Recurring Expenses & Subscriptions</h1>
+      <p class="page-subtitle">Manage automated subscriptions, billing schedules, and recurring dues</p>
+    </div>
+
+    <button type="button" class="btn-primary" (click)="openAddModal()">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Add Subscription
+    </button>
+  </div>
+
+  <!-- KPI Summary -->
+  @if (recurringExpenses$ | async; as list) {
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-label">Active Subscriptions</span>
+        <span class="stat-value">{{ getActiveCount(list) }} of {{ list.length }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Monthly Commitments</span>
+        <span class="stat-value">${{ getMonthlyTotal(list) | number:'1.2-2' }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Annual Projected Cost</span>
+        <span class="stat-value">${{ (getMonthlyTotal(list) * 12) | number:'1.2-2' }}</span>
+      </div>
+    </div>
+
+    <!-- Subscriptions Grid / List -->
+    <div class="cards-grid">
+      @for (item of list; track item.id) {
+        <div class="subscription-card" [ngClass]="{ 'inactive': !item.isActive }">
+          <div class="card-top">
+            <div class="brand-group">
+              <div class="brand-avatar">
+                {{ (item.name || 'R').charAt(0).toUpperCase() }}
+              </div>
+              <div>
+                <h3 class="sub-name">{{ item.name || 'Unnamed Subscription' }}</h3>
+                <span class="sub-cat">{{ item.categoryName }} • {{ item.accountName }}</span>
+              </div>
+            </div>
+
+            <!-- Active Toggle Switch -->
+            <label class="switch-toggle" [title]="item.isActive ? 'Active Subscription' : 'Paused'">
+              <input
+                type="checkbox"
+                [checked]="item.isActive"
+                (change)="toggleActive(item.id, !item.isActive)"
+              />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="price-row">
+            <div class="price-box">
+              <span class="price-val">${{ item.amount | number:'1.2-2' }}</span>
+              <span class="cycle-tag">/ {{ (item.frequency || 'MONTHLY').toLowerCase() }}</span>
+            </div>
+            <div class="next-due">
+              <span class="due-label">Next Billing</span>
+              <span class="due-date">{{ item.nextBillingDate | date:'mediumDate' }}</span>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <button class="btn-del" (click)="deleteItem(item.id)" title="Delete Subscription">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+              Remove
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Add Subscription Modal -->
+  @if (showAddModal) {
+    <div class="modal-backdrop" (click)="showAddModal = false">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">+ Add Recurring Expense</h3>
+          <button class="btn-close" (click)="showAddModal = false">✕</button>
+        </div>
+
+        <form [formGroup]="subForm" (ngSubmit)="onSaveSubscription()" class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Subscription / Merchant Name *</label>
+            <input type="text" placeholder="e.g. Spotify, Gym, Cloud Storage" class="form-input" formControlName="name" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label class="form-label">Amount ($) *</label>
+              <input type="number" step="0.01" placeholder="0.00" class="form-input font-bold" formControlName="amount" />
+            </div>
+            <div class="form-group flex-1">
+              <label class="form-label">Billing Frequency *</label>
+              <select class="form-select" formControlName="frequency">
+                <option value="MONTHLY">Monthly</option>
+                <option value="YEARLY">Yearly</option>
+                <option value="WEEKLY">Weekly</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label class="form-label">Category *</label>
+              <select class="form-select" formControlName="categoryName">
+                <option value="Entertainment">Entertainment</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Health">Health</option>
+                <option value="Education">Education</option>
+                <option value="Shopping">Shopping</option>
+              </select>
+            </div>
+            <div class="form-group flex-1">
+              <label class="form-label">Account *</label>
+              <select class="form-select" formControlName="accountName">
+                <option value="Main Checking">Main Checking</option>
+                <option value="Chase Sapphire">Chase Sapphire</option>
+                <option value="Amex Gold">Amex Gold</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Next Billing Date *</label>
+            <input type="date" class="form-input" formControlName="nextBillingDate" />
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" (click)="showAddModal = false">Cancel</button>
+            <button type="submit" class="btn-primary" [disabled]="subForm.invalid">Save Subscription</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

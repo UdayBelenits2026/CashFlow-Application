@@ -1,0 +1,168 @@
+<div class="dashboard-page">
+  <!-- Top Toast Notification Banner -->
+  @if (successMessage$ | async; as msg) {
+    <div class="toast-banner success">
+      <span>✨ {{ msg }}</span>
+      <button class="btn-toast-close" (click)="onClearFeedback()">✕</button>
+    </div>
+  }
+
+  @if (error$ | async; as err) {
+    <div class="toast-banner error">
+      <span>⚠️ {{ err }}</span>
+      <button class="btn-retry" (click)="onRetry()">Retry</button>
+    </div>
+  }
+
+  <!-- Main Dashboard Header -->
+  <div class="dashboard-header">
+    <div class="header-left">
+      <h1 class="page-title">Spending Dashboard</h1>
+      <p class="page-subtitle">Monitor your spending, categories, trends, and budget performance.</p>
+    </div>
+
+    <div class="header-actions">
+      <!-- Period Selector -->
+      <div class="period-selector-box">
+        <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+        <select class="period-select" [(ngModel)]="selectedPeriod" (ngModelChange)="onPeriodChange($event)" aria-label="Select spending time period">
+          <option value="THIS_MONTH">This Month</option>
+          <option value="LAST_MONTH">Last Month</option>
+          <option value="LAST_30_DAYS">Last 30 Days</option>
+          <option value="YTD">Year to Date</option>
+        </select>
+      </div>
+
+      <!-- Utility Action: [ Insights ] -->
+      <button type="button" class="btn-utility" (click)="openInsightsDrawer()" title="View Spending Insights">
+        <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+        <span>Insights</span>
+      </button>
+
+      <!-- Utility Action: [ Alerts (count) ] -->
+      <button type="button" class="btn-utility" (click)="openAlertsDrawer()" title="View Spending Alerts">
+        <i class="fa-regular fa-bell" aria-hidden="true"></i>
+        <span>Alerts</span>
+        @if ((unreadAlertsCount$ | async); as unreadCount) {
+          @if (unreadCount > 0) {
+            <span class="badge-alert">{{ unreadCount }}</span>
+          }
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Skeleton / Content -->
+  @if (isLoading$ | async) {
+    <div class="skeleton-container">
+      <div class="skeleton-kpis"></div>
+      <div class="skeleton-charts"></div>
+      <div class="skeleton-table"></div>
+    </div>
+  } @else {
+    <!-- 1. KPI SUMMARY SECTION -->
+    <section class="section-kpis">
+      <app-spending-kpi-cards [overview]="overview$ | async"></app-spending-kpi-cards>
+    </section>
+
+    <!-- 2. ANALYTICS SECTION (Side-by-side) -->
+    <section class="section-analytics">
+      <div class="analytics-left">
+        <app-cf-line-chart
+          [title]="'Spending Trend'"
+          [labels]="(trendLabels$ | async) || []"
+          [datasets]="(trendDatasets$ | async) || []"
+        ></app-cf-line-chart>
+      </div>
+      <div class="analytics-right">
+        <app-cf-doughnut-chart
+          [title]="'Spending by Category'"
+          [total]="(categoryTotal$ | async) || 0"
+          [labels]="(categoryLabels$ | async) || []"
+          [datasets]="(categoryDatasets$ | async) || []"
+        ></app-cf-doughnut-chart>
+      </div>
+    </section>
+
+    <!-- 3. RECENT EXPENSES SECTION -->
+    <section class="section-recent">
+      <app-recent-expenses
+        [expenses]="(recentExpenses$ | async) || []"
+        (expenseSelected)="onExpenseSelected($event)"
+      ></app-recent-expenses>
+    </section>
+  }
+
+  <!-- ================= CONTEXTUAL DRAWERS & MODALS ================= -->
+
+  <!-- Spending Insights Drawer -->
+  @if (showInsightsDrawer) {
+    <app-spending-insights-drawer
+      [insights]="(insights$ | async) || []"
+      (close)="showInsightsDrawer = false"
+    ></app-spending-insights-drawer>
+  }
+
+  <!-- Spending Alerts Drawer -->
+  @if (showAlertsDrawer) {
+    <app-spending-alerts-drawer
+      [alerts]="(alerts$ | async) || []"
+      (close)="showAlertsDrawer = false"
+      (markAsRead)="onMarkAlertAsRead($event)"
+      (dismiss)="onDismissAlert($event)"
+    ></app-spending-alerts-drawer>
+  }
+
+  <!-- Expense Details Drawer -->
+  @if (showDetailsDrawer && activeExpense) {
+    <app-expense-details-drawer
+      [expense]="activeExpense"
+      (close)="showDetailsDrawer = false"
+      (edit)="openEditModal($event)"
+      (delete)="openDeleteDialog($event)"
+      (viewReceipt)="openReceiptViewer($event)"
+      (uploadReceipt)="openReceiptViewer($event)"
+      (split)="onSplitExpense($event)"
+    ></app-expense-details-drawer>
+  }
+
+  <!-- Edit Expense Modal (Uses the reusable 3-step wizard) -->
+  @if (showEditModal && activeExpense) {
+    <app-add-expense-modal
+      [expense]="activeExpense"
+      [categories]="(categories$ | async) || []"
+      (close)="showEditModal = false"
+      (update)="onUpdateExpense($event)"
+      (save)="onUpdateExpense($event)"
+    ></app-add-expense-modal>
+  }
+
+  <!-- Split Expense Modal -->
+  @if (showSplitModal && activeExpense) {
+    <app-split-expense-modal
+      [expense]="activeExpense"
+      [categories]="(categories$ | async) || []"
+      (close)="showSplitModal = false"
+      (splitSaved)="onSaveSplits($event)"
+    ></app-split-expense-modal>
+  }
+
+  <!-- Delete Confirmation Dialog -->
+  @if (showDeleteDialog && activeExpense) {
+    <app-delete-confirm-dialog
+      [expense]="activeExpense"
+      (cancel)="showDeleteDialog = false"
+      (confirm)="onConfirmDeleteExpense($event)"
+    ></app-delete-confirm-dialog>
+  }
+
+  <!-- Receipt Viewer Lightbox -->
+  @if (showReceiptViewer && activeExpense) {
+    <app-receipt-viewer-modal
+      [expense]="activeExpense"
+      (close)="showReceiptViewer = false"
+      (updateReceipt)="onUpdateReceipt($event)"
+      (removeReceipt)="onRemoveReceipt($event)"
+    ></app-receipt-viewer-modal>
+  }
+</div>

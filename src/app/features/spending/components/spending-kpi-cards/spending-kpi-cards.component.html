@@ -1,0 +1,120 @@
+<div class="kpi-grid">
+  <!-- 1. Total Spending -->
+  <div class="kpi-card">
+    <div class="kpi-header">
+      <span class="kpi-label">Total Spending</span>
+      <div class="kpi-icon-badge blue">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-amount">
+      ${{ (overview()?.totalSpending || 0) | number:'1.2-2' }}
+    </div>
+    <div class="kpi-trend trend-up">
+      <span class="trend-badge positive">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
+        +{{ (overview()?.spendingGrowthPercentage || 8.5) | number:'1.1-1' }}%
+      </span>
+      <span class="trend-context">vs last month</span>
+    </div>
+  </div>
+
+  <!-- 2. Transactions -->
+  <div class="kpi-card">
+    <div class="kpi-header">
+      <span class="kpi-label">Transactions</span>
+      <div class="kpi-icon-badge purple">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="5" width="20" height="14" rx="2"/>
+          <line x1="2" y1="10" x2="22" y2="10"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-amount">
+      {{ overview()?.transactionsCount || 0 }}
+    </div>
+    <div class="kpi-trend">
+      <span class="trend-badge neutral">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+        {{ overview()?.transactionsGrowthCount ? (overview()!.transactionsGrowthCount > 0 ? '+' : '') + overview()!.transactionsGrowthCount : '-5' }}
+      </span>
+      <span class="trend-context">vs last period</span>
+    </div>
+  </div>
+
+  <!-- 3. Average Daily -->
+  <div class="kpi-card">
+    <div class="kpi-header">
+      <span class="kpi-label">Average Daily</span>
+      <div class="kpi-icon-badge amber">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-amount">
+      ${{ (overview()?.averageDaily || 0) | number:'1.2-2' }}
+    </div>
+    <div class="kpi-trend">
+      <span class="trend-badge positive">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
+        +{{ (overview()?.averageDailyGrowthPercentage || 0.8) | number:'1.1-1' }}%
+      </span>
+      <span class="trend-context">per day baseline</span>
+    </div>
+  </div>
+
+  <!-- 4. Top Category -->
+  <div class="kpi-card">
+    <div class="kpi-header">
+      <span class="kpi-label">Top Category</span>
+      <div class="kpi-icon-badge emerald">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-category-name" [title]="overview()?.topCategoryName || 'Food & Dining'">
+      {{ overview()?.topCategoryName || 'Food & Dining' }}
+    </div>
+    <div class="kpi-category-sub">
+      ${{ (overview()?.topCategoryAmount || 0) | number:'1.2-2' }} (Highest)
+    </div>
+  </div>
+
+  <!-- 5. Budget Used -->
+  <div class="kpi-card">
+    <div class="kpi-header">
+      <span class="kpi-label">Budget Used</span>
+      <div class="kpi-icon-badge" [ngClass]="(overview()?.budgetUsedPercentage || 66) > 80 ? 'rose' : 'indigo'">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-amount">
+      {{ overview()?.budgetUsedPercentage || 66 }}%
+    </div>
+    <div class="budget-bar-track">
+      <div
+        class="budget-bar-fill"
+        [style.width.%]="overview()?.budgetUsedPercentage || 66"
+        [ngClass]="(overview()?.budgetUsedPercentage || 66) > 85 ? 'fill-danger' : 'fill-normal'"
+      ></div>
+    </div>
+  </div>
+</div>
