@@ -1,11 +1,13 @@
 import { Injectable, inject } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, exhaustMap, map, of, tap } from 'rxjs';
-import * as AuthActions from './auth.actions';
-import { AuthApiService } from '../services/auth-api.service';
-import { AuthError, LoginResponse, RegisterResponse } from '../models/auth.models';
-import { AuthTokenService } from '../services/auth-token.service';
+import { catchError, exhaustMap, filter, map, of, tap } from 'rxjs';
+import * as AuthActions from '../actions/auth.actions';
+import { AuthApiService } from '../../services/auth-api.service';
+import { AuthError, LoginData, LoginResponse, RegisterResponse } from '../../models/auth.models';
+import { AuthTokenService } from '../../services/auth-token.service';
 
 @Injectable()
 export class AuthEffects {
@@ -13,6 +15,15 @@ export class AuthEffects {
   private readonly authApi = inject(AuthApiService);
   private readonly tokenService = inject(AuthTokenService);
   private readonly router = inject(Router);
+
+  restoreSession$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ROOT_EFFECTS_INIT),
+      map(() => this.tokenService.hydrateSession()),
+      filter((session): session is LoginData => Boolean(session)),
+      map((session) => AuthActions.restoreSession({ data: session })),
+    ),
+  );
 
   signIn$ = createEffect(() =>
     this.actions$.pipe(
@@ -32,8 +43,8 @@ export class AuthEffects {
       this.actions$.pipe(
         ofType(AuthActions.loginSuccess),
         tap(({ data }) => {
-          this.tokenService.set(data.accessToken);
-          void this.router.navigate(['/dashboard']);
+          this.tokenService.setSession(data);
+          this.router.navigate(['/dashboard']);
         }),
       ),
     { dispatch: false },
@@ -59,11 +70,33 @@ export class AuthEffects {
       ),
     { dispatch: false },
   );
+
+  logout$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.logout),
+        tap(() => {
+          this.tokenService.clear();
+          this.router.navigate(['/']);
+        }),
+      ),
+    { dispatch: false },
+  );
+
   private normalize(error: unknown): AuthError {
-    const response = error as { error?: AuthError; message?: string };
-    const backendError = response?.error;
+    const httpError = error as HttpErrorResponse;
+    const backendError = httpError?.error as Partial<AuthError> | undefined;
+
     return backendError?.message
-      ? backendError
-      : { code: backendError?.code ?? 'UNKNOWN', message: 'Something went wrong. Please try again.' };
+      ? {
+        code: backendError.code ?? 'UNKNOWN',
+        message: backendError.message,
+        correlationId: backendError.correlationId,
+      }
+      : {
+        code: backendError?.code ?? 'UNKNOWN',
+        message: 'Something went wrong. Please try again.',
+        correlationId: backendError?.correlationId,
+      };
   }
 }

@@ -32,6 +32,13 @@ export interface LoginData {
   user: AuthUser;
 }
 
+export interface StoredAuthSession {
+  accessToken: string;
+  tokenType: string;
+  expiresAt: number;
+  user: AuthUser;
+}
+
 export type LoginResponse = ApiResponse<LoginData>;
 export type RegisterResponse = ApiResponse<RegisteredUser>;
 export interface AuthError { code: string; message: string; correlationId?: string; }
@@ -54,4 +61,10 @@ export interface RegisterRequest {
   confirmPassword: string;
   termsAccepted: boolean;
 }
-
+export interface RoleGuardData {
+  roles?: string[];
+}
+export interface ForgotPassword{
+  newPassword:string;
+  confirmPassword:string;
+}

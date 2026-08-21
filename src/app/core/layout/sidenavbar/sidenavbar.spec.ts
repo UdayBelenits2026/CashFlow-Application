@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { Sidenavbar } from './sidenavbar';
 import { provideStore } from '@ngrx/store';
-import { authReducer } from '../../auth/store/auth.reducer';
+import { authReducer } from '../../auth/store/reducer/auth.reducer';
 import { provideRouter } from '@angular/router';
 import { navigationList } from '../data/navigation.data';
 

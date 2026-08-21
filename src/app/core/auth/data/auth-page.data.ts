@@ -15,3 +15,11 @@ export const signUpPanelConfig: AuthSidePanelConfig = {
   showCashFlowStats: true,
   showSecurityPoints: true,
 };
+export const ForgotPasswordPanelConfig: AuthSidePanelConfig = {
+  image: '/assets/images/forgot-password.png',
+  title: 'Get Back to Your Finances.',
+  description:
+    'Forgot your password? Reset it securely and get back to managing your finances with CashFlow.',
+  showCashFlowStats: true,
+  showSecurityPoints: true,
+};

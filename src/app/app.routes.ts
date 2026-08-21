@@ -10,6 +10,9 @@ export const routes: Routes = [
   {
     path: 'dashboard', loadComponent: () => import('./core/layout/main-layout/main-layout').then((m) => m.MainLayout),
   },
+  {
+    path:'forgot-password', loadComponent:()=>import('./core/auth/pages/forgot-password/forgot-password').then((m)=>m.ForgotPassword),
+  }
   // {
   //   path: '**',
   //   redirectTo: '',

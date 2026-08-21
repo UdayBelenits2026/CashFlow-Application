@@ -21,8 +21,8 @@ import Aura from '@primeuix/themes/aura';
 
 import { routes } from './app.routes';
 
-import { authReducer } from './core/auth/store/auth.reducer';
-import { AuthEffects } from './core/auth/store/auth.effects';
+import { authReducer } from './core/auth/store/reducer/auth.reducer';
+import { AuthEffects } from './core/auth/store/effects/auth.effects';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SignUp } from './sign-up';
 import { provideStore } from '@ngrx/store';
-import { authReducer } from '../../store/auth.reducer';
+import { authReducer } from '../../store/reducer/auth.reducer';
 import { provideRouter } from '@angular/router';
 
 describe('SignUp', () => {
