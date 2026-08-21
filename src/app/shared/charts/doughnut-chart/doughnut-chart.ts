@@ -5,6 +5,7 @@ import {
   ElementRef,
   input,
   OnDestroy,
+  output,
   ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -33,6 +34,9 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
   readonly total = input<number>(2650);
   readonly datasets = input<ChartConfiguration<'doughnut'>['data']['datasets']>([]);
   readonly labels = input<string[]>([]);
+  readonly isLoading = input<boolean>(false);
+  readonly hasError = input<boolean>(false);
+  readonly retry = output<void>();
   private chart: Chart<'doughnut'> | null = null;
 
   ngAfterViewInit(): void {
@@ -51,7 +55,7 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
             cutout: '70%',
             plugins: {
               legend: {
-                position: 'right',
+                display: false,
                 labels: {
                   usePointStyle: true,
                   pointStyle: 'circle',
@@ -85,5 +89,17 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.chart?.destroy();
+  }
+
+  onRetry(): void {
+    this.retry.emit();
+  }
+
+  legendColor(index: number): string {
+    const backgroundColor = this.datasets()?.[0]?.backgroundColor;
+    if (Array.isArray(backgroundColor) && typeof backgroundColor[index] === 'string') {
+      return backgroundColor[index] as string;
+    }
+    return '#94a3b8';
   }
 }

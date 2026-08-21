@@ -26,6 +26,91 @@
   min-height: 16.25rem;
 }
 
+.chart-container canvas.dimmed {
+  opacity: 0;
+}
+
+.chart-loading-state,
+.chart-error-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.loading-line {
+  position: relative;
+  display: block;
+  height: 0.625rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: #e2e8f0;
+  margin: 0.375rem 0;
+}
+
+.loading-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .7), transparent);
+  animation: line-skeleton-shimmer 1.3s infinite;
+}
+
+.loading-line.wide {
+  width: 80%;
+}
+
+.loading-line.medium {
+  width: 65%;
+}
+
+.loading-line.short {
+  width: 48%;
+}
+
+.chart-error-state {
+  text-align: center;
+}
+
+.error-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff1f2;
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.chart-error-state p {
+  margin: 0.625rem 0 0.25rem;
+  color: #1e293b;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.chart-error-state small {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.retry-btn {
+  margin-top: 0.75rem;
+  border: 0.0625rem solid #c7d2fe;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #2563eb;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.4375rem 1rem;
+}
+
 .empty-chart-state {
   position: absolute;
   inset: 0;
@@ -103,4 +188,10 @@
 
 .chart-card.empty-state canvas {
   visibility: hidden;
+}
+
+@keyframes line-skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }

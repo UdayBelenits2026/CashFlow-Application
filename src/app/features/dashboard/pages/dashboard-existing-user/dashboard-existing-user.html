@@ -15,6 +15,9 @@
         [title]="'Cash Flow Trend'"
         [labels]="lineChartLabels"
         [datasets]="lineChartDatasets"
+        [isLoading]="(loading$ | async) ?? false"
+        [hasError]="(loadError$ | async) ?? false"
+        (retry)="retryLoad()"
       ></app-cf-line-chart>
     </article>
 
@@ -24,6 +27,9 @@
         [labels]="doughnutLabels"
         [datasets]="doughnutDatasets"
         [total]="2650"
+        [isLoading]="(loading$ | async) ?? false"
+        [hasError]="(loadError$ | async) ?? false"
+        (retry)="retryLoad()"
       ></app-cf-doughnut-chart>
     </article>
 
@@ -32,6 +38,9 @@
         [title]="'Upcoming Bills'"
         [items]="(upcomingBills$ | async) || []"
         [showAddReminder]="true"
+        [isLoading]="(loading$ | async) ?? false"
+        [hasError]="(loadError$ | async) ?? false"
+        (retry)="retryLoad()"
       ></app-cf-dashboard-list>
     </article>
   </section>

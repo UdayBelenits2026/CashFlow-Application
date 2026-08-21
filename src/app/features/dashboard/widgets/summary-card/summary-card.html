@@ -1,8 +1,10 @@
 <section class="summary-card" [class]="data().id">
   @if (isLoading()) {
-    <div class="summary-icon skeleton-block"></div>
-    <div class="summary-content skeleton-content">
-      <span class="skeleton-line short"></span>
+    <div class="summary-icon">
+      <fa-icon [icon]="icons[data().icon]"></fa-icon>
+    </div>
+    <div class="summary-content skeleton-content amount-only-loading">
+      <p>{{ data().title }}</p>
       <span class="skeleton-line wide"></span>
       <span class="skeleton-line medium"></span>
     </div>

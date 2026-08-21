@@ -5,6 +5,7 @@ import {
   ElementRef,
   input,
   OnDestroy,
+  output,
   ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -48,6 +49,9 @@ export class LineChart implements AfterViewInit, OnDestroy {
   readonly labels = input<string[]>([]);
   readonly datasets = input<ChartConfiguration<'line'>['data']['datasets']>([]);
   readonly emptyState = input<boolean>(false);
+  readonly isLoading = input<boolean>(false);
+  readonly hasError = input<boolean>(false);
+  readonly retry = output<void>();
   private chart: Chart<'line'> | null = null;
 
   ngAfterViewInit(): void {
@@ -127,5 +131,9 @@ export class LineChart implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.chart?.destroy();
+  }
+
+  onRetry(): void {
+    this.retry.emit();
   }
 }

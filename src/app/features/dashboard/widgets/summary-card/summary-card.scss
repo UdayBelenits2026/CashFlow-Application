@@ -46,12 +46,16 @@
 }
 
 .skeleton-line.medium {
-  width: 56%;
+  width: 34%;
 }
 
 .skeleton-line.wide {
-  width: 72%;
+  width: 58%;
   height: 1.5rem;
+}
+
+.amount-only-loading .skeleton-line.wide {
+  margin-top: 0.125rem;
 }
 .summary-icon {
   width: 3rem;
