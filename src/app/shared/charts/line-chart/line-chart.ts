@@ -45,8 +45,9 @@ Chart.register(
 })
 export class LineChart implements AfterViewInit, OnDestroy {
   @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
-
-  readonly title = input<string>('Cash Flow Trend');
+  readonly title = input<string>('Spending Trend');
+  readonly subtitle = input<string>('Trajectory comparing current and previous periods');
+  readonly badge = input<string>('');
   readonly labels = input<string[]>([]);
   readonly datasets =
     input<ChartConfiguration<'line'>['data']['datasets']>([]);
@@ -61,121 +62,165 @@ export class LineChart implements AfterViewInit, OnDestroy {
 
       if (this.chart) {
         this.chart.data.labels = labels;
-        this.chart.data.datasets = datasets;
+        this.chart.data.datasets = this.applyEnhancedStyling(datasets);
         this.chart.update();
       }
     });
   }
 
-  ngAfterViewInit(): void {
-    if (!this.chartCanvas?.nativeElement) {
-      return;
-    }
-
+  private applyEnhancedStyling(datasets: ChartConfiguration<'line'>['data']['datasets']): ChartConfiguration<'line'>['data']['datasets'] {
+    if (!this.chartCanvas?.nativeElement) return datasets;
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
 
-    if (!ctx) {
-      return;
+    return datasets.map((ds, index) => {
+      if (ctx && (index === 0 || ds.fill)) {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 240);
+        gradient.addColorStop(0, 'rgba(37, 99, 235, 0.22)');
+        gradient.addColorStop(0.65, 'rgba(37, 99, 235, 0.05)');
+        gradient.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
+
+        return {
+          ...ds,
+          backgroundColor: gradient,
+          borderColor: ds.borderColor || '#2563EB',
+          borderWidth: 2.5,
+          tension: 0.4,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: '#2563EB',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointHoverBorderWidth: 3,
+        };
+      }
+      return {
+        ...ds,
+        borderWidth: 2,
+        tension: 0.4,
+        pointRadius: 3.5,
+        pointHoverRadius: 5.5,
+      };
+    });
+  }
+
+  ngAfterViewInit(): void {
+    if (this.chartCanvas?.nativeElement) {
+      const ctx = this.chartCanvas.nativeElement.getContext('2d');
+      if (ctx) {
+        const enhancedDatasets = this.applyEnhancedStyling(this.datasets());
+
+        const config: ChartConfiguration<'line'> = {
+          type: 'line',
+          data: {
+            labels: this.labels(),
+            datasets: enhancedDatasets,
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+              padding: {
+                top: 24,
+                right: 12,
+                bottom: 6,
+                left: 6,
+              },
+            },
+            interaction: {
+              mode: 'index',
+              intersect: false,
+            },
+            plugins: {
+              legend: {
+                position: 'top',
+                align: 'end',
+                labels: {
+                  usePointStyle: true,
+                  pointStyle: 'circle',
+                  boxWidth: 8,
+                  boxHeight: 8,
+                  padding: 16,
+                  font: {
+                    size: 11.5,
+                    family: "'Roboto', sans-serif",
+                    weight: 500,
+                  },
+                  color: '#475569',
+                },
+              },
+              tooltip: {
+                enabled: true,
+                backgroundColor: '#0f172a',
+                titleColor: '#ffffff',
+                bodyColor: '#f1f5f9',
+                borderColor: '#1e293b',
+                borderWidth: 1,
+                padding: 10,
+                cornerRadius: 8,
+                caretPadding: 6,
+                boxPadding: 4,
+                usePointStyle: true,
+                titleFont: { size: 12, weight: 'bold', family: "'Roboto', sans-serif" },
+                bodyFont: { size: 11.5, weight: 'normal', family: "'Roboto', sans-serif" },
+                callbacks: {
+                  label: (context: any) => {
+                    const label = context.dataset.label || '';
+                    const val = Number(context.raw);
+                    return `  ${label}: ₹${val.toFixed(2)}`;
+                  },
+                },
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: false,
+                grace: '20%',
+                grid: {
+                  color: '#f1f5f9',
+                },
+                ticks: {
+                  font: { size: 11, family: "'Roboto', sans-serif" },
+                  color: '#94a3b8',
+                  padding: 8,
+                  callback: (value: any) => {
+                    const num = Number(value);
+                    return num >= 1000 ? '₹' + (num / 1000) + 'K' : '₹' + num;
+                  },
+                },
+                border: {
+                  dash: [4, 4],
+                  display: false,
+                },
+              },
+              x: {
+                grid: {
+                  display: false,
+                },
+                ticks: {
+                  font: { size: 11, family: "'Roboto', sans-serif" },
+                  color: '#94a3b8',
+                  padding: 8,
+                },
+                border: {
+                  display: false,
+                },
+              },
+            },
+            elements: {
+              line: {
+                tension: 0.4,
+                borderWidth: 2.5,
+              },
+              point: {
+                radius: 4,
+                hoverRadius: 6,
+              },
+            },
+          },
+        };
+        this.chart = new Chart(ctx, config);
+      }
     }
-
-    const config: ChartConfiguration<'line'> = {
-      type: 'line',
-      data: {
-        labels: this.labels(),
-        datasets: this.datasets(),
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: {
-          mode: 'index',
-          intersect: false,
-        },
-        plugins: {
-          legend: {
-            position: 'top',
-            align: 'end',
-            labels: {
-              usePointStyle: true,
-              pointStyle: 'circle',
-              boxWidth: 6,
-              boxHeight: 6,
-              padding: 14,
-              font: {
-                size: 11,
-                family:
-                  "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-                weight: 500,
-              },
-              color: '#475569',
-            },
-          },
-          tooltip: {
-            backgroundColor: '#0f172a',
-            padding: 10,
-            cornerRadius: 8,
-            titleFont: {
-              size: 11.5,
-              weight: 'bold',
-            },
-            bodyFont: {
-              size: 12,
-              weight: 'bold',
-            },
-          },
-        },
-        scales: {
-          y: {
-            beginAtZero: false,
-            grid: {
-              color: '#f1f5f9',
-            },
-            ticks: {
-              font: {
-                size: 10.5,
-                family:
-                  "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              },
-              color: '#64748b',
-              callback: (value: string | number) => {
-                const num = Number(value);
-
-                if (num >= 1000 || num <= -1000) {
-                  return `$${num / 1000}K`;
-                }
-
-                return `$${num}`;
-              },
-            },
-          },
-          x: {
-            grid: {
-              display: false,
-            },
-            ticks: {
-              font: {
-                size: 10.5,
-                family:
-                  "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-              },
-              color: '#64748b',
-            },
-          },
-        },
-        elements: {
-          line: {
-            tension: 0.4,
-            borderWidth: 2,
-          },
-          point: {
-            radius: 3.5,
-            hoverRadius: 5.5,
-          },
-        },
-      },
-    };
-
-    this.chart = new Chart(ctx, config);
   }
 
   ngOnDestroy(): void {
@@ -183,3 +228,5 @@ export class LineChart implements AfterViewInit, OnDestroy {
     this.chart = null;
   }
 }
+
+

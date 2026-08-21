@@ -24,11 +24,11 @@
       </div>
       <div class="stat-card">
         <span class="stat-label">Monthly Commitments</span>
-        <span class="stat-value">${{ getMonthlyTotal(list) | number:'1.2-2' }}</span>
+        <span class="stat-value">₹{{ getMonthlyTotal(list) | number:'1.2-2' }}</span>
       </div>
       <div class="stat-card">
         <span class="stat-label">Annual Projected Cost</span>
-        <span class="stat-value">${{ (getMonthlyTotal(list) * 12) | number:'1.2-2' }}</span>
+        <span class="stat-value">₹{{ (getMonthlyTotal(list) * 12) | number:'1.2-2' }}</span>
       </div>
     </div>
 
@@ -60,7 +60,7 @@
 
           <div class="price-row">
             <div class="price-box">
-              <span class="price-val">${{ item.amount | number:'1.2-2' }}</span>
+              <span class="price-val">₹{{ item.amount | number:'1.2-2' }}</span>
               <span class="cycle-tag">/ {{ (item.frequency || 'MONTHLY').toLowerCase() }}</span>
             </div>
             <div class="next-due">
@@ -100,7 +100,7 @@
 
           <div class="form-row">
             <div class="form-group flex-1">
-              <label class="form-label">Amount ($) *</label>
+              <label class="form-label">Amount (₹) *</label>
               <input type="number" step="0.01" placeholder="0.00" class="form-input font-bold" formControlName="amount" />
             </div>
             <div class="form-group flex-1">

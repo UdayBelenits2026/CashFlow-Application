@@ -1,8 +1,10 @@
+@use '../../../../../styles/variables' as *;
+
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: $spacing-4;
+  margin-bottom: $spacing-6;
 
   @media (max-width: 1200px) {
     grid-template-columns: repeat(3, 1fr);
@@ -18,20 +20,20 @@
 }
 
 .kpi-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 14px;
-  padding: 18px 20px;
+  background: $color-card;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-4 $spacing-5;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 125px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: $shadow-sm;
+  transition: transform $transition-fast, box-shadow $transition-fast;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    box-shadow: $shadow-md;
   }
 }
 
@@ -39,106 +41,107 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: $spacing-2;
 }
 
 .kpi-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #64748B;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-text-muted;
   letter-spacing: -0.01em;
 }
 
 .kpi-icon-badge {
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: $radius-md;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  &.blue { background: #EFF6FF; color: #2563EB; }
-  &.purple { background: #F5F3FF; color: #7C3AED; }
-  &.amber { background: #FFFBEB; color: #D97706; }
-  &.emerald { background: #ECFDF5; color: #059669; }
-  &.indigo { background: #EEF2FF; color: #4F46E5; }
-  &.rose { background: #FFF1F2; color: #E11D48; }
+  &.blue { background: $color-info-bg; color: $color-info; }
+  &.purple { background: #f5f3ff; color: #7c3aed; }
+  &.amber { background: $color-warning-bg; color: $color-warning; }
+  &.emerald { background: $color-success-bg; color: $color-success; }
+  &.indigo { background: #eef2ff; color: $color-secondary; }
+  &.rose { background: $color-danger-bg; color: $color-danger; }
 }
 
 .kpi-amount {
-  font-size: 24px;
-  font-weight: 800;
-  color: #0F172A;
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
   letter-spacing: -0.02em;
   line-height: 1.2;
 }
 
 .kpi-category-name {
-  font-size: 17px;
-  font-weight: 700;
-  color: #0F172A;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .kpi-category-sub {
-  font-size: 12px;
-  font-weight: 600;
-  color: #64748B;
-  margin-top: 4px;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-muted;
+  margin-top: $spacing-1;
 }
 
 .kpi-trend {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 8px;
-  font-size: 12px;
+  gap: $spacing-2;
+  margin-top: $spacing-2;
+  font-size: $font-size-sm;
 }
 
 .trend-badge {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  padding: 2px 6px;
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 11px;
+  gap: 3px;
+  padding: 2px $spacing-2;
+  border-radius: $radius-sm;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-xs;
 
   &.positive {
-    background: #DCFCE7;
-    color: #15803D;
+    background: $color-success-bg;
+    color: $color-success;
   }
   &.neutral {
-    background: #F1F5F9;
-    color: #475569;
+    background: $color-background;
+    color: $color-text-secondary;
   }
   &.negative {
-    background: #FEE2E2;
-    color: #B91C1C;
+    background: $color-danger-bg;
+    color: $color-danger;
   }
 }
 
 .trend-context {
-  color: #94A3B8;
-  font-weight: 500;
+  color: $color-text-light;
+  font-weight: $font-weight-regular;
 }
 
 .budget-bar-track {
   width: 100%;
   height: 6px;
-  background: #F1F5F9;
+  background: $color-border-light;
   border-radius: 999px;
   overflow: hidden;
-  margin-top: 10px;
+  margin-top: $spacing-2;
 }
 
 .budget-bar-fill {
   height: 100%;
   border-radius: 999px;
-  transition: width 0.4s ease;
+  transition: width $transition-slow;
 
-  &.fill-normal { background: linear-gradient(90deg, #2563EB, #4F46E5); }
-  &.fill-danger { background: linear-gradient(90deg, #F59E0B, #EF4444); }
+  &.fill-normal { background: linear-gradient(90deg, $color-info, $color-secondary); }
+  &.fill-danger { background: linear-gradient(90deg, $color-warning, $color-danger); }
 }
+

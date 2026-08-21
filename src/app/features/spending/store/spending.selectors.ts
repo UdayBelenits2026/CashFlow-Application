@@ -197,7 +197,7 @@ export const selectCalculatedInsights = createSelector(
       insights.push({
         id: 'ins-1',
         title: 'Top Spending Category',
-        message: `You spent $${overview.topCategoryAmount.toFixed(2)} on ${overview.topCategoryName}, which represents your highest expenditure this period.`,
+        message: `You spent ₹${overview.topCategoryAmount.toFixed(2)} on ${overview.topCategoryName}, which represents your highest expenditure this period.`,
         type: 'info',
         badge: 'Category'
       });
@@ -208,7 +208,7 @@ export const selectCalculatedInsights = createSelector(
       insights.push({
         id: 'ins-2',
         title: 'Average Daily Outflow',
-        message: `Your average daily spending is $${overview.averageDaily.toFixed(2)}. ${overview.averageDailyGrowthPercentage >= 0 ? `Up by ${overview.averageDailyGrowthPercentage}%` : `Down by ${Math.abs(overview.averageDailyGrowthPercentage)}%`} compared to previous baseline.`,
+        message: `Your average daily spending is ₹${overview.averageDaily.toFixed(2)}. ${overview.averageDailyGrowthPercentage >= 0 ? `Up by ${overview.averageDailyGrowthPercentage}%` : `Down by ${Math.abs(overview.averageDailyGrowthPercentage)}%`} compared to previous baseline.`,
         type: overview.averageDailyGrowthPercentage > 5 ? 'negative' : 'positive',
         badge: 'Daily Trend'
       });
@@ -232,7 +232,7 @@ export const selectCalculatedInsights = createSelector(
         insights.push({
           id: 'ins-3',
           title: 'Frequent Merchant',
-          message: `${topMerchant} is your top merchant with total volume of $${topMerchantAmt.toFixed(2)}.`,
+          message: `${topMerchant} is your top merchant with total volume of ₹${topMerchantAmt.toFixed(2)}.`,
           type: 'neutral',
           badge: 'Merchant'
         });

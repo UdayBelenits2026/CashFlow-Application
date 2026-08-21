@@ -1,31 +1,35 @@
+@use '../../../../../styles/variables' as *;
+@use '../../../../../styles/buttons' as *;
+
 .drawer-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(3px);
-  z-index: 1000;
+  background: rgba(11, 31, 58, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: $z-index-modal;
   display: flex;
   justify-content: flex-end;
-  animation: fadeIn 0.15s ease-out;
+  animation: fadeIn $transition-fast ease-out;
 }
 
 .drawer-panel {
   width: 100%;
   max-width: 460px;
   height: 100vh;
-  background: #FFFFFF;
-  box-shadow: -10px 0 25px rgba(0, 0, 0, 0.1);
+  background: $color-card;
+  box-shadow: $shadow-lg;
+  border-left: 1px solid $color-border;
   display: flex;
   flex-direction: column;
-  animation: slideLeft 0.2s ease-out;
+  animation: slideLeft $transition-normal cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .drawer-header {
-  padding: 24px;
-  border-bottom: 1px solid #F1F5F9;
+  padding: $spacing-5 $spacing-6;
+  border-bottom: 1px solid $color-border-light;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -33,16 +37,16 @@
 
 .drawer-tag {
   font-size: 11px;
-  font-weight: 700;
-  color: #64748B;
+  font-weight: $font-weight-bold;
+  color: $color-text-muted;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .drawer-merchant {
-  font-size: 20px;
-  font-weight: 800;
-  color: #0F172A;
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
   margin: 4px 0 0 0;
 }
 
@@ -50,64 +54,66 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #64748B;
-  padding: 4px;
-  border-radius: 6px;
+  color: $color-text-muted;
+  padding: $spacing-1;
+  border-radius: $radius-sm;
+  font-size: $font-size-lg;
+  transition: all $transition-fast;
 
-  &:hover { background: #F1F5F9; color: #0F172A; }
+  &:hover { background: $color-background; color: $color-text-primary; }
 }
 
 .drawer-content {
-  padding: 24px;
+  padding: $spacing-6;
   overflow-y: auto;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: $spacing-6;
 }
 
 .amount-hero-card {
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
-  border-radius: 12px;
-  padding: 20px;
+  background: $color-background;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-5;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: $spacing-1;
 }
 
 .amount-sub {
-  font-size: 12px;
-  color: #64748B;
-  font-weight: 600;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  font-weight: $font-weight-semibold;
 }
 
 .amount-val {
-  font-size: 32px;
-  font-weight: 800;
-  color: #0F172A;
+  font-size: $font-size-5xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
   letter-spacing: -0.02em;
 }
 
 .status-pill-row {
   display: flex;
-  gap: 8px;
+  gap: $spacing-2;
   align-items: center;
-  margin-top: 6px;
+  margin-top: $spacing-1;
 }
 
 .status-pill {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 8px;
+  padding: 3px $spacing-2;
   border-radius: 999px;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
 
-  &.cleared { background: #DCFCE7; color: #15803D; }
+  &.cleared { background: $color-success-bg; color: $color-success; }
 }
 
 .dot {
@@ -118,27 +124,28 @@
 }
 
 .category-pill {
-  font-size: 12px;
-  font-weight: 700;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  padding: 2px 8px;
-  border-radius: 6px;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  background: $color-card;
+  border: 1px solid $color-border;
+  padding: 2px $spacing-2;
+  border-radius: $radius-sm;
+  color: $color-text-primary;
 }
 
 .section-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: #64748B;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  color: $color-text-muted;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin: 0 0 12px 0;
+  margin: 0 0 $spacing-3 0;
 }
 
 .meta-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: $spacing-3;
 }
 
 .meta-item {
@@ -149,14 +156,14 @@
 
 .meta-label {
   font-size: 11px;
-  color: #94A3B8;
-  font-weight: 600;
+  color: $color-text-light;
+  font-weight: $font-weight-semibold;
 }
 
 .meta-val {
-  font-size: 13px;
-  font-weight: 700;
-  color: #1E293B;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
 }
 
 .font-mono { font-family: monospace; }
@@ -164,25 +171,25 @@
 .tags-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: $spacing-2;
 }
 
 .tag-badge {
-  background: #EFF6FF;
-  color: #1D4ED8;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 6px;
+  background: $color-info-bg;
+  color: $color-info;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  padding: 3px $spacing-2;
+  border-radius: $radius-sm;
 }
 
 .notes-box {
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 13px;
-  color: #334155;
+  background: $color-background;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $spacing-3;
+  font-size: $font-size-base;
+  color: $color-text-secondary;
   margin: 0;
   line-height: 1.5;
 }
@@ -190,18 +197,18 @@
 .receipt-preview-card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: #F8FAFC;
-  border: 1px solid #E2E8F0;
-  border-radius: 8px;
-  padding: 12px;
+  gap: $spacing-3;
+  background: $color-background;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $spacing-3;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background $transition-fast;
 
-  &:hover { background: #F1F5F9; }
+  &:hover { background: $color-border-light; }
 }
 
-.receipt-icon { font-size: 24px; }
+.receipt-icon { font-size: $font-size-3xl; }
 
 .receipt-info {
   flex: 1;
@@ -210,24 +217,24 @@
 }
 
 .receipt-name {
-  font-size: 13px;
-  font-weight: 700;
-  color: #0F172A;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
 }
 
 .receipt-action {
   font-size: 11px;
-  color: #2563EB;
-  font-weight: 600;
+  color: $color-primary-button;
+  font-weight: $font-weight-semibold;
 }
 
 .btn-view-receipt {
-  background: #FFFFFF;
-  border: 1px solid #CBD5E1;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
+  background: $color-card;
+  border: 1px solid $color-border;
+  padding: 4px $spacing-2;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
   cursor: pointer;
 }
 
@@ -235,33 +242,33 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
-  background: #F8FAFC;
-  border: 1px dashed #CBD5E1;
-  border-radius: 8px;
-  font-size: 12px;
-  color: #64748B;
+  padding: $spacing-3;
+  background: $color-background;
+  border: 1px dashed $color-border;
+  border-radius: $radius-md;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
 }
 
 .btn-upload-link {
   background: none;
   border: none;
-  color: #2563EB;
-  font-weight: 700;
-  font-size: 12px;
+  color: $color-primary-button;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-xs;
   cursor: pointer;
 }
 
 .drawer-footer {
-  padding: 16px 24px;
-  border-top: 1px solid #F1F5F9;
-  background: #FAFAFA;
+  padding: $spacing-4 $spacing-6;
+  border-top: 1px solid $color-border-light;
+  background: $color-card;
 }
 
 .action-buttons-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: $spacing-2;
 }
 
 .btn-action {
@@ -269,36 +276,36 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
+  padding: $spacing-2;
+  border-radius: $radius-md;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: all 0.15s ease;
+  transition: all $transition-fast;
 
   &.edit {
-    background: #EFF6FF;
-    color: #1D4ED8;
-    border-color: #BFDBFE;
+    background: $color-info-bg;
+    color: $color-primary-button;
+    border-color: rgba(37, 99, 235, 0.2);
   }
 
   &.split {
-    background: #F8FAFC;
-    color: #334155;
-    border-color: #E2E8F0;
+    background: $color-background;
+    color: $color-text-secondary;
+    border-color: $color-border;
   }
 
   &.receipt {
-    background: #F8FAFC;
-    color: #334155;
-    border-color: #E2E8F0;
+    background: $color-background;
+    color: $color-text-secondary;
+    border-color: $color-border;
   }
 
   &.delete {
-    background: #FEF2F2;
-    color: #DC2626;
-    border-color: #FECACA;
+    background: $color-danger-bg;
+    color: $color-danger;
+    border-color: rgba(220, 38, 38, 0.2);
   }
 
   &:hover {
@@ -315,3 +322,4 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+

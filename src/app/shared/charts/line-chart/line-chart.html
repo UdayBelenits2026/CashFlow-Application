@@ -1,7 +1,18 @@
 <section class="chart-card" [class.empty-state]="emptyState()">
-  <header>
-    <h3>{{ title() }}</h3>
+  <header class="chart-header">
+    <div class="header-text">
+      <div class="title-row">
+        <h3 class="chart-title">{{ title() }}</h3>
+        @if (badge()) {
+          <span class="chart-badge">{{ badge() }}</span>
+        }
+      </div>
+      @if (subtitle()) {
+        <p class="chart-subtitle">{{ subtitle() }}</p>
+      }
+    </div>
   </header>
+
   <div class="chart-container">
     <canvas #chartCanvas></canvas>
     @if (emptyState()) {
@@ -13,8 +24,7 @@
         </div>
         <div class="empty-chart-plot">
           <div class="empty-chart-y-axis">
-            <span>$3K</span><span>$2K</span><span>$1K</span><span>$0</span> <span>-$1K</span
-            ><span>-$2K</span><span>-$3K</span>
+            <span>₹3K</span><span>₹2K</span><span>₹1K</span><span>₹0</span><span>-₹1K</span><span>-₹2K</span><span>-₹3K</span>
           </div>
           <div class="empty-chart-grid"></div>
           <div class="empty-chart-x-axis">
@@ -27,4 +37,5 @@
     }
   </div>
 </section>
+
 
