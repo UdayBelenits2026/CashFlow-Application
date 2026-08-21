@@ -4,65 +4,125 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    loadComponent: () => import('./core/auth/pages/sign-in/sign-in').then((m) => m.SignInComponent),
+    loadComponent: () =>
+      import('./core/auth/pages/sign-in/sign-in').then(
+        (m) => m.SignInComponent,
+      ),
   },
   {
     path: 'sign-up',
-    loadComponent: () => import('./core/auth/pages/sign-up/sign-up').then((m) => m.SignUp),
+    loadComponent: () =>
+      import('./core/auth/pages/sign-up/sign-up').then(
+        (m) => m.SignUp,
+      ),
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./core/auth/pages/forgot-password/forgot-password').then(
+        (m) => m.ForgotPassword,
+      ),
   },
   {
     path: '',
-    loadComponent: () => import('./core/layout/main-layout/main-layout').then((m) => m.MainLayout),
+    loadComponent: () =>
+      import('./core/layout/main-layout/main-layout').then(
+        (m) => m.MainLayout,
+      ),
     children: [
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+          import('./features/dashboard/pages/dashboard-home/dashboard-home').then(
+            (m) => m.DashboardHome,
+          ),
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            loadComponent: () =>
+              import('./features/dashboard/pages/dashboard-route-entry/dashboard-route-entry').then(
+                (m) => m.DashboardRouteEntry,
+              ),
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import('./features/dashboard/pages/dashboard-new-user/dashboard-new-user').then(
+                (m) => m.DashboardNewUser,
+              ),
+          },
+          {
+            path: 'home',
+            loadComponent: () =>
+              import('./features/dashboard/pages/dashboard-existing-user/dashboard-existing-user').then(
+                (m) => m.DashboardExistingUser,
+              ),
+          },
+        ],
       },
       {
         path: 'transactions',
         loadComponent: () =>
-          import('./features/transactions/transactions.component').then((m) => m.TransactionsComponent),
+          import('./features/transactions/transactions.component').then(
+            (m) => m.TransactionsComponent,
+          ),
       },
       {
         path: 'income',
         loadComponent: () =>
-          import('./features/income/income.component').then((m) => m.IncomeComponent),
+          import('./features/income/income.component').then(
+            (m) => m.IncomeComponent,
+          ),
       },
       {
         path: 'spending',
         loadChildren: () =>
-          import('./features/spending/spending.routes').then((m) => m.SPENDING_ROUTES),
+          import('./features/spending/spending.routes').then(
+            (m) => m.SPENDING_ROUTES,
+          ),
       },
       {
         path: 'cash-flow',
         loadComponent: () =>
-          import('./features/cash-flow/cash-flow.component').then((m) => m.CashFlowComponent),
+          import('./features/cash-flow/cash-flow.component').then(
+            (m) => m.CashFlowComponent,
+          ),
       },
       {
         path: 'budget',
         loadComponent: () =>
-          import('./features/budgets/budgets.component').then((m) => m.BudgetsComponent),
+          import('./features/budgets/budgets.component').then(
+            (m) => m.BudgetsComponent,
+          ),
       },
       {
         path: 'goals',
         loadComponent: () =>
-          import('./features/goals/goals.component').then((m) => m.GoalsComponent),
+          import('./features/goals/goals.component').then(
+            (m) => m.GoalsComponent,
+          ),
       },
       {
         path: 'accounts',
         loadComponent: () =>
-          import('./features/accounts/accounts.component').then((m) => m.AccountsComponent),
+          import('./features/accounts/accounts.component').then(
+            (m) => m.AccountsComponent,
+          ),
       },
       {
         path: 'reports',
         loadComponent: () =>
-          import('./features/reports/reports.component').then((m) => m.ReportsComponent),
+          import('./features/reports/reports.component').then(
+            (m) => m.ReportsComponent,
+          ),
       },
       {
         path: 'settings',
         loadComponent: () =>
-          import('./features/settings/settings.component').then((m) => m.SettingsComponent),
+          import('./features/settings/settings.component').then(
+            (m) => m.SettingsComponent,
+          ),
       },
     ],
   },
@@ -70,8 +130,4 @@ export const routes: Routes = [
     path: '**',
     redirectTo: '',
   },
-  {
-    path:'forgot-password', loadComponent:()=>import('./core/auth/pages/forgot-password/forgot-password').then((m)=>m.ForgotPassword),
-  }
-
 ];

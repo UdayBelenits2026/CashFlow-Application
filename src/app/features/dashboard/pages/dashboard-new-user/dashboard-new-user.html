@@ -1,0 +1,116 @@
+<div class="dashboard-page">
+  <section class="summary-grid">
+    @for (card of summaryCards$ | async; track card.id) {
+      <app-cf-summary-card [data]="card"></app-cf-summary-card>
+    }
+  </section>
+
+  <section class="welcome-grid">
+    <article class="welcome-card">
+      <div class="welcome-copy">
+        <p class="eyebrow">Your financial workspace</p>
+        <h1>Welcome to CashFlow, Neelima! <span aria-hidden="true">&#127881;</span></h1>
+        <p>Let's get you set up in a few simple steps so you can take control of your finances.</p>
+        <ul>
+          <li><fa-icon [icon]="checkIcon"></fa-icon> Connect your accounts</li>
+          <li><fa-icon [icon]="checkIcon"></fa-icon> Add income and expenses</li>
+          <li><fa-icon [icon]="checkIcon"></fa-icon> Create a budget</li>
+          <li><fa-icon [icon]="checkIcon"></fa-icon> Track your progress</li>
+        </ul>
+        <button class="primary-button" type="button" (click)="start('connect-account')">
+          Let's Get Started
+        </button>
+      </div>
+      <div class="welcome-art" aria-hidden="true">
+        <div class="art-window">
+          <div class="art-toolbar"><i></i><i></i><i></i></div>
+          <div class="art-body">
+            <div class="art-donut"></div>
+            <div class="art-lines"><i></i><i></i><i></i></div>
+            <div class="art-bars"><i></i><i></i><i></i><i></i></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="checklist-card">
+      <header>
+        <h2>Getting Started</h2>
+        <span class="progress-pill">0% complete</span>
+      </header>
+      <div class="checklist">
+        @for (step of onboardingSteps$ | async; track step.id) {
+          <button class="checklist-row" type="button" (click)="start(step.actionId)">
+            <span class="check-circle" [class.completed]="step.completed"
+              ><fa-icon [icon]="checkIcon"></fa-icon
+            ></span>
+            <span>{{ step.title }}</span>
+            <strong
+              >{{ step.completed ? 'Done' : 'Start' }} <fa-icon [icon]="arrowIcon"></fa-icon
+            ></strong>
+          </button>
+        }
+      </div>
+    </article>
+  </section>
+
+  <section class="action-grid">
+    @for (action of onboardingActions$ | async; track action.id) {
+      <article class="action-card">
+        <div class="action-heading">
+          <span class="action-icon" [class]="action.tone"
+            ><fa-icon [icon]="icons[action.icon]!"></fa-icon
+          ></span>
+          <h2>{{ action.title }}</h2>
+        </div>
+        <p>{{ action.description }}</p>
+        <button class="outline-button" type="button" (click)="start(action.id)">
+          {{
+            action.title === 'Connect Bank Account'
+              ? 'Connect Now'
+              : action.title.replace('First ', '').replace('Your ', '')
+          }}
+          <fa-icon [icon]="arrowIcon"></fa-icon>
+        </button>
+      </article>
+    }
+  </section>
+
+  <section class="empty-grid">
+    <app-cf-line-chart
+      class="empty-line-chart"
+      [title]="'Cash Flow Trend'"
+      [labels]="lineChartLabels"
+      [datasets]="[]"
+      [emptyState]="true"
+    ></app-cf-line-chart>
+
+    <article class="empty-card centered-empty">
+      <header>
+        <h2>Spending by Category</h2>
+        <button type="button">This Month <span>&#8964;</span></button>
+      </header>
+      <div class="empty-illustration category-illustration">
+        <fa-icon [icon]="icons['receipt']"></fa-icon>
+      </div>
+      <h3>No spending data yet</h3>
+      <p>
+        Add expenses to see your<br />
+        spending by category.
+      </p>
+    </article>
+
+    <article class="empty-card centered-empty">
+      <header>
+        <h2>Recent Transactions</h2>
+        <button class="text-button" type="button">View All</button>
+      </header>
+      <div class="empty-illustration document-illustration"><span></span></div>
+      <h3>No transactions yet</h3>
+      <p>
+        Connect an account or add income<br />
+        and expenses to get started.
+      </p>
+    </article>
+  </section>
+</div>

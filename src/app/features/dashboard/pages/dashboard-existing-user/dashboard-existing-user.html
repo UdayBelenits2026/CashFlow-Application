@@ -1,0 +1,91 @@
+<div class="dashboard-page">
+  <section class="summary-grid">
+    @for (card of summaryCards$ | async; track card.id) {
+      <app-cf-summary-card
+        [data]="card"
+        [isLoading]="(loading$ | async) ?? false"
+        [hasError]="(loadError$ | async) ?? false"
+      ></app-cf-summary-card>
+    }
+  </section>
+
+  <section class="second-row">
+    <article class="chart-card wide">
+      <app-cf-line-chart
+        [title]="'Cash Flow Trend'"
+        [labels]="lineChartLabels"
+        [datasets]="lineChartDatasets"
+      ></app-cf-line-chart>
+    </article>
+
+    <article class="chart-card">
+      <app-cf-doughnut-chart
+        [title]="'Spending by Category'"
+        [labels]="doughnutLabels"
+        [datasets]="doughnutDatasets"
+        [total]="2650"
+      ></app-cf-doughnut-chart>
+    </article>
+
+    <article class="dashboard-widget">
+      <app-cf-dashboard-list
+        [title]="'Upcoming Bills'"
+        [items]="(upcomingBills$ | async) || []"
+        [showAddReminder]="true"
+      ></app-cf-dashboard-list>
+    </article>
+  </section>
+
+  <section class="third-row">
+    <article class="dashboard-widget">
+      <app-cf-dashboard-list
+        [title]="'Recent Transactions'"
+        [items]="(recentTransactions$ | async) || []"
+        [isLoading]="(loading$ | async) ?? false"
+        [hasError]="(loadError$ | async) ?? false"
+        (retry)="retryLoad()"
+      ></app-cf-dashboard-list>
+    </article>
+
+    <article class="dashboard-widget">
+      <app-cf-dashboard-list
+        [title]="'Recent Income'"
+        [items]="(recentIncome$ | async) || []"
+        [isLoading]="(loading$ | async) ?? false"
+        [hasError]="(loadError$ | async) ?? false"
+        (retry)="retryLoad()"
+      ></app-cf-dashboard-list>
+    </article>
+
+    <article class="dashboard-widget">
+      <app-cf-dashboard-list
+        [title]="'Recent Expenses'"
+        [items]="(recentExpenses$ | async) || []"
+        [isLoading]="(loading$ | async) ?? false"
+        [hasError]="(loadError$ | async) ?? false"
+        (retry)="retryLoad()"
+      ></app-cf-dashboard-list>
+    </article>
+
+    <article class="dashboard-widget">
+      <app-cf-quick-actions
+        [title]="'Quick Actions'"
+        [actions]="(quickActions$ | async) || []"
+      ></app-cf-quick-actions>
+    </article>
+  </section>
+
+  <section class="bottom-row">
+    <article class="dashboard-widget cash-balance-card">
+      <app-cf-cash-balance
+        [title]="'Cash Balance'"
+        [totalBalance]="(cashBalance$ | async)?.totalBalance ?? 0"
+        [inAccounts]="(cashBalance$ | async)?.inAccounts ?? 0"
+        [pending]="(cashBalance$ | async)?.pending ?? 0"
+        [isLoading]="(loading$ | async) ?? false"
+        [hasError]="(loadError$ | async) ?? false"
+        (retry)="retryLoad()"
+      ></app-cf-cash-balance>
+    </article>
+  </section>
+</div>
