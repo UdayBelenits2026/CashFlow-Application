@@ -70,6 +70,8 @@
       <div class="analytics-left">
         <app-cf-line-chart
           [title]="'Spending Trend'"
+          [subtitle]="'Weekly trajectory comparing current & last period'"
+          [badge]="'+8.5% MoM'"
           [labels]="(trendLabels$ | async) || []"
           [datasets]="(trendDatasets$ | async) || []"
         ></app-cf-line-chart>
@@ -77,6 +79,7 @@
       <div class="analytics-right">
         <app-cf-doughnut-chart
           [title]="'Spending by Category'"
+          [subtitle]="'Distribution across all expense categories'"
           [total]="(categoryTotal$ | async) || 0"
           [labels]="(categoryLabels$ | async) || []"
           [datasets]="(categoryDatasets$ | async) || []"

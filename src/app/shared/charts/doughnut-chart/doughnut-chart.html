@@ -1,8 +1,16 @@
 <section class="chart-card">
-  <header>
-    <h3>{{ title() }}</h3>
+  <header class="chart-header">
+    <div class="header-text">
+      <div class="title-row">
+        <h3 class="chart-title">{{ title() }}</h3>
+      </div>
+      @if (subtitle()) {
+        <p class="chart-subtitle">{{ subtitle() }}</p>
+      }
+    </div>
   </header>
   <div class="chart-container doughnut-container">
     <canvas #chartCanvas></canvas>
   </div>
 </section>
+

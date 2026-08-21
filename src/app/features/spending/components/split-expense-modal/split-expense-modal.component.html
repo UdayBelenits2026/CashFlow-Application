@@ -4,7 +4,7 @@
     <div class="modal-header">
       <div>
         <h2 class="modal-title">Split Expense</h2>
-        <span class="modal-sub">{{ expense()?.merchantName }} • Total ${{ expense()?.amount | number:'1.2-2' }}</span>
+        <span class="modal-sub">{{ expense()?.merchantName }} • Total ₹{{ expense()?.amount | number:'1.2-2' }}</span>
       </div>
       <button class="btn-close" (click)="onClose()" title="Close">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
@@ -18,15 +18,15 @@
     <div class="split-balance-bar" [ngClass]="{ balanced: remainingAmount === 0, warning: remainingAmount !== 0 }">
       <div class="balance-item">
         <span class="b-lbl">Original Amount:</span>
-        <span class="b-val">${{ totalOriginalAmount | number:'1.2-2' }}</span>
+        <span class="b-val">₹{{ totalOriginalAmount | number:'1.2-2' }}</span>
       </div>
       <div class="balance-item">
         <span class="b-lbl">Allocated:</span>
-        <span class="b-val">${{ allocatedAmount | number:'1.2-2' }}</span>
+        <span class="b-val">₹{{ allocatedAmount | number:'1.2-2' }}</span>
       </div>
       <div class="balance-item">
         <span class="b-lbl">Remaining:</span>
-        <span class="b-val highlight">${{ remainingAmount | number:'1.2-2' }}</span>
+        <span class="b-val highlight">₹{{ remainingAmount | number:'1.2-2' }}</span>
       </div>
     </div>
 
@@ -47,9 +47,9 @@
             <div class="split-fields-grid">
               <!-- Amount -->
               <div class="form-group flex-1">
-                <label class="form-label">Amount ($) *</label>
+                <label class="form-label">Amount (₹) *</label>
                 <div class="input-with-icon">
-                  <span class="currency-symbol">$</span>
+                  <span class="currency-symbol">₹</span>
                   <input
                     type="number"
                     step="0.01"

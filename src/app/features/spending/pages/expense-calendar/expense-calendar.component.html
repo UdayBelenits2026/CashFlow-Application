@@ -53,7 +53,7 @@
 
             @if (day.totalSpending > 0) {
               <div class="day-spending-badge">
-                -${{ day.totalSpending | number:'1.0-0' }}
+                -₹{{ day.totalSpending | number:'1.0-0' }}
               </div>
             }
           </div>
@@ -84,7 +84,7 @@
 
         <div class="daily-total-banner">
           <span class="dt-label">Daily Outflow</span>
-          <span class="dt-amount">${{ (selectedDay?.totalSpending || 0) | number:'1.2-2' }}</span>
+          <span class="dt-amount">₹{{ (selectedDay?.totalSpending || 0) | number:'1.2-2' }}</span>
         </div>
       </div>
 
@@ -101,7 +101,7 @@
                   </div>
                 </div>
                 <div class="de-right">
-                  <span class="de-amt">-${{ exp.amount | number:'1.2-2' }}</span>
+                  <span class="de-amt">-₹{{ exp.amount | number:'1.2-2' }}</span>
                   <span class="arrow-icon">&rarr;</span>
                 </div>
               </div>

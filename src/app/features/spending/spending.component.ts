@@ -10,3 +10,5 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './spending.component.scss'
 })
 export class SpendingComponent {}
+
+

@@ -51,7 +51,7 @@
                 {{ exp.date | date:'mediumDate' }}
               </td>
               <td class="amount-cell text-right">
-                -${{ exp.amount | number:'1.2-2' }}
+                -₹{{ exp.amount | number:'1.2-2' }}
               </td>
               <td class="status-cell text-center">
                 <span class="status-badge" [ngClass]="exp.status === 'CLEARED' ? 'cleared' : 'pending'">

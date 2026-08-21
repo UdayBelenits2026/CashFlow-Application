@@ -1,28 +1,32 @@
+@use '../../../../../styles/variables' as *;
+@use '../../../../../styles/buttons' as *;
+
 .modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(11, 31, 58, 0.5);
   backdrop-filter: blur(4px);
-  z-index: 1001;
+  z-index: $z-index-modal;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: $spacing-4;
   box-sizing: border-box;
-  animation: fadeIn 0.15s ease-out;
+  animation: fadeIn $transition-fast ease-out;
 }
 
 .dialog-card {
-  background: #FFFFFF;
-  border-radius: 16px;
+  background: $color-card;
+  border-radius: $radius-xl;
   width: 100%;
   max-width: 420px;
-  padding: 24px;
+  padding: $spacing-6;
   text-align: center;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: $shadow-lg;
+  border: 1px solid $color-border;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -33,68 +37,78 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: #FEE2E2;
-  color: #DC2626;
+  background: $color-danger-bg;
+  color: $color-danger;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: $spacing-4;
+  font-size: $font-size-2xl;
 }
 
 .dialog-title {
-  font-size: 18px;
-  font-weight: 800;
-  color: #0F172A;
-  margin: 0 0 8px 0;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0 0 $spacing-2 0;
 }
 
 .dialog-message {
-  font-size: 14px;
-  color: #64748B;
-  margin: 0 0 24px 0;
+  font-size: $font-size-base;
+  color: $color-text-muted;
+  margin: 0 0 $spacing-6 0;
   line-height: 1.5;
 
   strong {
-    color: #0F172A;
+    color: $color-text-primary;
   }
 }
 
 .dialog-actions {
   display: flex;
-  gap: 12px;
+  gap: $spacing-3;
   width: 100%;
 }
 
 .btn-cancel {
   flex: 1;
-  padding: 10px;
-  background: #FFFFFF;
-  border: 1px solid #CBD5E1;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #475569;
+  padding: $spacing-2 $spacing-4;
+  background: $color-card;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
   cursor: pointer;
+  transition: all $transition-fast;
 
-  &:hover { background: #F1F5F9; }
+  &:hover {
+    background: $color-background;
+    border-color: $color-border-hover;
+  }
 }
 
 .btn-delete {
   flex: 1;
-  padding: 10px;
-  background: #DC2626;
-  border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #FFFFFF;
+  padding: $spacing-2 $spacing-4;
+  background: $color-danger;
+  border: 1px solid $color-danger;
+  border-radius: $radius-md;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-white;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+  box-shadow: $shadow-sm;
+  transition: all $transition-fast;
 
-  &:hover { background: #B91C1C; }
+  &:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+  }
 }
 
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+

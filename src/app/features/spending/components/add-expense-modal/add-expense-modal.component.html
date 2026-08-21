@@ -39,9 +39,9 @@
         <div class="step-content">
           <div class="form-row">
             <div class="form-group flex-1">
-              <label class="form-label">Amount ($) *</label>
+              <label class="form-label">Amount (₹) *</label>
               <div class="input-with-icon">
-                <span class="currency-symbol">$</span>
+                <span class="currency-symbol">₹</span>
                 <input
                   type="number"
                   step="0.01"
@@ -145,7 +145,7 @@
         <div class="step-content review-step">
           <div class="review-amount-box">
             <span class="review-sub">{{ isEditMode() ? 'Updated Amount' : 'Total Amount to Record' }}</span>
-            <span class="review-total">${{ expenseForm.get('amount')?.value | number:'1.2-2' }}</span>
+            <span class="review-total">₹{{ expenseForm.get('amount')?.value | number:'1.2-2' }}</span>
           </div>
 
           <div class="review-summary-table">

@@ -19,7 +19,7 @@
         <!-- Amount Card -->
         <div class="amount-hero-card">
           <span class="amount-sub">Recorded Outflow</span>
-          <span class="amount-val">-${{ exp.amount | number:'1.2-2' }}</span>
+          <span class="amount-val">-₹{{ exp.amount | number:'1.2-2' }}</span>
           <div class="status-pill-row">
             <span class="status-pill cleared">
               <span class="dot"></span> {{ exp.status || 'CLEARED' }}

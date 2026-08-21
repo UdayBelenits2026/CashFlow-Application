@@ -65,7 +65,7 @@
       </svg>
       <div class="donut-center-label">
         <span class="center-sub">Total Spent</span>
-        <span class="center-val">${{ totalAmount() | number:'1.0-0' }}</span>
+        <span class="center-val">₹{{ totalAmount() | number:'1.0-0' }}</span>
       </div>
     </div>
 
@@ -79,7 +79,7 @@
               <span class="cat-name">{{ cat.name }}</span>
             </div>
             <div class="cat-right">
-              <span class="cat-amt">${{ cat.amount | number:'1.2-2' }}</span>
+              <span class="cat-amt">₹{{ cat.amount | number:'1.2-2' }}</span>
               <span class="cat-pct">({{ cat.percentage | number:'1.1-1' }}%)</span>
             </div>
           </div>

@@ -13,7 +13,7 @@
     <p class="dialog-message">
       Are you sure you want to delete
       <strong>"{{ expense()?.merchantName }}"</strong>
-      for <strong>${{ (expense()?.amount || 0) | number:'1.2-2' }}</strong>? This action cannot be undone.
+      for <strong>₹{{ (expense()?.amount || 0) | number:'1.2-2' }}</strong>? This action cannot be undone.
     </p>
 
     <div class="dialog-actions">

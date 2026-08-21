@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="kpi-amount">
-      ${{ (overview()?.totalSpending || 0) | number:'1.2-2' }}
+      ₹{{ (overview()?.totalSpending || 0) | number:'1.2-2' }}
     </div>
     <div class="kpi-trend trend-up">
       <span class="trend-badge positive">
@@ -62,7 +62,7 @@
       </div>
     </div>
     <div class="kpi-amount">
-      ${{ (overview()?.averageDaily || 0) | number:'1.2-2' }}
+      ₹{{ (overview()?.averageDaily || 0) | number:'1.2-2' }}
     </div>
     <div class="kpi-trend">
       <span class="trend-badge positive">
@@ -91,7 +91,7 @@
       {{ overview()?.topCategoryName || 'Food & Dining' }}
     </div>
     <div class="kpi-category-sub">
-      ${{ (overview()?.topCategoryAmount || 0) | number:'1.2-2' }} (Highest)
+      ₹{{ (overview()?.topCategoryAmount || 0) | number:'1.2-2' }} (Highest)
     </div>
   </div>
 
