@@ -2,6 +2,8 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  computed,
+  effect,
   ElementRef,
   input,
   OnDestroy,
@@ -49,10 +51,31 @@ export class LineChart implements AfterViewInit, OnDestroy {
   readonly labels = input<string[]>([]);
   readonly datasets = input<ChartConfiguration<'line'>['data']['datasets']>([]);
   readonly emptyState = input<boolean>(false);
+  readonly showInfoIcon = input<boolean>(true);
   readonly isLoading = input<boolean>(false);
   readonly hasError = input<boolean>(false);
   readonly retry = output<void>();
   private chart: Chart<'line'> | null = null;
+
+  readonly isEmpty = computed(() => {
+    if (this.emptyState()) {
+      return true;
+    }
+    const ds = this.datasets();
+    return !ds || ds.length === 0 || ds.every((d) => !d.data || d.data.length === 0);
+  });
+
+  constructor() {
+    effect(() => {
+      const labels = this.labels();
+      const datasets = this.datasets();
+      if (this.chart) {
+        this.chart.data.labels = labels;
+        this.chart.data.datasets = datasets;
+        this.chart.update();
+      }
+    });
+  }
 
   ngAfterViewInit(): void {
     if (this.chartCanvas?.nativeElement) {
@@ -99,7 +122,7 @@ export class LineChart implements AfterViewInit, OnDestroy {
                 ticks: {
                   font: { size: 11, family: "'Inter', sans-serif" },
                   color: '#64748b',
-                  callback: (value: any) => '$' + value / 1000 + 'K',
+                  callback: (value: any) => '₹' + value / 1000 + 'K',
                 },
               },
               x: {

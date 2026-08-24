@@ -38,7 +38,7 @@ $color-warning-bg: #fffbeb;
 $color-danger-bg: #fef2f2;
 $color-info-bg: #eff6ff;
 // TYPOGRAPHY
-$font-family-base: Roboto, 'Segoe UI', Arial, sans-serif;
+$font-family-base: 'Roboto', sans-serif;
 // FONT SIZES
 $font-size-xs: 0.625rem;
 $font-size-sm: 0.6875rem;
@@ -109,13 +109,13 @@ $z-index-sticky: 1100;
 $z-index-fixed: 1200;
 $z-index-modal: 1300;
 $z-index-toast: 1400;
-
+ 
 //font weight
 $font-weight-regular: 400;
 $font-weight-medium: 500;
 $font-weight-semibold: 600;
 $font-weight-bold: 700;
-
+ 
 // Z-INDEX
 $z-index-base: 1;
 $z-index-sticky: 100;
@@ -123,3 +123,73 @@ $z-index-fixed: 200;
 $z-index-overlay: 300;
 $z-index-modal: 400;
 $z-index-toast: 500;
+ 
+// BREAKPOINTS (REM ONLY)
+$breakpoint-xs: 30rem;
+$breakpoint-sm: 37.5rem;
+$breakpoint-md: 52.5rem;
+$breakpoint-lg: 60rem;
+$breakpoint-xl: 80rem;
+ 
+// REUSABLE RESPONSIVE MIXINS (MIN-WIDTH ONLY - MOBILE FIRST)
+@mixin xs {
+  @media (min-width: $breakpoint-xs) {
+    @content;
+  }
+}
+ 
+@mixin sm {
+  @media (min-width: $breakpoint-sm) {
+    @content;
+  }
+}
+ 
+@mixin md {
+  @media (min-width: $breakpoint-md) {
+    @content;
+  }
+}
+ 
+@mixin lg {
+  @media (min-width: $breakpoint-lg) {
+    @content;
+  }
+}
+ 
+@mixin xl {
+  @media (min-width: $breakpoint-xl) {
+    @content;
+  }
+}
+
+// MAX-WIDTH MEDIA QUERY MIXINS FOR BREAKPOINTS 1280, 960, 840, 600, 480
+@mixin max-xl {
+  @media (max-width: $breakpoint-xl) {
+    @content;
+  }
+}
+
+@mixin max-lg {
+  @media (max-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+@mixin max-md {
+  @media (max-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+@mixin max-sm {
+  @media (max-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+@mixin max-xs {
+  @media (max-width: $breakpoint-xs) {
+    @content;
+  }
+}
+ 

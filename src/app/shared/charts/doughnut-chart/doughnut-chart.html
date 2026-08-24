@@ -3,15 +3,15 @@
     <h3>{{ title() }}</h3>
   </header>
   <div class="chart-container doughnut-container">
-    <div class="doughnut-content-wrap" [class.dimmed]="isLoading() || hasError()">
+    <div class="doughnut-content-wrap" [class.dimmed]="isLoading() || hasError() || isEmpty()">
       <div class="doughnut-plot-wrap">
         <canvas #chartCanvas></canvas>
-        <div class="doughnut-center" [class.hidden]="isLoading() || hasError()">
+        <div class="doughnut-center" [class.hidden]="isLoading() || hasError() || isEmpty()">
           <small>Total</small>
-          <span>{{ total() | currency: 'USD' : 'symbol' : '1.2-2' }}</span>
+          <span>{{ total() | currency: 'INR' : 'symbol' : '1.2-2' }}</span>
         </div>
       </div>
-      <ul class="doughnut-legend" [class.hidden]="isLoading() || hasError()">
+      <ul class="doughnut-legend" [class.hidden]="isLoading() || hasError() || isEmpty()">
         @for (label of labels(); track label; let i = $index) {
           <li>
             <span class="swatch" [style.background-color]="legendColor(i)"></span>
@@ -32,6 +32,14 @@
         <p>We couldn't load the chart right now.</p>
         <small>Please refresh and try again.</small>
         <button class="retry-btn" type="button" (click)="onRetry()">Retry</button>
+      </div>
+    } @else if (isEmpty()) {
+      <div class="chart-empty-state">
+        <div class="empty-icon-wrap">
+          <i class="fa-solid fa-chart-pie" aria-hidden="true"></i>
+        </div>
+        <p>No spending data found.</p>
+        <small>Add expenses to see your category breakdown.</small>
       </div>
     }
   </div>

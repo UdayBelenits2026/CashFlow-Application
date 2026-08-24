@@ -47,11 +47,11 @@ export class Mainnavbar {
   }
 
   openFilter(): void {
-    console.log('Open filter');
+    void this.router.navigate(['/dashboard/filter']);
   }
 
   openCustomize(): void {
-    console.log('Open customize');
+    void this.router.navigate(['/dashboard/customize']);
   }
 
   exportData(): void {

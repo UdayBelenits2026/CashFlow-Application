@@ -1,24 +1,21 @@
+@use '../../../../../styles/variables' as *;
+
 .dashboard-list {
   height: 100%;
-
-  padding: 1rem 1.125rem;
-
-  background: #ffffff;
+  padding: $spacing-4 1.125rem;
+  background: $color-card;
   border: 0;
   border-radius: 0;
   box-shadow: none;
 }
-
 .list-card {
   height: 100%;
+  h3 {
+    margin: 0 0 $spacing-3;
+    color: $color-text-primary;
+    font-size: $font-size-lg;
+  }
 }
-
-.list-card h3 {
-  margin: 0 0 0.75rem;
-  color: #1e293b;
-  font-size: 1rem;
-}
-
 .list-error-state {
   display: flex;
   min-height: 11.25rem;
@@ -27,142 +24,130 @@
   justify-content: center;
   text-align: center;
 }
-
+.list-empty-state {
+  display: flex;
+  min-height: 10rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem $spacing-4;
+  p {
+    margin: 0 0 $spacing-1;
+    color: $color-text-secondary;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+  }
+  small {
+    color: $color-text-light;
+    font-size: $font-size-base;
+  }
+}
 .list-skeleton-state {
   display: grid;
   gap: 0.625rem;
   padding-top: 0.375rem;
 }
-
 .skeleton-line {
   position: relative;
   display: block;
   height: 2.875rem;
   border-radius: 0.625rem;
   overflow: hidden;
-  background: #e2e8f0;
+  background: $color-border-light;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+    animation: list-skeleton-shimmer 1.3s infinite;
+  }
+  &.wide {
+    width: 100%;
+  }
+  &.medium {
+    width: 82%;
+  }
+  &.short {
+    width: 68%;
+  }
 }
-
-.skeleton-line::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .65), transparent);
-  animation: list-skeleton-shimmer 1.3s infinite;
-}
-
-.skeleton-line.wide {
-  width: 100%;
-}
-
-.skeleton-line.medium {
-  width: 82%;
-}
-
-.skeleton-line.short {
-  width: 68%;
-}
-
 .error-icon-wrap {
   display: grid;
   width: 2.625rem;
   height: 2.625rem;
   place-items: center;
   border-radius: 50%;
-  background: #fff1f2;
-  color: #ef4444;
+  background: $color-danger-bg;
+  color: $color-danger;
 }
-
 .list-error-state p {
   margin: 0.625rem 0 0.25rem;
-  color: #1e293b;
+  color: $color-text-primary;
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: $font-weight-semibold;
 }
-
 .list-error-state small {
-  color: #64748b;
-  font-size: 0.75rem;
+  color: $color-text-muted;
+  font-size: $font-size-base;
 }
-
 .retry-btn {
-  margin-top: 0.75rem;
-  border: 0.0625rem solid #c7d2fe;
-  border-radius: 0.5rem;
-  background: #fff;
-  color: #2563eb;
+  margin-top: $spacing-3;
+  border: $border-width-sm solid #c7d2fe;
+  border-radius: $radius-md;
+  background: $color-card;
+  color: $color-info;
   cursor: pointer;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.4375rem 1rem;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  padding: 0.4375rem $spacing-4;
 }
-
 .list-header {
   display: flex;
-
   align-items: center;
   justify-content: space-between;
-
-  margin-bottom: 0.5rem;
+  margin-bottom: $spacing-2;
+  h3 {
+    margin: 0;
+    font-size: $font-size-lg;
+    color: $color-text-primary;
+  }
 }
-
-.list-header h3 {
-  margin: 0;
-
-  font-size: 1rem;
-
-  color: #1e293b;
-}
-
 .view-all {
   border: none;
-
   background: transparent;
-
-  color: #2563eb;
-
+  color: $color-info;
   font-size: 0.8125rem;
-
   cursor: pointer;
 }
-
 .list-footer {
   width: 100%;
-
-  padding-top: 0.75rem;
-
+  padding-top: $spacing-3;
   border: none;
-  border-top: 0.0625rem solid #edf0f4;
-
+  border-top: $border-width-sm solid $color-border-light;
   background: transparent;
-
-  color: #2563eb;
-
+  color: $color-info;
   font-size: 0.8125rem;
-  font-weight: 500;
-
+  font-weight: $font-weight-medium;
   cursor: pointer;
 }
-
 @keyframes list-skeleton-shimmer {
   100% {
     transform: translateX(100%);
   }
 }
-
-.reminder-btn-container{
+.reminder-btn-container {
   width: 100%;
   display: flex;
   justify-content: center;
-  padding-top: 1rem;
-  border-top: 0.05rem solid #e2e8f0;
+  padding-top: $spacing-4;
+  border-top: $border-width-sm solid $color-border-light;
 }
-
-.reminder-btn{
-  color: #2563eb;
+.reminder-btn {
+  color: $color-info;
   border: none;
-  background-color: white;
+  background-color: $color-white;
   cursor: pointer;
-  font-weight: medium;
+  font-weight: $font-weight-medium;
 }

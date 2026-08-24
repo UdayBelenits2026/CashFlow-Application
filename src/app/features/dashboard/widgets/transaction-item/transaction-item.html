@@ -26,6 +26,6 @@
       -
     }
 
-    ${{ item().amount | number: '1.2-2' }}
+    {{ absAmount() | currency: 'INR' : 'symbol' : '1.2-2' }}
   </div>
 </div>

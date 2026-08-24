@@ -42,15 +42,16 @@
   gap: 1rem;
 }
 
+.doughnut-content-wrap.dimmed {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .doughnut-plot-wrap {
   position: relative;
   width: 100%;
   max-width: 15rem;
   aspect-ratio: 1 / 1;
-}
-
-.doughnut-plot-wrap.dimmed {
-  opacity: 0;
 }
 
 .doughnut-legend {
@@ -113,7 +114,8 @@
 }
 
 .chart-loading-state,
-.chart-error-state {
+.chart-error-state,
+.chart-empty-state {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -123,6 +125,37 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  background: #fff;
+  z-index: 2;
+}
+
+.chart-empty-state {
+  text-align: center;
+  padding: 1rem;
+
+  .empty-icon-wrap {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    margin: 0 0 0.25rem;
+    color: #1e293b;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  small {
+    color: #64748b;
+    font-size: 0.75rem;
+  }
 }
 
 .doughnut-skeleton {

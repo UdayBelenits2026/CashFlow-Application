@@ -1,0 +1,65 @@
+<section class="savings-goal">
+  <div class="goal-header">
+    <div class="header-left">
+      <fa-icon [icon]="goalIcon" class="header-icon"></fa-icon>
+      <h3>{{ title() }}</h3>
+    </div>
+    @if (!isLoading() && !hasError() && !isEmpty() && dueDate()) {
+      <span class="date-chip">
+        <fa-icon [icon]="calendarIcon"></fa-icon>
+        {{ dueDate() }}
+      </span>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <div class="goal-skeleton-state" aria-hidden="true">
+      <div class="skeleton-line title"></div>
+      <div class="skeleton-line progress"></div>
+      <div class="skeleton-grid">
+        <div class="skeleton-box"></div>
+        <div class="skeleton-box"></div>
+      </div>
+    </div>
+  } @else if (hasError()) {
+    <div class="goal-error-state">
+      <div class="error-icon-wrap">
+        <fa-icon [icon]="errorIcon"></fa-icon>
+      </div>
+      <p>We couldn't load your savings goal.</p>
+      <small>Please try again.</small>
+      <button class="retry-btn" type="button" (click)="onRetry()">Retry</button>
+    </div>
+  } @else if (isEmpty()) {
+    <div class="goal-empty-state">
+      <p>No savings goal found.</p>
+      <small>Set a goal to track your savings progress.</small>
+    </div>
+  } @else {
+    <div class="goal-content">
+      <div class="goal-meta-row">
+        <span class="goal-name">{{ goalName() }}</span>
+        <span class="badge-chip">{{ progressPercent() }}% Reached</span>
+      </div>
+
+      <div class="progress-track">
+        <div class="progress-fill" [style.width.%]="progressPercent()"></div>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-card saved">
+          <small>Saved</small>
+          <strong>{{ savedAmount() | currency: 'INR' : 'symbol' : '1.0-0' }}</strong>
+        </div>
+        <div class="metric-card target">
+          <small>Target</small>
+          <strong>{{ targetAmount() | currency: 'INR' : 'symbol' : '1.0-0' }}</strong>
+        </div>
+        <div class="metric-card remaining">
+          <small>Remaining</small>
+          <strong>{{ remainingAmount() | currency: 'INR' : 'symbol' : '1.0-0' }}</strong>
+        </div>
+      </div>
+    </div>
+  }
+</section>

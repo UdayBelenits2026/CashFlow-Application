@@ -1,81 +1,109 @@
-import { Injectable, Optional } from '@angular/core';
+import { Injectable, Signal, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Store } from '@ngrx/store';
-import { Observable, of } from 'rxjs';
 import { initialDashboardState } from '../data/dashboard.data';
 import { DashboardState } from '../models/dashboard.models';
 import * as DashboardActions from '../store/dashboard.actions';
 import * as DashboardSelectors from '../store/dashboard.selectors';
+import { DashboardWidgetConfig } from '../utility/dashboard-widget-config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DashboardFacade {
-  constructor(@Optional() private store: Store<DashboardState> | null) {}
+  private readonly store = inject<Store<DashboardState>>(Store, { optional: true });
 
-  private select<T>(selector: (state: any) => T, fallback: T): Observable<T> {
-    return this.store ? this.store.select(selector) : of(fallback);
+  private select<T>(selector: (state: any) => T, fallback: T): Signal<T> {
+    if (this.store) {
+      return toSignal(this.store.select(selector), { initialValue: fallback });
+    }
+    return signal(fallback);
   }
 
-  get summaryCards$() {
-    return this.select(DashboardSelectors.selectSummaryCards, initialDashboardState.summaryCards);
-  }
-  get upcomingBills$() {
-    return this.select(DashboardSelectors.selectUpcomingBills, initialDashboardState.upcomingBills);
-  }
-  get recentTransactions$() {
-    return this.select(
-      DashboardSelectors.selectRecentTransactions,
-      initialDashboardState.recentTransactions,
-    );
-  }
-  get recentIncome$() {
-    return this.select(DashboardSelectors.selectRecentIncome, initialDashboardState.recentIncome);
-  }
-  get recentExpenses$() {
-    return this.select(
-      DashboardSelectors.selectRecentExpenses,
-      initialDashboardState.recentExpenses,
-    );
-  }
-  get quickActions$() {
-    return this.select(DashboardSelectors.selectQuickActions, initialDashboardState.quickActions);
-  }
-  get cashBalance$() {
-    return this.select(DashboardSelectors.selectCashBalance, initialDashboardState.cashBalance);
-  }
-  get selectedAction$() {
-    return this.select(
-      DashboardSelectors.selectSelectedAction,
-      initialDashboardState.selectedAction,
-    );
-  }
-  get loading$() {
-    return this.select(DashboardSelectors.selectDashboardLoading, initialDashboardState.loading);
-  }
-  get loadError$() {
-    return this.select(
-      DashboardSelectors.selectDashboardLoadError,
-      initialDashboardState.loadError,
-    );
-  }
-  get onboardingSteps$() {
-    return this.select(
-      DashboardSelectors.selectOnboardingSteps,
-      initialDashboardState.onboardingSteps,
-    );
-  }
-  get onboardingActions$() {
-    return this.select(
-      DashboardSelectors.selectOnboardingActions,
-      initialDashboardState.onboardingActions,
-    );
-  }
-  get dashboardState$() {
-    return this.select(DashboardSelectors.selectDashboardState, initialDashboardState);
-  }
-  get isNewUser$() {
-    return this.select(DashboardSelectors.selectIsNewUser, initialDashboardState.isNewUser);
-  }
+  readonly summaryCards = this.select(
+    DashboardSelectors.selectSummaryCards,
+    initialDashboardState.summaryCards,
+  );
+  readonly upcomingBills = this.select(
+    DashboardSelectors.selectUpcomingBills,
+    initialDashboardState.upcomingBills,
+  );
+  readonly recentTransactions = this.select(
+    DashboardSelectors.selectRecentTransactions,
+    initialDashboardState.recentTransactions,
+  );
+  readonly recentIncome = this.select(
+    DashboardSelectors.selectRecentIncome,
+    initialDashboardState.recentIncome,
+  );
+  readonly recentExpenses = this.select(
+    DashboardSelectors.selectRecentExpenses,
+    initialDashboardState.recentExpenses,
+  );
+  readonly widgetConfig = this.select(
+    DashboardSelectors.selectDashboardWidgetConfig,
+    initialDashboardState.widgetConfig,
+  );
+  readonly quickActions = this.select(
+    DashboardSelectors.selectQuickActions,
+    initialDashboardState.quickActions,
+  );
+  readonly cashBalance = this.select(
+    DashboardSelectors.selectCashBalance,
+    initialDashboardState.cashBalance,
+  );
+  readonly budgetCategories = this.select(
+    DashboardSelectors.selectBudgetCategories,
+    initialDashboardState.budgetCategories,
+  );
+  readonly savingsGoal = this.select(
+    DashboardSelectors.selectSavingsGoal,
+    initialDashboardState.savingsGoal,
+  );
+  readonly incomeSources = this.select(
+    DashboardSelectors.selectIncomeSources,
+    initialDashboardState.incomeSources,
+  );
+  readonly netWorth = this.select(
+    DashboardSelectors.selectNetWorth,
+    initialDashboardState.netWorth,
+  );
+  readonly cashFlowTrendChart = this.select(
+    DashboardSelectors.selectCashFlowTrendChart,
+    initialDashboardState.cashFlowTrendChart,
+  );
+  readonly spendingByCategoryChart = this.select(
+    DashboardSelectors.selectSpendingByCategoryChart,
+    initialDashboardState.spendingByCategoryChart,
+  );
+  readonly selectedAction = this.select(
+    DashboardSelectors.selectSelectedAction,
+    initialDashboardState.selectedAction,
+  );
+  readonly loading = this.select(
+    DashboardSelectors.selectDashboardLoading,
+    initialDashboardState.loading,
+  );
+  readonly loadError = this.select(
+    DashboardSelectors.selectDashboardLoadError,
+    initialDashboardState.loadError,
+  );
+  readonly onboardingSteps = this.select(
+    DashboardSelectors.selectOnboardingSteps,
+    initialDashboardState.onboardingSteps,
+  );
+  readonly onboardingActions = this.select(
+    DashboardSelectors.selectOnboardingActions,
+    initialDashboardState.onboardingActions,
+  );
+  readonly dashboardState = this.select(
+    DashboardSelectors.selectDashboardState,
+    initialDashboardState,
+  );
+  readonly isNewUser = this.select(
+    DashboardSelectors.selectIsNewUser,
+    initialDashboardState.isNewUser,
+  );
 
   loadDashboard(): void {
     this.store?.dispatch(DashboardActions.loadDashboard());
@@ -95,6 +123,10 @@ export class DashboardFacade {
 
   addReminder(): void {
     this.store?.dispatch(DashboardActions.addReminder());
+  }
+
+  saveWidgetConfig(widgetConfig: DashboardWidgetConfig[]): void {
+    this.store?.dispatch(DashboardActions.saveDashboardWidgetConfig({ widgetConfig }));
   }
 
   startOnboarding(actionId: string): void {

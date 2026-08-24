@@ -1,0 +1,100 @@
+@use '../../../../styles/variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-4;
+  padding: 0.75rem 1.25rem;
+  background: #fff5f5;
+  border: 1px solid #fee2e2;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(220, 38, 38, 0.05);
+  margin-bottom: 0.875rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.error-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.error-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+.error-banner-message {
+  margin: 0;
+  font-size: 0.84375rem;
+  font-weight: $font-weight-medium;
+  color: #1e293b;
+  line-height: $line-height-normal;
+}
+
+.error-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.retry-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  background: #ffffff;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.5rem;
+  color: #2563eb;
+  font-size: 0.8125rem;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+
+  .btn-icon {
+    font-size: 0.75rem;
+  }
+
+  &:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.dismiss-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.375rem;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+
+  &:hover {
+    color: #475569;
+    background: rgba(0, 0, 0, 0.04);
+  }
+}

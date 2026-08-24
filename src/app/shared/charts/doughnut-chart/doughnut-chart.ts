@@ -2,6 +2,8 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  computed,
+  effect,
   ElementRef,
   input,
   OnDestroy,
@@ -39,6 +41,30 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
   readonly retry = output<void>();
   private chart: Chart<'doughnut'> | null = null;
 
+  readonly isEmpty = computed(() => {
+    const ds = this.datasets();
+    const lbls = this.labels();
+    return (
+      !ds ||
+      ds.length === 0 ||
+      !lbls ||
+      lbls.length === 0 ||
+      ds.every((d) => !d.data || d.data.length === 0 || d.data.every((v) => v === 0))
+    );
+  });
+
+  constructor() {
+    effect(() => {
+      const labels = this.labels();
+      const datasets = this.datasets();
+      if (this.chart) {
+        this.chart.data.labels = labels;
+        this.chart.data.datasets = datasets;
+        this.chart.update();
+      }
+    });
+  }
+
   ngAfterViewInit(): void {
     if (this.chartCanvas?.nativeElement) {
       const ctx = this.chartCanvas.nativeElement.getContext('2d');
@@ -75,7 +101,7 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
                       0,
                     ) as number;
                     const percentage = Math.round((value / total) * 100);
-                    return ` ${context.label}: ${percentage}% ($${value.toFixed(2)})`;
+                    return ` ${context.label}: ${percentage}% (₹${value.toFixed(2)})`;
                   },
                 },
               },
