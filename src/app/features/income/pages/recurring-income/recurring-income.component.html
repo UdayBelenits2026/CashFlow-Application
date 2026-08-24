@@ -1,0 +1,203 @@
+<div class="recurring-income-page">
+  @let allRecurring = (recurringIncomes$ | async) || [];
+  @let filteredRecurring = getFilteredList(allRecurring);
+
+  <!-- Header -->
+  <div class="top-bar">
+    <div class="title-wrap">
+      <h1 class="page-title">Recurring Income</h1>
+      <p class="page-subtitle">Schedule, track, and record repeat revenue streams like monthly salary, rent, and dividends</p>
+    </div>
+
+    <div class="action-buttons">
+      <button type="button" class="btn-primary" (click)="openCreate()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        + Add Recurring Schedule
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-cards-grid">
+    <div class="summary-card">
+      <span class="card-label">Total Recurring Expected</span>
+      <span class="card-val green">₹{{ getTotalRecurring(allRecurring) | number:'1.2-2' }}</span>
+      <span class="card-sub">Baseline monthly/periodic inflows</span>
+    </div>
+
+    <div class="summary-card">
+      <span class="card-label">Active Schedules</span>
+      <span class="card-val">{{ getActiveCount(allRecurring) }}</span>
+      <span class="card-sub">Currently running repeat cycles</span>
+    </div>
+
+    <div class="summary-card">
+      <span class="card-label">Next 30 Days Expected</span>
+      <span class="card-val">₹{{ getNext30DaysTotal(allRecurring) | number:'1.2-2' }}</span>
+      <span class="card-sub">Incoming cash within 30 days</span>
+    </div>
+  </div>
+
+  <!-- Filter & Search -->
+  <div class="filter-bar">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search recurring schedules..."
+        [(ngModel)]="searchTerm"
+      />
+    </div>
+
+    <div class="status-tabs">
+      <button
+        type="button"
+        class="tab-btn"
+        [ngClass]="{ active: statusFilter === 'ALL' }"
+        (click)="statusFilter = 'ALL'"
+      >
+        All ({{ allRecurring.length }})
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        [ngClass]="{ active: statusFilter === 'ACTIVE' }"
+        (click)="statusFilter = 'ACTIVE'"
+      >
+        Active
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        [ngClass]="{ active: statusFilter === 'PAUSED' }"
+        (click)="statusFilter = 'PAUSED'"
+      >
+        Paused
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    @if (filteredRecurring.length === 0) {
+      <div class="empty-state">
+        <p>No recurring income schedules found.</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="recurring-table">
+          <thead>
+            <tr>
+              <th>Source & Category</th>
+              <th>Destination Account</th>
+              <th>Frequency</th>
+              <th>Next Occurrence</th>
+              <th>Last Recorded</th>
+              <th class="text-right">Expected Amount</th>
+              <th class="text-center">Status</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of filteredRecurring; track item.id) {
+              <tr class="table-row">
+                <td class="source-cell">
+                  <div class="source-cell-wrap">
+                    <span
+                      class="color-dot"
+                      [style.backgroundColor]="item.sourceColor || '#10B981'"
+                    ></span>
+                    <div class="source-info">
+                      <span class="source-name">{{ item.sourceName }}</span>
+                      <span class="source-type">{{ item.sourceType }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="account-cell">{{ item.accountName }}</td>
+                <td>
+                  <span class="freq-badge">{{ formatFrequencyLabel(item.frequency) }}</span>
+                </td>
+                <td class="next-date-cell">
+                  <span class="next-date-val">{{ item.nextIncomeDate | date:'mediumDate' }}</span>
+                </td>
+                <td class="last-date-cell">
+                  {{ item.lastRecordedDate ? (item.lastRecordedDate | date:'mediumDate') : '—' }}
+                </td>
+                <td class="amount-cell text-right">
+                  <span class="amount-val">₹{{ item.expectedAmount | number:'1.2-2' }}</span>
+                </td>
+                <td class="status-cell text-center">
+                  <button
+                    type="button"
+                    class="status-toggle-btn"
+                    [ngClass]="item.status === 'ACTIVE' ? 'active' : 'paused'"
+                    (click)="onToggleStatus(item)"
+                    [title]="item.status === 'ACTIVE' ? 'Click to Pause' : 'Click to Resume'"
+                  >
+                    ● {{ item.status }}
+                  </button>
+                </td>
+                <td class="actions-cell text-center">
+                  <div class="action-buttons-wrap">
+                    @if (item.status === 'ACTIVE') {
+                      <button
+                        type="button"
+                        class="btn-record-now"
+                        title="Record this scheduled occurrence as an actual received transaction"
+                        (click)="onRecordOccurrence(item)"
+                      >
+                        ✓ Record
+                      </button>
+                    }
+                    <button type="button" class="btn-icon" (click)="openEdit(item)" title="Edit">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      </svg>
+                    </button>
+                    <button type="button" class="btn-icon delete" (click)="openDelete(item)" title="Delete">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <!-- Modals -->
+  @if (showModal) {
+    <app-recurring-income-modal
+      [item]="activeItem"
+      [sources]="(sources$ | async) || []"
+      [accounts]="(accounts$ | async) || []"
+      (close)="showModal = false; activeItem = null"
+      (save)="onSaveItem($event)"
+      (update)="onUpdateItem($event)"
+    ></app-recurring-income-modal>
+  }
+
+  @if (showDeleteDialog) {
+    <app-income-delete-confirm-dialog
+      [title]="'Delete Recurring Schedule'"
+      [message]="'Are you sure you want to delete this recurring income schedule? Future occurrences will no longer be tracked automatically.'"
+      [itemDescription]="activeItem?.sourceName"
+      [itemAmount]="activeItem?.expectedAmount"
+      (close)="showDeleteDialog = false; activeItem = null"
+      (confirm)="onConfirmDelete()"
+    ></app-income-delete-confirm-dialog>
+  }
+</div>

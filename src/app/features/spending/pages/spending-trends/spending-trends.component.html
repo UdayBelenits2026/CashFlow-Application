@@ -1,0 +1,114 @@
+<div class="trends-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <a class="back-link" routerLink="/spending/dashboard">← Back to Spending Dashboard</a>
+      <h1 class="page-title">Spending Trends & Full Report</h1>
+      <p class="page-subtitle">Analyze how your spending evolves over time.</p>
+    </div>
+    <button type="button" class="btn-primary" (click)="exportReport()">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Export Report
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    @for (tab of tabs; track tab.key) {
+      <button
+        type="button"
+        class="tab"
+        [class.active]="activeTab() === tab.key"
+        (click)="setTab(tab.key)"
+      >
+        {{ tab.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-label">Total Spending</span>
+      <span class="stat-value">₹{{ totalSpending | number:'1.2-2' }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Average Daily</span>
+      <span class="stat-value">₹{{ averageDaily | number:'1.2-2' }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Highest Day</span>
+      <span class="stat-value">₹{{ highestDay.amount | number:'1.2-2' }}</span>
+      <span class="stat-meta">{{ highestDay.label }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Lowest Day</span>
+      <span class="stat-value">₹{{ lowestDay.amount | number:'1.2-2' }}</span>
+      <span class="stat-meta">{{ lowestDay.label }}</span>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-row">
+    <div class="chart-main">
+      <app-cf-line-chart
+        [title]="chartTitle()"
+        [subtitle]="'Spending distribution over the selected period'"
+        [labels]="chartLabels"
+        [datasets]="chartDatasets"
+      ></app-cf-line-chart>
+    </div>
+    <div class="chart-side">
+      <app-cf-doughnut-chart
+        [title]="'Spending by Category'"
+        [subtitle]="'Category split for the period'"
+        [total]="categoryTotal"
+        [labels]="categoryLabels"
+        [datasets]="categoryDatasets"
+      ></app-cf-doughnut-chart>
+    </div>
+  </div>
+
+  <!-- Period Breakdown Table -->
+  <div class="breakdown-card">
+    <div class="card-header">
+      <h3 class="card-title">Period Breakdown</h3>
+      <p class="card-subtitle">{{ chartTitle() }} detail</p>
+    </div>
+    @if (buckets.length > 0) {
+      <div class="table-responsive">
+        <table class="breakdown-table">
+          <thead>
+            <tr>
+              <th>Period</th>
+              <th class="text-right">Amount</th>
+              <th class="progress-col">Share</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (b of buckets; track b.label) {
+              <tr>
+                <td>{{ b.label }}</td>
+                <td class="text-right">₹{{ b.amount | number:'1.2-2' }}</td>
+                <td class="progress-col">
+                  <div class="progress-track">
+                    <span class="progress-fill" [style.width.%]="totalSpending > 0 ? (b.amount / totalSpending) * 100 : 0"></span>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <span class="empty-icon">📊</span>
+        <p>No spending data available for this period.</p>
+      </div>
+    }
+  </div>
+</div>

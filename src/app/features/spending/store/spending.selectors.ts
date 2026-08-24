@@ -1,6 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { SpendingState, spendingFeatureKey } from './spending.state';
-import { SpendingInsight } from '../models/spending-summary.model';
+import { computeTopMerchants, computeBudgetVsActual, computeInsights } from '../utility/spending.calculations';
 
 export const selectSpendingState = createFeatureSelector<SpendingState>(spendingFeatureKey);
 
@@ -24,6 +24,11 @@ export const selectSuccessMessage = createSelector(
 export const selectSpendingOverview = createSelector(
   selectSpendingState,
   (state) => state.overview
+);
+
+export const selectHasLoadedData = createSelector(
+  selectSpendingOverview,
+  (overview) => overview !== null
 );
 
 export const selectTotalSpending = createSelector(
@@ -65,6 +70,12 @@ export const selectSpendingTrendPoints = createSelector(
   (state) => state.trendPoints
 );
 
+// --- Budget vs Actual (derived from categories) ---
+export const selectBudgetVsActual = createSelector(
+  selectSpendingCategories,
+  (categories) => computeBudgetVsActual(categories)
+);
+
 // --- Expenses Selectors ---
 export const selectAllExpenses = createSelector(
   selectSpendingState,
@@ -77,20 +88,6 @@ export const selectRecentExpenses = createSelector(
     return [...expenses]
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 6);
-  }
-);
-
-export const selectSelectedExpenseId = createSelector(
-  selectSpendingState,
-  (state) => state.selectedExpenseId
-);
-
-export const selectSelectedExpense = createSelector(
-  selectAllExpenses,
-  selectSelectedExpenseId,
-  (expenses, selectedId) => {
-    if (!selectedId) return null;
-    return expenses.find((e) => e.id === selectedId) || null;
   }
 );
 
@@ -127,6 +124,11 @@ export const selectFilteredExpenses = createSelector(
       result = result.filter((e) => e.accountId === filters.accountId || e.accountName === filters.accountId);
     }
 
+    // Payment method filter
+    if (filters.paymentMethod) {
+      result = result.filter((e) => e.paymentMethod === filters.paymentMethod);
+    }
+
     // Date range filter
     if (filters.startDate) {
       result = result.filter((e) => new Date(e.date) >= new Date(filters.startDate!));
@@ -146,18 +148,27 @@ export const selectFilteredExpenses = createSelector(
     // Sorting
     result.sort((a, b) => {
       let comparison = 0;
-      if (filters.sortBy === 'amount') {
-        comparison = a.amount - b.amount;
-      } else if (filters.sortBy === 'merchant') {
-        comparison = a.merchantName.localeCompare(b.merchantName);
-      } else {
-        comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+      switch (filters.sortBy) {
+        case 'amount':
+          comparison = a.amount - b.amount;
+          break;
+        case 'merchant':
+          comparison = a.merchantName.localeCompare(b.merchantName);
+          break;
+        default:
+          comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
       }
       return filters.sortOrder === 'asc' ? comparison : -comparison;
     });
 
     return result;
   }
+);
+
+// --- Top Merchants (derived from expenses) ---
+export const selectTopMerchants = createSelector(
+  selectAllExpenses,
+  (expenses) => computeTopMerchants(expenses)
 );
 
 // --- Tags Selectors ---
@@ -187,68 +198,5 @@ export const selectUnreadAlertsCount = createSelector(
 export const selectCalculatedInsights = createSelector(
   selectSpendingOverview,
   selectAllExpenses,
-  selectSpendingCategories,
-  (overview, expenses, categories): SpendingInsight[] => {
-    const insights: SpendingInsight[] = [];
-    if (!overview) return insights;
-
-    // Insight 1: Top Category
-    if (overview.topCategoryName) {
-      insights.push({
-        id: 'ins-1',
-        title: 'Top Spending Category',
-        message: `You spent ₹${overview.topCategoryAmount.toFixed(2)} on ${overview.topCategoryName}, which represents your highest expenditure this period.`,
-        type: 'info',
-        badge: 'Category'
-      });
-    }
-
-    // Insight 2: Daily Average
-    if (overview.averageDaily) {
-      insights.push({
-        id: 'ins-2',
-        title: 'Average Daily Outflow',
-        message: `Your average daily spending is ₹${overview.averageDaily.toFixed(2)}. ${overview.averageDailyGrowthPercentage >= 0 ? `Up by ${overview.averageDailyGrowthPercentage}%` : `Down by ${Math.abs(overview.averageDailyGrowthPercentage)}%`} compared to previous baseline.`,
-        type: overview.averageDailyGrowthPercentage > 5 ? 'negative' : 'positive',
-        badge: 'Daily Trend'
-      });
-    }
-
-    // Insight 3: Top Merchant
-    if (expenses.length > 0) {
-      const merchantMap: { [m: string]: number } = {};
-      for (const e of expenses) {
-        merchantMap[e.merchantName] = (merchantMap[e.merchantName] || 0) + e.amount;
-      }
-      let topMerchant = '';
-      let topMerchantAmt = 0;
-      for (const [m, amt] of Object.entries(merchantMap)) {
-        if (amt > topMerchantAmt) {
-          topMerchantAmt = amt;
-          topMerchant = m;
-        }
-      }
-      if (topMerchant) {
-        insights.push({
-          id: 'ins-3',
-          title: 'Frequent Merchant',
-          message: `${topMerchant} is your top merchant with total volume of ₹${topMerchantAmt.toFixed(2)}.`,
-          type: 'neutral',
-          badge: 'Merchant'
-        });
-      }
-    }
-
-    // Insight 4: Budget Adherence
-    const budgetPct = overview.budgetUsedPercentage || 66;
-    insights.push({
-      id: 'ins-4',
-      title: 'Budget Discipline',
-      message: `You have consumed ${budgetPct}% of your allocated monthly spending ceiling. 5 out of 8 categories remain securely within budget.`,
-      type: budgetPct > 85 ? 'negative' : 'positive',
-      badge: 'Budget'
-    });
-
-    return insights;
-  }
+  (overview, expenses) => computeInsights(overview, expenses)
 );

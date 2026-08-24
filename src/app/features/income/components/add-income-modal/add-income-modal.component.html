@@ -1,0 +1,249 @@
+<div class="modal-backdrop" (click)="onClose()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <div class="header-left">
+        <h2 class="modal-title">{{ isEditMode() ? '✏️ Edit Income Record' : '+ Record New Income' }}</h2>
+        <span class="step-indicator">Step {{ currentStep() }} of 3</span>
+      </div>
+      <button class="btn-close" (click)="onClose()" title="Close modal">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Wizard Progress Bar -->
+    <div class="wizard-progress">
+      <div class="progress-step" [ngClass]="{ active: currentStep() >= 1, current: currentStep() === 1 }">
+        <span class="step-num">1</span>
+        <span class="step-label">Details</span>
+      </div>
+      <div class="progress-bar" [ngClass]="{ filled: currentStep() >= 2 }"></div>
+      <div class="progress-step" [ngClass]="{ active: currentStep() >= 2, current: currentStep() === 2 }">
+        <span class="step-num">2</span>
+        <span class="step-label">Income Source</span>
+      </div>
+      <div class="progress-bar" [ngClass]="{ filled: currentStep() >= 3 }"></div>
+      <div class="progress-step" [ngClass]="{ active: currentStep() >= 3, current: currentStep() === 3 }">
+        <span class="step-num">3</span>
+        <span class="step-label">Review & Save</span>
+      </div>
+    </div>
+
+    <!-- Form Body -->
+    <form [formGroup]="incomeForm" class="modal-body">
+      <!-- ================= STEP 1: DETAILS ================= -->
+      @if (currentStep() === 1) {
+        <div class="step-content">
+          <div class="form-group">
+            <label class="form-label">Destination Account *</label>
+            <select class="form-input" formControlName="accountId">
+              @for (acc of availableAccounts(); track acc.id) {
+                <option [value]="acc.id">{{ acc.name }} (••••{{ acc.accountNumberLast4 }}) - Balance: ₹{{ acc.balance | number:'1.2-2' }}</option>
+              }
+            </select>
+            <span class="help-text">Select the active user bank account where funds were received.</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label class="form-label">Amount (₹) *</label>
+              <div class="input-with-icon">
+                <span class="currency-symbol">₹</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  class="form-input text-lg font-bold"
+                  formControlName="amount"
+                />
+              </div>
+              @if (incomeForm.get('amount')?.touched && incomeForm.get('amount')?.errors?.['required']) {
+                <span class="error-text">Amount is required.</span>
+              }
+              @if (incomeForm.get('amount')?.touched && incomeForm.get('amount')?.errors?.['min']) {
+                <span class="error-text">Enter an amount greater than 0.</span>
+              }
+            </div>
+
+            <div class="form-group flex-1">
+              <label class="form-label">Transaction Date *</label>
+              <input type="date" class="form-input" formControlName="date" />
+              @if (incomeForm.get('date')?.touched && incomeForm.get('date')?.errors?.['required']) {
+                <span class="error-text">Date is required.</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description *</label>
+            <input
+              type="text"
+              class="form-input"
+              placeholder="e.g. Monthly Salary Payout, Freelance Project Payment"
+              formControlName="description"
+            />
+            @if (incomeForm.get('description')?.touched && incomeForm.get('description')?.errors?.['required']) {
+              <span class="error-text">Description is required.</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Notes (Optional)</label>
+            <textarea
+              class="form-textarea"
+              rows="2"
+              placeholder="Additional client/employer or reference notes"
+              formControlName="notes"
+            ></textarea>
+          </div>
+
+          <div class="form-row checkbox-row">
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="taxable" />
+              <span>Taxable Income Stream</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="isRecurring" />
+              <span>Recurring / Periodic Expected</span>
+            </label>
+          </div>
+        </div>
+      }
+
+      <!-- ================= STEP 2: SOURCE SELECTION ================= -->
+      @if (currentStep() === 2) {
+        <div class="step-content">
+          <div class="sources-header">
+            <span class="sources-sub">Select where this income came from:</span>
+            <button type="button" class="btn-toggle-new" (click)="toggleCreateNewSource()">
+              {{ isCreatingNewSource() ? '← Choose Existing' : '+ New Income Source' }}
+            </button>
+          </div>
+
+          @if (!isCreatingNewSource()) {
+            <div class="sources-grid">
+              @for (src of availableSources(); track src.id) {
+                <div
+                  class="source-option-card"
+                  [ngClass]="{ selected: selectedSourceId() === src.id }"
+                  (click)="onSelectSource(src)"
+                >
+                  <div class="source-color-dot" [style.backgroundColor]="src.color || '#10B981'"></div>
+                  <div class="source-option-details">
+                    <span class="source-option-name">{{ src.name }}</span>
+                    <span class="source-option-type">{{ src.type }}</span>
+                  </div>
+                  @if (selectedSourceId() === src.id) {
+                    <div class="selected-check">✓</div>
+                  }
+                </div>
+              }
+            </div>
+          } @else {
+            <form [formGroup]="newSourceForm" class="new-source-form">
+              <div class="form-group">
+                <label class="form-label">Source Name *</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="e.g. YouTube AdSense, Consulting Retainer"
+                  formControlName="newSourceName"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Source Type *</label>
+                <select class="form-input" formControlName="newSourceType">
+                  @for (opt of typeOptions; track opt.type) {
+                    <option [value]="opt.type">{{ opt.label }}</option>
+                  }
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Description (Optional)</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="e.g. Primary client contracting agreement"
+                  formControlName="newSourceDescription"
+                />
+              </div>
+            </form>
+          }
+        </div>
+      }
+
+      <!-- ================= STEP 3: REVIEW & CONFIRM ================= -->
+      @if (currentStep() === 3) {
+        <div class="step-content">
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-source-badge" [style.backgroundColor]="selectedSourceColor()">
+                {{ selectedSourceName() }}
+              </div>
+              <div class="review-amount">
+                +₹{{ (incomeForm.get('amount')?.value || 0) | number:'1.2-2' }}
+              </div>
+            </div>
+
+            <div class="review-details-grid">
+              <div class="review-item">
+                <span class="review-label">Destination Account</span>
+                <span class="review-val">{{ getSelectedAccountName() }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Date Received</span>
+                <span class="review-val">{{ incomeForm.get('date')?.value }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Source Category</span>
+                <span class="review-val">{{ selectedSourceType() }}</span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Tax Status</span>
+                <span class="review-val">{{ incomeForm.get('taxable')?.value ? 'Taxable' : 'Non-Taxable' }}</span>
+              </div>
+              <div class="review-item full-width">
+                <span class="review-label">Description</span>
+                <span class="review-val">{{ incomeForm.get('description')?.value }}</span>
+              </div>
+              @if (incomeForm.get('notes')?.value) {
+                <div class="review-item full-width">
+                  <span class="review-label">Notes</span>
+                  <span class="review-val">{{ incomeForm.get('notes')?.value }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        @if (currentStep() > 1) {
+          <button type="button" class="btn-secondary" (click)="goToPreviousStep()">
+            Back
+          </button>
+        } @else {
+          <button type="button" class="btn-secondary" (click)="onClose()">
+            Cancel
+          </button>
+        }
+
+        @if (currentStep() < 3) {
+          <button type="button" class="btn-primary" (click)="goToNextStep()">
+            Next →
+          </button>
+        } @else {
+          <button type="button" class="btn-primary" (click)="onSubmit()">
+            {{ isEditMode() ? 'Save Changes' : 'Confirm & Save Income' }}
+          </button>
+        }
+      </div>
+    </form>
+  </div>
+</div>

@@ -123,3 +123,17 @@ $z-index-fixed: 200;
 $z-index-overlay: 300;
 $z-index-modal: 400;
 $z-index-toast: 500;
+
+// RESPONSIVE BREAKPOINTS
+$bp-480: 480px;
+$bp-600: 600px;
+$bp-840: 840px;
+$bp-960: 960px;
+$bp-1280: 1280px;
+
+// Applies styles at or below the given max-width breakpoint.
+@mixin respond-max($bp) {
+  @media (max-width: $bp) {
+    @content;
+  }
+}

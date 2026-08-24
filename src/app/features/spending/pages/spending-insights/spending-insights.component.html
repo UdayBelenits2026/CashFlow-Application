@@ -1,0 +1,48 @@
+<div class="insights-page">
+  <div class="page-header">
+    <div class="header-left">
+      <a class="back-link" routerLink="/spending/dashboard">← Back to Spending Dashboard</a>
+      <h1 class="page-title">Spending Insights</h1>
+      <p class="page-subtitle">Smart, personalized observations and recommendations.</p>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div class="insights-column">
+      @if ((insights$ | async) && ((insights$ | async)!.length > 0)) {
+        <div class="insights-list">
+          @for (ins of (insights$ | async) || []; track ins.id) {
+            <div class="insight-card" [ngClass]="accentClass(ins.type)">
+              <span class="insight-icon">{{ iconFor(ins.type) }}</span>
+              <div class="insight-body">
+                <div class="insight-top">
+                  <h3 class="insight-title">{{ ins.title }}</h3>
+                  @if (ins.badge) { <span class="insight-badge">{{ ins.badge }}</span> }
+                </div>
+                <p class="insight-message">{{ ins.message }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <span class="empty-icon">💡</span>
+          <h4>No insights yet</h4>
+          <p>Add more expenses to unlock personalized insights.</p>
+        </div>
+      }
+    </div>
+
+    <div class="side-column">
+      <div class="chart-card">
+        <app-cf-doughnut-chart
+          [title]="'Spending by Category'"
+          [subtitle]="'What is driving your insights'"
+          [total]="categoryTotal"
+          [labels]="categoryLabels"
+          [datasets]="categoryDatasets"
+        ></app-cf-doughnut-chart>
+      </div>
+    </div>
+  </div>
+</div>

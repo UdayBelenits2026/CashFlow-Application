@@ -2,11 +2,10 @@
 
 .recent-card {
   background: $color-card;
-  border: 1px solid $color-border;
+  border: $border-width-sm solid $color-border;
   border-radius: $radius-lg;
   padding: $spacing-5 $spacing-6;
   box-shadow: $shadow-sm;
-  margin-top: $spacing-6;
 }
 
 .card-header {
@@ -67,15 +66,21 @@
     color: $color-text-muted;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    border-bottom: 1px solid $color-border-light;
+    border-bottom: $border-width-sm solid $color-border-light;
   }
 
   td {
     padding: $spacing-4 $spacing-4;
-    border-bottom: 1px solid $color-border-light;
+    border-bottom: $border-width-sm solid $color-border-light;
     color: $color-text-secondary;
     vertical-align: middle;
   }
+
+  th.text-right,
+  td.text-right { text-align: right; }
+
+  th.text-center,
+  td.text-center { text-align: center; }
 }
 
 .expense-row {
@@ -94,12 +99,12 @@
 }
 
 .merchant-avatar {
-  width: 36px;
-  height: 36px;
+  width: $spacing-8;
+  height: $spacing-8;
   border-radius: $radius-md;
   background: $color-background;
   color: $color-secondary;
-  border: 1px solid $color-border;
+  border: $border-width-sm solid $color-border;
   font-weight: $font-weight-bold;
   display: flex;
   align-items: center;
@@ -110,7 +115,7 @@
 .merchant-info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: $spacing-1;
 }
 
 .merchant-name {
@@ -129,9 +134,9 @@
 
 .category-pill {
   display: inline-block;
-  padding: 3px $spacing-3;
+  padding: $spacing-1 $spacing-3;
   background: $color-card;
-  border: 1px solid $color-border;
+  border: $border-width-sm solid $color-border;
   border-radius: 999px;
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
@@ -153,11 +158,12 @@
   font-weight: $font-weight-bold;
   color: $color-text-primary;
   font-size: $font-size-lg;
+  white-space: nowrap;
 }
 
 .status-badge {
   display: inline-block;
-  padding: 2px $spacing-2;
+  padding: $spacing-1 $spacing-2;
   border-radius: $radius-sm;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
@@ -185,5 +191,22 @@
   .empty-icon { font-size: $font-size-4xl; margin-bottom: $spacing-3; }
   h4 { margin: 0 0 $spacing-2 0; color: $color-text-primary; }
   p { margin: 0; font-size: $font-size-base; color: $color-text-muted; }
+}
+
+// RESPONSIVE
+@include respond-max($bp-840) {
+  .recent-card { padding: $spacing-4; }
+}
+
+@include respond-max($bp-480) {
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-2;
+  }
+
+  .expenses-table {
+    th, td { padding: $spacing-2 $spacing-3; }
+  }
 }
 

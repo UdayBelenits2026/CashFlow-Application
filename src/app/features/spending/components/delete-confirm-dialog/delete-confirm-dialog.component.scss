@@ -26,7 +26,7 @@
   padding: $spacing-6;
   text-align: center;
   box-shadow: $shadow-lg;
-  border: 1px solid $color-border;
+  border: $border-width-sm solid $color-border;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -34,8 +34,8 @@
 }
 
 .icon-bubble {
-  width: 52px;
-  height: 52px;
+  width: $spacing-12;
+  height: $spacing-12;
   border-radius: 50%;
   background: $color-danger-bg;
   color: $color-danger;
@@ -74,7 +74,7 @@
   flex: 1;
   padding: $spacing-2 $spacing-4;
   background: $color-card;
-  border: 1px solid $color-border;
+  border: $border-width-sm solid $color-border;
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
@@ -92,7 +92,7 @@
   flex: 1;
   padding: $spacing-2 $spacing-4;
   background: $color-danger;
-  border: 1px solid $color-danger;
+  border: $border-width-sm solid $color-danger;
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
@@ -110,5 +110,10 @@
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+// RESPONSIVE
+@include respond-max($bp-480) {
+  .dialog-card { padding: $spacing-5 $spacing-4; }
 }
 

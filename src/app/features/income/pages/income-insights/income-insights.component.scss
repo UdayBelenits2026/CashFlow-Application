@@ -1,0 +1,118 @@
+@use '../../../../../styles/variables' as *;
+
+.income-insights-page {
+  padding: $spacing-6;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-6;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.page-title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  margin: $spacing-1 0 0 0;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: $spacing-4;
+}
+
+.insight-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-5;
+  box-shadow: $shadow-sm;
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-4;
+  border-left: 4px solid transparent;
+  transition: transform $transition-fast;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &.accent-positive {
+    border-left-color: #10B981;
+    .card-icon { background: #ECFDF5; color: #10B981; }
+  }
+
+  &.accent-info {
+    border-left-color: #3B82F6;
+    .card-icon { background: #EFF6FF; color: #3B82F6; }
+  }
+
+  &.accent-neutral {
+    border-left-color: #F59E0B;
+    .card-icon { background: #FFFBEB; color: #F59E0B; }
+  }
+
+  &.accent-negative {
+    border-left-color: #EF4444;
+    .card-icon { background: #FEF2F2; color: #EF4444; }
+  }
+}
+
+.card-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-lg;
+  flex-shrink: 0;
+}
+
+.card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.insight-heading {
+  margin: 0;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.insight-badge {
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  background: $color-background;
+  color: $color-text-primary;
+  padding: 2px 8px;
+  border-radius: $radius-sm;
+}
+
+.insight-body {
+  margin: 0;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  line-height: $line-height-relaxed;
+}

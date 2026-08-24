@@ -1,0 +1,111 @@
+<div class="income-reports-page">
+  @let items = (sourceBreakdown$ | async) || [];
+  @let ov = overview$ | async;
+
+  <!-- Header -->
+  <div class="top-bar">
+    <div class="title-wrap">
+      <h1 class="page-title">Income by Source Report</h1>
+      <p class="page-subtitle">Analyze revenue concentration, stream growth, and portfolio diversification</p>
+    </div>
+
+    <div class="action-wrap">
+      <select class="period-select" [(ngModel)]="selectedPeriod">
+        <option value="THIS_MONTH">This Month (May 2026)</option>
+        <option value="LAST_MONTH">Last Month</option>
+        <option value="THIS_QUARTER">This Quarter (Q2)</option>
+        <option value="THIS_YEAR">This Year (2026)</option>
+      </select>
+
+      <button type="button" class="btn-secondary" (click)="onExportReport(items)">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Export Report
+      </button>
+    </div>
+  </div>
+
+  <!-- Highlights & Doughnut Grid -->
+  <div class="report-overview-grid">
+    <!-- Top Source Spotlight -->
+    <div class="spotlight-card">
+      <span class="spotlight-label">Primary Revenue Contributor</span>
+      <div class="spotlight-main">
+        <h2 class="spotlight-title">{{ ov?.topSourceName || 'Salary' }}</h2>
+        <span class="spotlight-amount">₹{{ (ov?.topSourceAmount || 0) | number:'1.2-2' }}</span>
+        <span class="spotlight-share">{{ ov?.topSourcePercentage || 0 }}% of total portfolio</span>
+      </div>
+      <div class="spotlight-footer">
+        <span>Active Sources: <strong>{{ ov?.activeSourcesCount || 0 }}</strong></span>
+        <span>Taxable Ratio: <strong>{{ getTaxableRatio(ov) }}%</strong></span>
+      </div>
+    </div>
+
+    <!-- Doughnut Chart -->
+    <div class="chart-box">
+      <app-cf-doughnut-chart
+        [title]="'Source Distribution'"
+        [subtitle]="'Percentage share per income channel'"
+        [labels]="(sourceLabels$ | async) || []"
+        [datasets]="(sourceDatasets$ | async) || []"
+        [total]="(totalIncome$ | async) || 0"
+      ></app-cf-doughnut-chart>
+    </div>
+  </div>
+
+  <!-- Detailed Table -->
+  <div class="table-card">
+    <div class="table-header">
+      <h3 class="table-title">Source Breakdown Breakdown & Contribution</h3>
+    </div>
+
+    <div class="table-responsive">
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th>Income Source</th>
+            <th>Category</th>
+            <th>Receipts</th>
+            <th class="text-right">Total Amount</th>
+            <th class="text-right">Portfolio Share</th>
+            <th>Distribution Bar</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items; track item.sourceId) {
+            <tr>
+              <td class="source-cell">
+                <div class="source-item">
+                  <span class="color-dot" [style.backgroundColor]="item.color"></span>
+                  <span class="name-text">{{ item.sourceName }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="cat-pill">{{ item.sourceType }}</span>
+              </td>
+              <td>{{ item.transactionCount || 1 }} receipts</td>
+              <td class="amount-cell text-right">
+                ₹{{ item.amount | number:'1.2-2' }}
+              </td>
+              <td class="pct-cell text-right">
+                <strong>{{ item.percentage }}%</strong>
+              </td>
+              <td class="bar-cell">
+                <div class="progress-track">
+                  <div
+                    class="progress-fill"
+                    [style.width]="item.barWidth"
+                    [style.backgroundColor]="item.color"
+                  ></div>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

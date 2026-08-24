@@ -2,14 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { map, catchError, switchMap, mergeMap } from 'rxjs/operators';
-import { SpendingApiService } from '../Services/spending-api.service';
+import { SpendingApiService } from '../services/spending-api.service';
 import * as SpendingActions from './spending.actions';
-import { Expense } from '../models/expense.model';
+import { buildExpenseEntity } from '../utility/spending.calculations';
 
 @Injectable()
 export class SpendingEffects {
-  private readonly actions$ = inject(Actions);
-  private readonly apiService = inject(SpendingApiService);
+  private readonly actions$: Actions = inject(Actions);
+  private readonly apiService: SpendingApiService = inject(SpendingApiService);
 
   loadSpendingDashboard$ = createEffect(() =>
     this.actions$.pipe(
@@ -43,31 +43,15 @@ export class SpendingEffects {
     this.actions$.pipe(
       ofType(SpendingActions.addExpense),
       mergeMap(({ expense }) => {
-        const newExpense: Expense = {
-          id: `exp-${Date.now()}`,
-          amount: Number(expense.amount) || 0,
-          date: expense.date || new Date().toISOString().split('T')[0],
-          merchantName: expense.merchantName || 'Unknown Merchant',
-          categoryId: expense.categoryId || 'cat-1',
-          categoryName: expense.categoryName || 'Food & Dining',
-          categoryColor: expense.categoryColor || '#0F172A',
-          accountId: expense.accountId || 'acc-1',
-          accountName: expense.accountName || 'Main Checking',
-          paymentMethod: expense.paymentMethod || 'DEBIT_CARD',
-          tags: expense.tags || [],
-          notes: expense.notes || '',
-          receiptUrl: expense.receiptUrl,
-          receiptFileName: expense.receiptFileName,
-          status: expense.status || 'CLEARED',
-          createdAt: new Date().toISOString()
-        };
+        const newExpense = buildExpenseEntity(expense);
 
         return this.apiService.createExpense(newExpense).pipe(
           map((created) => SpendingActions.addExpenseSuccess({ expense: created || newExpense })),
-          catchError(() => {
-            // Optimistic fallback in case mock server offline
-            return of(SpendingActions.addExpenseSuccess({ expense: newExpense }));
-          })
+          catchError((err) =>
+            of(SpendingActions.addExpenseFailure({
+              error: err?.message || 'Unable to save the expense. Please try again.'
+            }))
+          )
         );
       })
     )
@@ -79,10 +63,11 @@ export class SpendingEffects {
       mergeMap(({ id, expense }) =>
         this.apiService.updateExpense(id, expense).pipe(
           map((updated) => SpendingActions.updateExpenseSuccess({ expense: updated })),
-          catchError(() => {
-            // Optimistic fallback
-            return of(SpendingActions.updateExpenseSuccess({ expense: { ...expense, id } as Expense }));
-          })
+          catchError((err) =>
+            of(SpendingActions.updateExpenseFailure({
+              error: err?.message || 'Unable to update the expense. Please try again.'
+            }))
+          )
         )
       )
     )
@@ -94,10 +79,11 @@ export class SpendingEffects {
       mergeMap(({ id }) =>
         this.apiService.deleteExpense(id).pipe(
           map(() => SpendingActions.deleteExpenseSuccess({ id })),
-          catchError(() => {
-            // Optimistic fallback
-            return of(SpendingActions.deleteExpenseSuccess({ id }));
-          })
+          catchError((err) =>
+            of(SpendingActions.deleteExpenseFailure({
+              error: err?.message || 'Unable to delete the expense. Please try again.'
+            }))
+          )
         )
       )
     )
@@ -109,7 +95,9 @@ export class SpendingEffects {
       mergeMap(({ tag }) =>
         this.apiService.createTag(tag).pipe(
           map((saved) => SpendingActions.addTagSuccess({ tag: saved || tag })),
-          catchError(() => of(SpendingActions.addTagSuccess({ tag })))
+          catchError((err) => of(SpendingActions.spendingOperationFailure({
+            error: err?.message || 'Unable to create the tag. Please try again.'
+          })))
         )
       )
     )
@@ -121,7 +109,9 @@ export class SpendingEffects {
       mergeMap(({ id }) =>
         this.apiService.deleteTag(id).pipe(
           map(() => SpendingActions.deleteTagSuccess({ id })),
-          catchError(() => of(SpendingActions.deleteTagSuccess({ id })))
+          catchError((err) => of(SpendingActions.spendingOperationFailure({
+            error: err?.message || 'Unable to delete the tag. Please try again.'
+          })))
         )
       )
     )
@@ -137,7 +127,9 @@ export class SpendingEffects {
         };
         return this.apiService.createRecurringExpense(newItem).pipe(
           map((saved) => SpendingActions.addRecurringExpenseSuccess({ item: saved || (newItem as any) })),
-          catchError(() => of(SpendingActions.addRecurringExpenseSuccess({ item: newItem as any })))
+          catchError((err) => of(SpendingActions.spendingOperationFailure({
+            error: err?.message || 'Unable to add the recurring expense. Please try again.'
+          })))
         );
       })
     )
@@ -149,8 +141,10 @@ export class SpendingEffects {
       mergeMap(({ id, isActive }) =>
         this.apiService.updateRecurringExpense(id, { isActive }).pipe(
           map((saved) => SpendingActions.toggleRecurringExpenseSuccess({ item: saved })),
-          catchError(() =>
-            of(SpendingActions.toggleRecurringExpenseSuccess({ item: { id, isActive } as any }))
+          catchError((err) =>
+            of(SpendingActions.spendingOperationFailure({
+              error: err?.message || 'Unable to update the recurring expense. Please try again.'
+            }))
           )
         )
       )
@@ -163,7 +157,9 @@ export class SpendingEffects {
       mergeMap(({ id }) =>
         this.apiService.deleteRecurringExpense(id).pipe(
           map(() => SpendingActions.deleteRecurringExpenseSuccess({ id })),
-          catchError(() => of(SpendingActions.deleteRecurringExpenseSuccess({ id })))
+          catchError((err) => of(SpendingActions.spendingOperationFailure({
+            error: err?.message || 'Unable to delete the recurring expense. Please try again.'
+          })))
         )
       )
     )

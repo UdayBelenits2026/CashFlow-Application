@@ -9,9 +9,16 @@
     <!-- Month Switcher Controls -->
     <div class="month-controls">
       <button class="btn-nav" (click)="changeMonth(-1)" title="Previous month">&larr;</button>
-      <span class="current-month-label">{{ currentYearMonthLabel }}</span>
+      <span class="current-month-label">{{ currentYearMonthLabel() }}</span>
       <button class="btn-nav" (click)="changeMonth(1)" title="Next month">&rarr;</button>
     </div>
+  </div>
+
+  <!-- Severity Legend -->
+  <div class="calendar-legend">
+    <span class="legend-item"><span class="legend-swatch sev-low"></span> Low (&lt; ₹50)</span>
+    <span class="legend-item"><span class="legend-swatch sev-medium"></span> Medium (₹50 – ₹100)</span>
+    <span class="legend-item"><span class="legend-swatch sev-high"></span> High (&gt; ₹100)</span>
   </div>
 
   <!-- Main Calendar Grid and Day Details Layout -->
@@ -33,13 +40,16 @@
       <div class="days-grid">
         @for (day of calendarDays; track day.dateString) {
           <div
-            class="day-cell" 
+            class="day-cell"
             [ngClass]="{
               'not-current-month': !day.isCurrentMonth,
               'today': day.isToday,
               'selected': selectedDay?.dateString === day.dateString,
               'has-expenses': day.expenses.length > 0
             }"
+            [class.sev-low]="severityClass(day.totalSpending) === 'sev-low'"
+            [class.sev-medium]="severityClass(day.totalSpending) === 'sev-medium'"
+            [class.sev-high]="severityClass(day.totalSpending) === 'sev-high'"
             (click)="selectDay(day)"
           >
             <div class="day-header">
@@ -86,6 +96,12 @@
           <span class="dt-label">Daily Outflow</span>
           <span class="dt-amount">₹{{ (selectedDay?.totalSpending || 0) | number:'1.2-2' }}</span>
         </div>
+
+        @if (selectedDay) {
+          <a class="btn-day-details" [routerLink]="['/spending/day-details', selectedDay.dateString]">
+            View Full Day Details →
+          </a>
+        }
       </div>
 
       <div class="day-expenses-list">

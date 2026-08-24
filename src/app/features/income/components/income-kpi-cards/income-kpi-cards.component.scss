@@ -1,0 +1,108 @@
+@use '../../../../../styles/variables' as *;
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: $spacing-4;
+  margin-bottom: $spacing-6;
+}
+
+.kpi-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-4;
+  display: flex;
+  flex-direction: column;
+  box-shadow: $shadow-sm;
+  transition: transform $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+}
+
+.kpi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-2;
+}
+
+.kpi-label {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kpi-icon-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.emerald { background: #ECFDF5; color: #10B981; }
+  &.blue { background: #EFF6FF; color: #3B82F6; }
+  &.purple { background: #FAF5FF; color: #8B5CF6; }
+  &.amber { background: #FFFBEB; color: #F59E0B; }
+  &.cyan { background: #ECFEFF; color: #06B6D4; }
+}
+
+.kpi-amount {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  letter-spacing: -0.02em;
+  margin-bottom: $spacing-2;
+}
+
+.kpi-category-name {
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: $spacing-1;
+}
+
+.kpi-category-sub {
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  margin-bottom: $spacing-1;
+}
+
+.kpi-trend {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  font-size: $font-size-xs;
+}
+
+.trend-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: $font-weight-bold;
+  padding: 2px 6px;
+  border-radius: $radius-sm;
+
+  &.positive {
+    background: #ECFDF5;
+    color: #059669;
+  }
+
+  &.neutral {
+    background: $color-background;
+    color: $color-text-muted;
+  }
+}
+
+.trend-context {
+  color: $color-text-muted;
+}

@@ -1,0 +1,27 @@
+<div class="income-insights-page">
+  <div class="top-bar">
+    <div class="title-wrap">
+      <h1 class="page-title">Income Intelligence & Insights</h1>
+      <p class="page-subtitle">Automated analytics, financial recommendations, and income stability metrics</p>
+    </div>
+  </div>
+
+  <div class="insights-grid">
+    @for (insight of insights$ | async; track insight.id) {
+      <div class="insight-card" [ngClass]="insightAccentClass(insight.type)">
+        <div class="card-icon">
+          <i [class]="insight.icon"></i>
+        </div>
+        <div class="card-content">
+          <div class="card-title-row">
+            <h3 class="insight-heading">{{ insight.title }}</h3>
+            @if (insight.metric) {
+              <span class="insight-badge">{{ insight.metric }}</span>
+            }
+          </div>
+          <p class="insight-body">{{ insight.description }}</p>
+        </div>
+      </div>
+    }
+  </div>
+</div>

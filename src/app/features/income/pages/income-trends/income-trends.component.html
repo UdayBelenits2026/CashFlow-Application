@@ -1,0 +1,63 @@
+<div class="income-trends-page">
+  <!-- Header -->
+  <div class="top-bar">
+    <div class="title-wrap">
+      <h1 class="page-title">Income Trends & Velocity</h1>
+      <p class="page-subtitle">Examine long-term earning trajectories, multi-month seasonality, and target projections</p>
+    </div>
+  </div>
+
+  <!-- Main Chart Box -->
+  <div class="chart-box">
+    <app-cf-line-chart
+      [title]="'Multi-Period Earnings Trajectory'"
+      [subtitle]="'Actual monthly inflows vs previous period benchmarks and forecasts'"
+      [labels]="(trendLabels$ | async) || []"
+      [datasets]="(trendDatasets$ | async) || []"
+    ></app-cf-line-chart>
+  </div>
+
+  <!-- Historical Table -->
+  <div class="table-card">
+    <div class="table-header">
+      <h3 class="table-title">Period-over-Period Performance</h3>
+    </div>
+
+    <div class="table-responsive">
+      <table class="trends-table">
+        <thead>
+          <tr>
+            <th>Month / Period</th>
+            <th class="text-right">Actual Inflow</th>
+            <th class="text-right">Previous Benchmark</th>
+            <th class="text-right">Projected Target</th>
+            <th class="text-right">Period Variance</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pt of trendPoints$ | async; track pt.xLabel) {
+            <tr>
+              <td class="label-cell">
+                <strong>{{ pt.xLabel }} 2026</strong>
+              </td>
+              <td class="text-right amount-green">
+                ₹{{ pt.thisPeriod | number:'1.2-2' }}
+              </td>
+              <td class="text-right amount-muted">
+                ₹{{ pt.lastPeriod | number:'1.2-2' }}
+              </td>
+              <td class="text-right amount-blue">
+                ₹{{ (pt.projected || pt.thisPeriod) | number:'1.2-2' }}
+              </td>
+              <td class="text-right">
+                <span class="variance-badge" [ngClass]="(pt.thisPeriod - pt.lastPeriod) >= 0 ? 'pos' : 'neg'">
+                  {{ (pt.thisPeriod - pt.lastPeriod) >= 0 ? '+' : '' }}₹{{ (pt.thisPeriod - pt.lastPeriod) | number:'1.2-2' }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

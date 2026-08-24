@@ -1,0 +1,323 @@
+@use '../../../../../styles/variables' as *;
+
+.recurring-income-page {
+  padding: $spacing-6;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-6;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: $spacing-4;
+}
+
+.page-title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  margin: $spacing-1 0 0 0;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  padding: $spacing-2 $spacing-4;
+  background: #10B981;
+  color: #ffffff;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: #059669;
+  }
+}
+
+.summary-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: $spacing-4;
+}
+
+.summary-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-4;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+  box-shadow: $shadow-sm;
+}
+
+.card-label {
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  color: $color-text-muted;
+  text-transform: uppercase;
+}
+
+.card-val {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+
+  &.green {
+    color: #059669;
+  }
+}
+
+.card-sub {
+  font-size: 11px;
+  color: $color-text-muted;
+}
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-4;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  flex: 1;
+  max-width: 360px;
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  svg {
+    position: absolute;
+    left: $spacing-3;
+    color: $color-text-muted;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: $spacing-2 $spacing-3 $spacing-2 $spacing-8;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    font-size: $font-size-xs;
+    background: $color-card;
+    color: $color-text-primary;
+    outline: none;
+
+    &:focus {
+      border-color: #10B981;
+    }
+  }
+}
+
+.status-tabs {
+  display: flex;
+  background: $color-background;
+  padding: 3px;
+  border-radius: $radius-md;
+  border: 1px solid $color-border;
+}
+
+.tab-btn {
+  padding: $spacing-1 $spacing-3;
+  background: transparent;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-muted;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &.active {
+    background: $color-card;
+    color: $color-text-primary;
+    box-shadow: $shadow-sm;
+  }
+}
+
+.table-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.recurring-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $font-size-sm;
+
+  th {
+    text-align: left;
+    padding: $spacing-3 $spacing-4;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: $color-background;
+    border-bottom: $border-width-sm solid $color-border;
+  }
+
+  td {
+    padding: $spacing-3 $spacing-4;
+    border-bottom: $border-width-sm solid $color-border;
+    color: $color-text-primary;
+    vertical-align: middle;
+  }
+}
+
+.source-cell-wrap {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+}
+
+.color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.source-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.source-name {
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.source-type {
+  font-size: 11px;
+  color: $color-text-muted;
+}
+
+.account-cell {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.freq-badge {
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  background: #EFF6FF;
+  color: #2563EB;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.next-date-val {
+  font-weight: $font-weight-semibold;
+  color: #047857;
+  font-size: $font-size-xs;
+}
+
+.last-date-cell {
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+}
+
+.amount-val {
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+
+.status-toggle-btn {
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &.active {
+    background: #ECFDF5;
+    color: #059669;
+    border-color: #A7F3D0;
+  }
+
+  &.paused {
+    background: #FEF3C7;
+    color: #D97706;
+    border-color: #FDE68A;
+  }
+}
+
+.action-buttons-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.btn-record-now {
+  padding: 3px 8px;
+  background: #10B981;
+  color: #ffffff;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: #059669;
+  }
+}
+
+.btn-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-md;
+  border: 1px solid $color-border;
+  background: $color-card;
+  color: $color-text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-background;
+    color: $color-text-primary;
+  }
+
+  &.delete:hover {
+    background: #FEE2E2;
+    color: #DC2626;
+    border-color: #FCA5A5;
+  }
+}
+
+.empty-state {
+  padding: $spacing-10;
+  text-align: center;
+  color: $color-text-muted;
+}

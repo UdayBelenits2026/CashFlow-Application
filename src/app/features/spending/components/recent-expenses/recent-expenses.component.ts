@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, InputSignal, OutputEmitterRef } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Expense } from '../../models/expense.model';
@@ -8,11 +8,12 @@ import { Expense } from '../../models/expense.model';
   standalone: true,
   imports: [CommonModule, RouterLink, DatePipe, DecimalPipe],
   templateUrl: './recent-expenses.component.html',
-  styleUrl: './recent-expenses.component.scss'
+  styleUrl: './recent-expenses.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecentExpensesComponent {
-  readonly expenses = input<Expense[]>([]);
-  readonly expenseSelected = output<Expense>();
+  readonly expenses: InputSignal<Expense[]> = input<Expense[]>([]);
+  readonly expenseSelected: OutputEmitterRef<Expense> = output<Expense>();
 
   onSelect(exp: Expense): void {
     this.expenseSelected.emit(exp);

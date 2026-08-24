@@ -1,8 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { firstValueFrom, Observable } from 'rxjs';
 import { SpendingFacade } from '../../facades/spending.facade';
 import { Expense } from '../../models/expense.model';
+import { SpendingCategoryItem } from '../../models/spending-summary.model';
+import { exportExpensesToCsv, formatPaymentMethod } from '../../utility/spending.helpers';
 import { ExpenseDetailsDrawerComponent } from '../../components/expense-details-drawer/expense-details-drawer.component';
 import { AddExpenseModalComponent } from '../../components/add-expense-modal/add-expense-modal.component';
 import { DeleteConfirmDialogComponent } from '../../components/delete-confirm-dialog/delete-confirm-dialog.component';
@@ -27,29 +30,34 @@ import { SplitExpenseModalComponent } from '../../components/split-expense-modal
   styleUrl: './all-expenses.component.scss'
 })
 export class AllExpensesComponent implements OnInit {
-  private readonly spendingFacade = inject(SpendingFacade);
+  private readonly spendingFacade: SpendingFacade = inject(SpendingFacade);
 
-  readonly allExpenses$ = this.spendingFacade.allExpenses$;
-  readonly filteredExpenses$ = this.spendingFacade.filteredExpenses$;
-  readonly categories$ = this.spendingFacade.categories$;
-  readonly isLoading$ = this.spendingFacade.isLoading$;
+  readonly allExpenses$: Observable<Expense[]> = this.spendingFacade.allExpenses$;
+  readonly filteredExpenses$: Observable<Expense[]> = this.spendingFacade.filteredExpenses$;
+  readonly categories$: Observable<SpendingCategoryItem[]> = this.spendingFacade.categories$;
+  readonly isLoading$: Observable<boolean> = this.spendingFacade.isLoading$;
 
-  searchTerm = '';
-  selectedCategory = 'ALL';
-  selectedAccount = 'ALL';
-  sortBy = 'NEWEST';
+  searchTerm: string = '';
+  selectedCategory: string = 'ALL';
+  selectedAccount: string = 'ALL';
+  selectedPayment: string = 'ALL';
+  startDate: string = '';
+  endDate: string = '';
+  minAmount: number | null = null;
+  maxAmount: number | null = null;
+  sortBy: string = 'NEWEST';
 
   // Pagination State
-  currentPage = 1;
-  pageSize = 10;
-  readonly pageSizeOptions = [10, 25, 50];
+  currentPage: number = 1;
+  pageSize: number = 10;
+  readonly pageSizeOptions: number[] = [10, 25, 50];
 
-  showAddModal = false;
-  showEditModal = false;
-  showDeleteDialog = false;
-  showReceiptViewer = false;
-  showDetailsDrawer = false;
-  showSplitModal = false;
+  showAddModal: boolean = false;
+  showEditModal: boolean = false;
+  showDeleteDialog: boolean = false;
+  showReceiptViewer: boolean = false;
+  showDetailsDrawer: boolean = false;
+  showSplitModal: boolean = false;
 
   activeExpense: Expense | null = null;
 
@@ -62,23 +70,34 @@ export class AllExpensesComponent implements OnInit {
     let sortBy: 'date' | 'amount' | 'merchant' = 'date';
     let sortOrder: 'asc' | 'desc' = 'desc';
 
-    if (this.sortBy === 'NEWEST') {
-      sortBy = 'date';
-      sortOrder = 'desc';
-    } else if (this.sortBy === 'OLDEST') {
-      sortBy = 'date';
-      sortOrder = 'asc';
-    } else if (this.sortBy === 'AMOUNT_DESC') {
-      sortBy = 'amount';
-      sortOrder = 'desc';
-    } else if (this.sortBy === 'AMOUNT_ASC') {
-      sortBy = 'amount';
-      sortOrder = 'asc';
+    switch (this.sortBy) {
+      case 'NEWEST':
+        sortBy = 'date';
+        sortOrder = 'desc';
+        break;
+      case 'OLDEST':
+        sortBy = 'date';
+        sortOrder = 'asc';
+        break;
+      case 'AMOUNT_DESC':
+        sortBy = 'amount';
+        sortOrder = 'desc';
+        break;
+      case 'AMOUNT_ASC':
+        sortBy = 'amount';
+        sortOrder = 'asc';
+        break;
     }
 
     this.spendingFacade.setFilters({
       searchTerm: this.searchTerm,
       categoryId: this.selectedCategory === 'ALL' ? null : this.selectedCategory,
+      accountId: this.selectedAccount === 'ALL' ? null : this.selectedAccount,
+      paymentMethod: this.selectedPayment === 'ALL' ? null : this.selectedPayment,
+      startDate: this.startDate || null,
+      endDate: this.endDate || null,
+      minAmount: this.minAmount !== null && this.minAmount !== undefined && `${this.minAmount}` !== '' ? Number(this.minAmount) : null,
+      maxAmount: this.maxAmount !== null && this.maxAmount !== undefined && `${this.maxAmount}` !== '' ? Number(this.maxAmount) : null,
       sortBy,
       sortOrder
     });
@@ -88,6 +107,11 @@ export class AllExpensesComponent implements OnInit {
     this.searchTerm = '';
     this.selectedCategory = 'ALL';
     this.selectedAccount = 'ALL';
+    this.selectedPayment = 'ALL';
+    this.startDate = '';
+    this.endDate = '';
+    this.minAmount = null;
+    this.maxAmount = null;
     this.sortBy = 'NEWEST';
     this.currentPage = 1;
     this.spendingFacade.resetFilters();
@@ -116,43 +140,14 @@ export class AllExpensesComponent implements OnInit {
 
   // CSV Export Feature
   exportToCsv(): void {
-    const sub = this.filteredExpenses$.subscribe((expenses) => {
+    firstValueFrom(this.filteredExpenses$).then((expenses) => {
       if (!expenses || expenses.length === 0) return;
-
-      const headers = ['Transaction ID', 'Date', 'Merchant', 'Category', 'Account', 'Payment Method', 'Amount ($)', 'Status', 'Notes'];
-      const rows = expenses.map(e => [
-        `"${e.id}"`,
-        `"${e.date}"`,
-        `"${e.merchantName.replace(/"/g, '""')}"`,
-        `"${e.categoryName.replace(/"/g, '""')}"`,
-        `"${e.accountName.replace(/"/g, '""')}"`,
-        `"${e.paymentMethod || 'DEBIT_CARD'}"`,
-        e.amount,
-        `"${e.status || 'CLEARED'}"`,
-        `"${(e.notes || '').replace(/"/g, '""')}"`
-      ]);
-
-      const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `spending_expenses_${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      exportExpensesToCsv(expenses, `spending_expenses_${new Date().toISOString().split('T')[0]}`);
     });
-    sub.unsubscribe();
   }
 
   formatPayment(method?: string): string {
-    switch (method) {
-      case 'DEBIT_CARD': return 'Debit Card';
-      case 'CREDIT_CARD': return 'Credit Card';
-      case 'BANK_TRANSFER': return 'Bank Transfer';
-      case 'CASH': return 'Cash';
-      default: return method || 'Card';
-    }
+    return formatPaymentMethod(method);
   }
 
   onSelectExpense(exp: Expense): void {

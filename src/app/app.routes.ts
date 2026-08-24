@@ -26,8 +26,8 @@ export const routes: Routes = [
       },
       {
         path: 'income',
-        loadComponent: () =>
-          import('./features/income/income.component').then((m) => m.IncomeComponent),
+        loadChildren: () =>
+          import('./features/income/income.routes').then((m) => m.INCOME_ROUTES),
       },
       {
         path: 'spending',

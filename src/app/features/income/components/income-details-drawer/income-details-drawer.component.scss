@@ -1,0 +1,206 @@
+@use '../../../../../styles/variables' as *;
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 1040;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.drawer-panel {
+  width: 100%;
+  max-width: 440px;
+  background: $color-card;
+  height: 100%;
+  box-shadow: $shadow-lg;
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.25s ease-out;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.drawer-header {
+  padding: $spacing-5 $spacing-6;
+  border-bottom: $border-width-sm solid $color-border;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+}
+
+.tx-badge {
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  color: #10B981;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.drawer-title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  color: $color-text-muted;
+  cursor: pointer;
+  padding: $spacing-1;
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}
+
+.drawer-body {
+  padding: $spacing-6;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-6;
+}
+
+.hero-amount-box {
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  border-radius: $radius-lg;
+  padding: $spacing-5;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-1;
+}
+
+.hero-label {
+  font-size: $font-size-xs;
+  color: #047857;
+  text-transform: uppercase;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.05em;
+}
+
+.hero-amount {
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  color: #059669;
+  letter-spacing: -0.02em;
+}
+
+.hero-status {
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  color: #065F46;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-dot {
+  font-size: 8px;
+}
+
+.section-title {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0 0 $spacing-3 0;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-3;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  &.full-width {
+    grid-column: span 2;
+  }
+}
+
+.detail-label {
+  font-size: 11px;
+  color: $color-text-muted;
+}
+
+.detail-val {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.source-pill {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.notes-text {
+  font-style: italic;
+  color: $color-text-secondary;
+}
+
+.drawer-footer {
+  padding: $spacing-4 $spacing-6;
+  border-top: $border-width-sm solid $color-border;
+  display: flex;
+  gap: $spacing-3;
+}
+
+.btn-edit, .btn-delete {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-2;
+  padding: $spacing-2 $spacing-3;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all $transition-fast;
+}
+
+.btn-edit {
+  background: $color-card;
+  border: 1px solid $color-border;
+  color: $color-text-primary;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.btn-delete {
+  background: #FFF1F2;
+  border: 1px solid #FECDD3;
+  color: #DC2626;
+
+  &:hover {
+    background: #FEE2E2;
+  }
+}

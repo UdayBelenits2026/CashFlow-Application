@@ -38,14 +38,22 @@ export class Mainnavbar {
   private updateTitle(url: string): void {
     if (url.includes('/spending/expenses')) {
       this.pageTitle.set('Expenses');
+    } else if (url.includes('/spending/trends')) {
+      this.pageTitle.set('Spending Trends');
     } else if (url.includes('/spending/calendar')) {
       this.pageTitle.set('Expense Calendar');
+    } else if (url.includes('/spending/day-details')) {
+      this.pageTitle.set('Day Details');
     } else if (url.includes('/spending/recurring')) {
       this.pageTitle.set('Recurring & Subscriptions');
+    } else if (url.includes('/spending/insights')) {
+      this.pageTitle.set('Spending Insights');
+    } else if (url.includes('/spending/alerts')) {
+      this.pageTitle.set('Spend Alerts');
     } else if (url.includes('/spending/tags')) {
       this.pageTitle.set('Spending Tags');
     } else if (url.includes('/spending')) {
-      this.pageTitle.set('Spending Overview');
+      this.pageTitle.set('Spending Dashboard');
     } else if (url.includes('/transactions')) {
       this.pageTitle.set('Transactions');
     } else if (url.includes('/income')) {

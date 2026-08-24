@@ -1,0 +1,38 @@
+<div class="merchants-card">
+  <div class="card-header">
+    <div>
+      <h3 class="card-title">Top Merchants</h3>
+      <p class="card-subtitle">Where your money goes most</p>
+    </div>
+    @if (showViewAll()) {
+      <button type="button" class="btn-view-all" (click)="onViewAll()">View All</button>
+    }
+  </div>
+
+  @if (visibleMerchants().length > 0) {
+    <ul class="merchant-list">
+      @for (m of visibleMerchants(); track m.name; let i = $index) {
+        <li class="merchant-row">
+          <span class="rank">{{ i + 1 }}</span>
+          <span class="avatar" [style.background]="m.color">{{ initials(m.name) }}</span>
+          <div class="merchant-info">
+            <span class="merchant-name">{{ m.name }}</span>
+            <span class="merchant-meta">{{ m.transactionCount }} txns • {{ m.topCategoryName }}</span>
+          </div>
+          <div class="merchant-amount">
+            <span class="amount">₹{{ m.amount | number:'1.2-2' }}</span>
+            <div class="bar-track">
+              <span class="bar-fill" [style.width.%]="m.percentage" [style.background]="m.color"></span>
+            </div>
+            <span class="pct">{{ m.percentage }}%</span>
+          </div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <div class="empty-state">
+      <span class="empty-icon">🏪</span>
+      <p>No merchant activity yet.</p>
+    </div>
+  }
+</div>

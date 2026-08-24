@@ -55,7 +55,7 @@
   padding: $spacing-2 $spacing-5;
   background: $color-primary-button;
   color: $color-white;
-  border: 1px solid $color-primary-button;
+  border: $border-width-sm solid $color-primary-button;
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
@@ -91,7 +91,7 @@
   gap: $spacing-3;
   padding: $spacing-4 $spacing-5;
   background: $color-card;
-  border: 1px solid $color-border;
+  border: $border-width-sm solid $color-border;
   border-radius: $radius-lg;
   box-shadow: $shadow-sm;
 }
@@ -100,8 +100,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: $spacing-10;
+  height: $spacing-10;
   border-radius: $radius-md;
   font-size: $font-size-lg;
 
@@ -124,7 +124,7 @@
 .stat-info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: $spacing-1;
 }
 
 .stat-label {
@@ -165,9 +165,9 @@
 
   .search-input {
     width: 100%;
-    height: 38px;
+    height: $spacing-10;
     padding: 0 $spacing-8;
-    border: 1px solid $color-border;
+    border: $border-width-sm solid $color-border;
     border-radius: $radius-md;
     background: $color-card;
     font-size: $font-size-base;
@@ -212,7 +212,7 @@
   justify-content: space-between;
   padding: $spacing-4;
   background: $color-card;
-  border: 1px solid $color-border;
+  border: $border-width-sm solid $color-border;
   border-radius: $radius-lg;
   box-shadow: $shadow-sm;
   transition: all $transition-fast;
@@ -233,32 +233,32 @@
 .tag-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px $spacing-2;
-  border: 1px solid transparent;
+  gap: $spacing-2;
+  padding: $spacing-1 $spacing-2;
+  border: $border-width-sm solid transparent;
   border-radius: $radius-sm;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
 }
 
 .tag-color-dot {
-  width: 8px;
-  height: 8px;
+  width: $spacing-2;
+  height: $spacing-2;
   border-radius: 50%;
 }
 
 .tag-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: $spacing-1;
 }
 
 .btn-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: $spacing-7;
+  height: $spacing-7;
   border: 0;
   border-radius: $radius-sm;
   background: transparent;
@@ -283,7 +283,7 @@
   color: $color-text-secondary;
   line-height: 1.4;
   margin: 0 0 $spacing-3 0;
-  min-height: 35px;
+  min-height: $spacing-8;
 
   &.empty-desc {
     color: $color-text-light;
@@ -296,19 +296,19 @@
   align-items: center;
   justify-content: space-between;
   padding-top: $spacing-2;
-  border-top: 1px solid $color-border-light;
+  border-top: $border-width-sm solid $color-border-light;
 }
 
 .tag-count-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: $spacing-1;
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
   color: $color-text-muted;
 
   i {
-    font-size: 11px;
+    font-size: $font-size-sm;
   }
 }
 
@@ -318,9 +318,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 60px $spacing-6;
+  padding: $spacing-16 $spacing-6;
   background: $color-card;
-  border: 1px dashed $color-border;
+  border: $border-width-sm dashed $color-border;
   border-radius: $radius-lg;
   text-align: center;
 
@@ -328,8 +328,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 56px;
-    height: 56px;
+    width: $spacing-12;
+    height: $spacing-12;
     border-radius: 50%;
     background: $color-info-bg;
     color: $color-info;
@@ -376,7 +376,7 @@
   border-radius: $radius-xl;
   box-shadow: $shadow-lg;
   overflow: hidden;
-  border: 1px solid $color-border;
+  border: $border-width-sm solid $color-border;
   animation: popIn $transition-normal cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -396,7 +396,7 @@
   align-items: center;
   justify-content: space-between;
   padding: $spacing-4 $spacing-5;
-  border-bottom: 1px solid $color-border-light;
+  border-bottom: $border-width-sm solid $color-border-light;
 }
 
 .modal-title-wrap {
@@ -409,8 +409,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: $spacing-8;
+  height: $spacing-8;
   border-radius: $radius-md;
   background: $color-info-bg;
   color: $color-info;
@@ -467,9 +467,9 @@
 
 .form-control {
   width: 100%;
-  height: 38px;
+  height: $spacing-10;
   padding: 0 $spacing-3;
-  border: 1px solid $color-border;
+  border: $border-width-sm solid $color-border;
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-family: inherit;
@@ -507,10 +507,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: $spacing-7;
+  height: $spacing-7;
   border-radius: 50%;
-  border: 2px solid $color-white;
+  border: $border-width-md solid $color-white;
   box-shadow: 0 0 0 1px $color-border;
   cursor: pointer;
   color: $color-white;
@@ -530,7 +530,7 @@
   padding: $spacing-2 $spacing-3;
   background: $color-background;
   border-radius: $radius-md;
-  border: 1px solid $color-border;
+  border: $border-width-sm solid $color-border;
 }
 
 .preview-label {
@@ -545,12 +545,12 @@
   justify-content: flex-end;
   gap: $spacing-2;
   padding-top: $spacing-2;
-  border-top: 1px solid $color-border-light;
+  border-top: $border-width-sm solid $color-border-light;
 }
 
 .btn-cancel {
   padding: $spacing-2 $spacing-3;
-  border: 1px solid $color-border;
+  border: $border-width-sm solid $color-border;
   border-radius: $radius-md;
   background: $color-card;
   color: $color-text-primary;
@@ -566,13 +566,21 @@
   }
 }
 
-@media (max-width: 768px) {
+// RESPONSIVE
+@include respond-max($bp-1280) {
+  .tags-page { max-width: 100%; }
+}
+
+@include respond-max($bp-840) {
   .tags-page {
     padding: $spacing-4 $spacing-4 $spacing-10 $spacing-4;
   }
 
-  .tags-stats-grid {
-    grid-template-columns: 1fr;
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .btn-primary { width: 100%; justify-content: center; }
   }
 
   .tags-toolbar {
@@ -583,4 +591,20 @@
   .search-box {
     width: 100%;
   }
+}
+
+@include respond-max($bp-600) {
+  .tags-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@include respond-max($bp-480) {
+  .tags-page {
+    padding: $spacing-3 $spacing-3 $spacing-8 $spacing-3;
+  }
+
+  .page-title { font-size: $font-size-2xl; }
+
+  .modal-header, .modal-body { padding: $spacing-4; }
 }

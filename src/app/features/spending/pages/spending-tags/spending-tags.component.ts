@@ -1,8 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { SpendingFacade } from '../../facades/spending.facade';
 import { Tag } from '../../models/tag.model';
+import { Expense } from '../../models/expense.model';
 
 @Component({
   selector: 'app-spending-tags',
@@ -12,18 +14,18 @@ import { Tag } from '../../models/tag.model';
   styleUrl: './spending-tags.component.scss'
 })
 export class SpendingTagsComponent implements OnInit {
-  private readonly spendingFacade = inject(SpendingFacade);
-  private readonly fb = inject(FormBuilder);
+  private readonly spendingFacade: SpendingFacade = inject(SpendingFacade);
+  private readonly fb: FormBuilder = inject(FormBuilder);
 
-  readonly tags$ = this.spendingFacade.tags$;
-  readonly allExpenses$ = this.spendingFacade.allExpenses$;
+  readonly tags$: Observable<Tag[]> = this.spendingFacade.tags$;
+  readonly allExpenses$: Observable<Expense[]> = this.spendingFacade.allExpenses$;
 
   tagForm!: FormGroup;
-  searchTerm = '';
-  showCreateModal = false;
+  searchTerm: string = '';
+  showCreateModal: boolean = false;
   editingTag: Tag | null = null;
 
-  readonly presetColors = [
+  readonly presetColors: string[] = [
     '#2563EB', // Blue
     '#10B981', // Emerald
     '#F59E0B', // Amber

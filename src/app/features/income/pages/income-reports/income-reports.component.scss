@@ -1,0 +1,237 @@
+@use '../../../../../styles/variables' as *;
+
+.income-reports-page {
+  padding: $spacing-6;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-6;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: $spacing-4;
+}
+
+.page-title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  margin: $spacing-1 0 0 0;
+}
+
+.action-wrap {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+}
+
+.period-select {
+  padding: $spacing-2 $spacing-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: $color-card;
+  color: $color-text-primary;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  outline: none;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  padding: $spacing-2 $spacing-4;
+  border: 1px solid $color-border;
+  background: $color-card;
+  color: $color-text-primary;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.report-overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-6;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.spotlight-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-6;
+  box-shadow: $shadow-sm;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: $spacing-4;
+}
+
+.spotlight-label {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.spotlight-main {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+}
+
+.spotlight-title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.spotlight-amount {
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  color: #059669;
+}
+
+.spotlight-share {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+.spotlight-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: $spacing-4;
+  border-top: 1px solid $color-border;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+
+  strong {
+    color: $color-text-primary;
+  }
+}
+
+.chart-box {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+
+.table-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+
+.table-header {
+  padding: $spacing-4 $spacing-5;
+  border-bottom: 1px solid $color-border;
+  background: $color-background;
+}
+
+.table-title {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $font-size-sm;
+
+  th {
+    text-align: left;
+    padding: $spacing-3 $spacing-4;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid $color-border;
+  }
+
+  td {
+    padding: $spacing-3 $spacing-4;
+    border-bottom: 1px solid $color-border;
+    color: $color-text-primary;
+    vertical-align: middle;
+  }
+}
+
+.source-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.name-text {
+  font-weight: $font-weight-semibold;
+}
+
+.cat-pill {
+  font-size: 11px;
+  background: $color-background;
+  padding: 2px 6px;
+  border-radius: $radius-sm;
+  color: $color-text-muted;
+}
+
+.amount-cell {
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.text-right { text-align: right; }
+
+.bar-cell {
+  width: 180px;
+}
+
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background: $color-background;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+}

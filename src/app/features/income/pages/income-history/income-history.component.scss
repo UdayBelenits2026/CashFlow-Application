@@ -1,0 +1,442 @@
+@use '../../../../../styles/variables' as *;
+
+.income-history-page {
+  padding: $spacing-6;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-6;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: $spacing-4;
+}
+
+.page-title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  margin: $spacing-1 0 0 0;
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  padding: $spacing-2 $spacing-4;
+  border: 1px solid $color-border;
+  background: $color-card;
+  color: $color-text-primary;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  padding: $spacing-2 $spacing-4;
+  background: #10B981;
+  color: #ffffff;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: #059669;
+  }
+}
+
+.summary-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $spacing-4;
+}
+
+.summary-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-4;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+  box-shadow: $shadow-sm;
+}
+
+.card-label {
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  color: $color-text-muted;
+  text-transform: uppercase;
+}
+
+.card-val {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+
+  &.green {
+    color: #059669;
+  }
+}
+
+.card-sub {
+  font-size: 11px;
+  color: $color-text-muted;
+}
+
+.filter-panel {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-4;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+  box-shadow: $shadow-sm;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 240px;
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  svg {
+    position: absolute;
+    left: $spacing-3;
+    color: $color-text-muted;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: $spacing-2 $spacing-3 $spacing-2 $spacing-8;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    font-size: $font-size-xs;
+    outline: none;
+
+    &:focus {
+      border-color: #10B981;
+    }
+  }
+}
+
+.quick-filters {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  flex-wrap: wrap;
+}
+
+.filter-select, .date-input {
+  padding: $spacing-2 $spacing-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  font-size: $font-size-xs;
+  color: $color-text-primary;
+  background: $color-card;
+  outline: none;
+
+  &:focus {
+    border-color: #10B981;
+  }
+}
+
+.btn-reset {
+  padding: $spacing-2 $spacing-3;
+  background: transparent;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-background;
+    color: $color-text-primary;
+  }
+}
+
+.secondary-filter-row {
+  justify-content: space-between;
+  padding-top: $spacing-2;
+  border-top: 1px solid $color-background;
+}
+
+.date-range-wrap, .sort-wrap {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.range-label {
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  color: $color-text-muted;
+}
+
+.btn-sort-order {
+  padding: $spacing-2 $spacing-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: $color-card;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.table-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $font-size-sm;
+
+  th {
+    text-align: left;
+    padding: $spacing-3 $spacing-4;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: $color-background;
+    border-bottom: $border-width-sm solid $color-border;
+  }
+
+  td {
+    padding: $spacing-3 $spacing-4;
+    border-bottom: $border-width-sm solid $color-border;
+    color: $color-text-primary;
+    vertical-align: middle;
+  }
+}
+
+.table-row {
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $color-background;
+  }
+
+  &:last-child td {
+    border-bottom: none;
+  }
+}
+
+.date-cell {
+  white-space: nowrap;
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+}
+
+.desc-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.desc-main {
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.desc-sub {
+  font-size: 11px;
+  color: $color-text-muted;
+}
+
+.source-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+}
+
+.account-cell {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.tax-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  padding: 1px 6px;
+  border-radius: $radius-sm;
+
+  &.taxable {
+    background: #EFF6FF;
+    color: #2563EB;
+  }
+
+  &.non-taxable {
+    background: #F1F5F9;
+    color: #64748B;
+  }
+}
+
+.amount-val {
+  font-weight: $font-weight-bold;
+  color: #059669;
+}
+
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+
+.action-buttons-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-1;
+}
+
+.btn-tbl-action {
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-md;
+  border: 1px solid $color-border;
+  background: $color-card;
+  color: $color-text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $color-background;
+    color: $color-text-primary;
+  }
+
+  &.delete:hover {
+    background: #FEE2E2;
+    color: #DC2626;
+    border-color: #FCA5A5;
+  }
+}
+
+.pagination-bar {
+  padding: $spacing-3 $spacing-4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid $color-border;
+  background: $color-background;
+  font-size: $font-size-xs;
+}
+
+.page-size-wrap {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  color: $color-text-muted;
+}
+
+.page-size-select {
+  padding: 2px 6px;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  background: $color-card;
+}
+
+.pagination-nav {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+}
+
+.btn-page {
+  padding: 4px 8px;
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  background: $color-card;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.page-current {
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.empty-state {
+  padding: $spacing-12;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-2;
+
+  .empty-icon {
+    color: $color-text-muted;
+    margin-bottom: $spacing-2;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: $font-size-base;
+    color: $color-text-primary;
+  }
+
+  p {
+    margin: 0;
+    font-size: $font-size-xs;
+    color: $color-text-muted;
+  }
+}

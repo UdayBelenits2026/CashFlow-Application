@@ -1,8 +1,10 @@
-import { Component, OnInit, inject, input, output, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, input, output, signal, computed, DestroyRef, InputSignal, OutputEmitterRef, WritableSignal, Signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Expense } from '../../models/expense.model';
 import { SpendingCategoryItem } from '../../models/spending-summary.model';
+import { DEFAULT_CATEGORIES } from '../../utility/spending.constants';
 
 @Component({
   selector: 'app-split-expense-modal',
@@ -12,56 +14,48 @@ import { SpendingCategoryItem } from '../../models/spending-summary.model';
   styleUrl: './split-expense-modal.component.scss'
 })
 export class SplitExpenseModalComponent implements OnInit {
-  readonly expense = input<Expense | null>(null);
-  readonly categories = input<SpendingCategoryItem[]>([]);
-  readonly close = output<void>();
-  readonly splitSaved = output<{ originalId: string; splits: Partial<Expense>[] }>();
+  readonly expense: InputSignal<Expense | null> = input<Expense | null>(null);
+  readonly categories: InputSignal<SpendingCategoryItem[]> = input<SpendingCategoryItem[]>([]);
+  readonly close: OutputEmitterRef<void> = output<void>();
+  readonly splitSaved: OutputEmitterRef<{ originalId: string; splits: Partial<Expense>[] }> = output<{ originalId: string; splits: Partial<Expense>[] }>();
 
-  private readonly fb = inject(FormBuilder);
+  private readonly fb: FormBuilder = inject(FormBuilder);
+  private readonly destroyRef: DestroyRef = inject(DestroyRef);
+
+  // Bumped on each form value change so the computed totals re-evaluate.
+  private readonly formTick: WritableSignal<number> = signal(0);
 
   splitForm!: FormGroup;
 
-  defaultCategories: SpendingCategoryItem[] = [
-    { id: 'cat-1', name: 'Food & Dining', color: '#0F172A', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-2', name: 'Shopping', color: '#1D4ED8', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-3', name: 'Transportation', color: '#EA580C', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-4', name: 'Utilities', color: '#D97706', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-5', name: 'Entertainment', color: '#6366F1', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-6', name: 'Health', color: '#10B981', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-7', name: 'Travel', color: '#06B6D4', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-8', name: 'Education', color: '#8B5CF6', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-9', name: 'Others', color: '#64748B', amount: 0, percentage: 0, barWidth: '0%' }
-  ];
-
-  readonly availableCategories = computed(() => {
+  readonly availableCategories: Signal<SpendingCategoryItem[]> = computed(() => {
     const cats = this.categories();
-    return cats && cats.length > 0 ? cats : this.defaultCategories;
+    return cats && cats.length > 0 ? cats : DEFAULT_CATEGORIES;
+  });
+
+  readonly totalOriginalAmount: Signal<number> = computed(() => this.expense()?.amount || 0);
+
+  readonly allocatedAmount: Signal<number> = computed(() => {
+    this.formTick();
+    if (!this.splitForm) return 0;
+    const values = this.splitsArray.value as { amount: number }[];
+    return values.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+  });
+
+  readonly remainingAmount: Signal<number> = computed(() =>
+    Number((this.totalOriginalAmount() - this.allocatedAmount()).toFixed(2))
+  );
+
+  readonly isSplitValid: Signal<boolean> = computed(() => {
+    this.formTick();
+    return (
+      this.splitForm?.valid === true &&
+      this.splitsArray.length >= 2 &&
+      Math.abs(this.remainingAmount()) < 0.01
+    );
   });
 
   get splitsArray(): FormArray {
     return this.splitForm.get('splits') as FormArray;
-  }
-
-  get totalOriginalAmount(): number {
-    return this.expense()?.amount || 0;
-  }
-
-  get allocatedAmount(): number {
-    if (!this.splitForm) return 0;
-    const values = this.splitsArray.value as { amount: number }[];
-    return values.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
-  }
-
-  get remainingAmount(): number {
-    return Number((this.totalOriginalAmount - this.allocatedAmount).toFixed(2));
-  }
-
-  get isSplitValid(): boolean {
-    return (
-      this.splitForm?.valid === true &&
-      this.splitsArray.length >= 2 &&
-      Math.abs(this.remainingAmount) < 0.01
-    );
   }
 
   ngOnInit(): void {
@@ -75,6 +69,10 @@ export class SplitExpenseModalComponent implements OnInit {
         this.createSplitGroup(rem, 'cat-2', 'Part 2')
       ])
     });
+
+    this.splitForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.formTick.update((v) => v + 1));
   }
 
   createSplitGroup(amount: number, categoryId: string, notes: string): FormGroup {
@@ -102,7 +100,7 @@ export class SplitExpenseModalComponent implements OnInit {
 
   onSaveSplits(): void {
     const exp = this.expense();
-    if (!exp || !this.isSplitValid) return;
+    if (!exp || !this.isSplitValid()) return;
 
     const cats = this.availableCategories();
     const formSplits = this.splitsArray.value as { amount: number; categoryId: string; notes: string }[];

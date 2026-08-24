@@ -1,57 +1,55 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef, signal, computed, WritableSignal, Signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { SpendingFacade } from '../../facades/spending.facade';
 import { Expense } from '../../models/expense.model';
+import { CalendarDay } from '../../models/calendar-day.model';
+import { exportExpensesToCsv } from '../../utility/spending.helpers';
 import { ExpenseDetailsDrawerComponent } from '../../components/expense-details-drawer/expense-details-drawer.component';
-
-interface CalendarDay {
-  date: Date;
-  dateString: string; // YYYY-MM-DD
-  dayNumber: number;
-  isCurrentMonth: boolean;
-  isToday: boolean;
-  totalSpending: number;
-  expenses: Expense[];
-}
 
 @Component({
   selector: 'app-expense-calendar',
   standalone: true,
-  imports: [CommonModule, DatePipe, DecimalPipe, ExpenseDetailsDrawerComponent],
+  imports: [CommonModule, RouterLink, DatePipe, DecimalPipe, ExpenseDetailsDrawerComponent],
   templateUrl: './expense-calendar.component.html',
   styleUrl: './expense-calendar.component.scss'
 })
 export class ExpenseCalendarComponent implements OnInit {
-  private readonly spendingFacade = inject(SpendingFacade);
+  private readonly spendingFacade: SpendingFacade = inject(SpendingFacade);
+  private readonly destroyRef: DestroyRef = inject(DestroyRef);
 
-  currentDate = new Date(2026, 4, 29); // May 2026
+  private latestExpenses: Expense[] = [];
+  private readonly today: Date = new Date();
+  readonly currentDate: WritableSignal<Date> = signal(new Date());
   calendarDays: CalendarDay[] = [];
   selectedDay: CalendarDay | null = null;
 
-  showDetailsDrawer = false;
+  showDetailsDrawer: boolean = false;
   activeExpense: Expense | null = null;
 
   ngOnInit(): void {
     this.spendingFacade.loadDashboard();
-    this.spendingFacade.allExpenses$.subscribe((expenses) => {
-      this.buildCalendar(expenses);
-    });
+    this.spendingFacade.allExpenses$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((expenses) => {
+        this.latestExpenses = expenses;
+        this.buildCalendar(expenses);
+      });
   }
 
-  get currentYearMonthLabel(): string {
-    return this.currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  }
+  readonly currentYearMonthLabel: Signal<string> = computed(() =>
+    this.currentDate().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  );
 
   changeMonth(delta: number): void {
-    this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + delta, 1);
-    this.spendingFacade.allExpenses$.subscribe((expenses) => {
-      this.buildCalendar(expenses);
-    });
+    this.currentDate.set(new Date(this.currentDate().getFullYear(), this.currentDate().getMonth() + delta, 1));
+    this.buildCalendar(this.latestExpenses);
   }
 
   buildCalendar(expenses: Expense[]): void {
-    const year = this.currentDate.getFullYear();
-    const month = this.currentDate.getMonth();
+    const year = this.currentDate().getFullYear();
+    const month = this.currentDate().getMonth();
 
     const firstDayIndex = new Date(year, month, 1).getDay();
     const totalDays = new Date(year, month + 1, 0).getDate();
@@ -80,8 +78,8 @@ export class ExpenseCalendarComponent implements OnInit {
 
     this.calendarDays = days;
 
-    // Default selection: today or 29th
-    const target = days.find((d) => d.dayNumber === 29 && d.isCurrentMonth) || days[firstDayIndex];
+    // Default selection: today, else first day of the current month
+    const target = days.find((d) => d.isToday) || days.find((d) => d.isCurrentMonth) || days[firstDayIndex];
     if (target) {
       this.selectedDay = target;
     }
@@ -101,7 +99,10 @@ export class ExpenseCalendarComponent implements OnInit {
       dateString,
       dayNumber: date.getDate(),
       isCurrentMonth,
-      isToday: date.getDate() === 29 && date.getMonth() === 4 && date.getFullYear() === 2026,
+      isToday:
+        date.getFullYear() === this.today.getFullYear() &&
+        date.getMonth() === this.today.getMonth() &&
+        date.getDate() === this.today.getDate(),
       totalSpending: total,
       expenses: matchingExpenses
     };
@@ -111,6 +112,13 @@ export class ExpenseCalendarComponent implements OnInit {
     this.selectedDay = day;
   }
 
+  severityClass(total: number): string {
+    if (total <= 0) return '';
+    if (total < 50) return 'sev-low';
+    if (total <= 100) return 'sev-medium';
+    return 'sev-high';
+  }
+
   openExpenseDetails(exp: Expense): void {
     this.activeExpense = exp;
     this.showDetailsDrawer = true;
@@ -118,28 +126,6 @@ export class ExpenseCalendarComponent implements OnInit {
 
   exportDayReport(): void {
     if (!this.selectedDay || this.selectedDay.expenses.length === 0) return;
-
-    const headers = ['Transaction ID', 'Date', 'Merchant', 'Category', 'Account', 'Payment Method', 'Amount ($)', 'Status', 'Notes'];
-    const rows = this.selectedDay.expenses.map((e) => [
-      `"${e.id}"`,
-      `"${e.date}"`,
-      `"${e.merchantName.replace(/"/g, '""')}"`,
-      `"${e.categoryName.replace(/"/g, '""')}"`,
-      `"${e.accountName.replace(/"/g, '""')}"`,
-      `"${e.paymentMethod || 'DEBIT_CARD'}"`,
-      e.amount,
-      `"${e.status || 'CLEARED'}"`,
-      `"${(e.notes || '').replace(/"/g, '""')}"`
-    ]);
-
-    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `spending_day_report_${this.selectedDay.dateString}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    exportExpensesToCsv(this.selectedDay.expenses, `spending_day_report_${this.selectedDay.dateString}`);
   }
 }

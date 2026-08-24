@@ -4,14 +4,14 @@ export interface SideNavChildItem {
   icon?: string;
   exact?: boolean;
 }
- 
+
 export interface SideNavItem {
   label: string;
   icon: string;
   route: string;
   children?: SideNavChildItem[];
 }
- 
+
 export const navigationList: SideNavItem[] = [
   {
     label: 'Dashboard',
@@ -27,6 +27,53 @@ export const navigationList: SideNavItem[] = [
     label: 'Income',
     icon: 'fa-solid fa-wallet',
     route: '/income',
+    children: [
+      {
+        label: 'Overview',
+        route: '/income/overview',
+        exact: true,
+      },
+      {
+        label: 'Dashboard',
+        route: '/income/dashboard',
+        exact: true,
+      },
+      {
+        label: 'History',
+        route: '/income/history',
+        exact: true,
+      },
+      {
+        label: 'Sources',
+        route: '/income/sources',
+        exact: true,
+      },
+      {
+        label: 'Recurring',
+        route: '/income/recurring',
+        exact: true,
+      },
+      {
+        label: 'Calendar',
+        route: '/income/calendar',
+        exact: true,
+      },
+      {
+        label: 'Reports',
+        route: '/income/reports',
+        exact: true,
+      },
+      {
+        label: 'Trends',
+        route: '/income/trends',
+        exact: true,
+      },
+      {
+        label: 'Insights',
+        route: '/income/insights',
+        exact: true,
+      },
+    ],
   },
   {
     label: 'Spending',
@@ -34,13 +81,18 @@ export const navigationList: SideNavItem[] = [
     route: '/spending',
     children: [
       {
-        label: 'Overview',
+        label: 'Dashboard',
         route: '/spending/dashboard',
         exact: true,
       },
       {
         label: 'Expenses',
         route: '/spending/expenses',
+        exact: true,
+      },
+      {
+        label: 'Trends',
+        route: '/spending/trends',
         exact: true,
       },
       {
@@ -51,6 +103,16 @@ export const navigationList: SideNavItem[] = [
       {
         label: 'Recurring',
         route: '/spending/recurring',
+        exact: true,
+      },
+      {
+        label: 'Insights',
+        route: '/spending/insights',
+        exact: true,
+      },
+      {
+        label: 'Alerts',
+        route: '/spending/alerts',
         exact: true,
       },
       {
@@ -91,4 +153,3 @@ export const navigationList: SideNavItem[] = [
     route: '/settings',
   },
 ];
- 

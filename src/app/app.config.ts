@@ -5,6 +5,7 @@ import {
 } from '@angular/core';
 
 import { provideRouter } from '@angular/router';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
 
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
@@ -42,6 +43,10 @@ export const appConfig: ApplicationConfig = {
     provideEffects([
       AuthEffects,
     ]),
+    provideStoreDevtools({
+      maxAge: 25,
+      logOnly: false,
+    }),
 
     provideHttpClient(
       withInterceptors([

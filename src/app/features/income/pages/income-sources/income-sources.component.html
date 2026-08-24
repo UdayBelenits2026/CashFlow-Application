@@ -1,0 +1,174 @@
+<div class="income-sources-page">
+  @let allSources = (sources$ | async) || [];
+  @let allIncomes = (allIncomes$ | async) || [];
+  @let filteredSources = getFilteredSources(allSources);
+
+  <!-- Header -->
+  <div class="top-bar">
+    <div class="title-wrap">
+      <h1 class="page-title">Income Sources</h1>
+      <p class="page-subtitle">Configure, monitor, and manage your employment, business, and passive revenue streams</p>
+    </div>
+
+    <div class="action-buttons">
+      <button type="button" class="btn-primary" (click)="openCreateSource()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        + Add New Source
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters & Search -->
+  <div class="filter-bar">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search income sources by name or type..."
+        [(ngModel)]="searchTerm"
+      />
+    </div>
+
+    <div class="status-tabs">
+      <button
+        type="button"
+        class="tab-btn"
+        [ngClass]="{ active: statusFilter === 'ALL' }"
+        (click)="statusFilter = 'ALL'"
+      >
+        All ({{ allSources.length }})
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        [ngClass]="{ active: statusFilter === 'ACTIVE' }"
+        (click)="statusFilter = 'ACTIVE'"
+      >
+        Active
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        [ngClass]="{ active: statusFilter === 'INACTIVE' }"
+        (click)="statusFilter = 'INACTIVE'"
+      >
+        Inactive
+      </button>
+    </div>
+  </div>
+
+  <!-- Sources Grid -->
+  @if (filteredSources.length === 0) {
+    <div class="empty-card">
+      <p>No income sources found matching your criteria.</p>
+      <button type="button" class="btn-secondary" (click)="searchTerm = ''; statusFilter = 'ALL'">
+        Reset Filters
+      </button>
+    </div>
+  } @else {
+    <div class="sources-grid">
+      @for (src of filteredSources; track src.id) {
+        <div class="source-card" (click)="openSourceDrawer(src)">
+          <div class="card-top">
+            <div class="type-badge-wrap">
+              <span
+                class="category-tag"
+                [style.backgroundColor]="(src.color || '#10B981') + '1A'"
+                [style.color]="src.color || '#10B981'"
+                [style.borderColor]="(src.color || '#10B981') + '33'"
+              >
+                {{ src.type }}
+              </span>
+              @if (src.isRecurring) {
+                <span class="recurring-tag">{{ src.frequency || 'Monthly' }}</span>
+              }
+            </div>
+
+            <span class="status-chip" [ngClass]="src.status === 'ACTIVE' ? 'active' : 'inactive'">
+              ● {{ src.status }}
+            </span>
+          </div>
+
+          <div class="card-main">
+            <h3 class="source-card-title">{{ src.name }}</h3>
+            @if (src.description) {
+              <p class="source-card-desc">{{ src.description }}</p>
+            }
+          </div>
+
+          <div class="card-metrics">
+            <div class="metric-item">
+              <span class="metric-lbl">Total YTD</span>
+              <span class="metric-val green">₹{{ (src.totalReceivedYtd || 0) | number:'1.2-2' }}</span>
+            </div>
+            <div class="metric-item text-right">
+              <span class="metric-lbl">Expected Baseline</span>
+              <span class="metric-val">₹{{ (src.expectedAmount || 0) | number:'1.2-2' }}</span>
+            </div>
+          </div>
+
+          <div class="card-footer" (click)="$event.stopPropagation()">
+            <span class="account-hint">{{ src.accountName || 'Primary Account' }}</span>
+            <div class="card-actions">
+              <button
+                type="button"
+                class="btn-quick-record"
+                title="Record income for this source"
+                (click)="onRecordFromSource(src)"
+              >
+                + Record
+              </button>
+              <button
+                type="button"
+                class="btn-edit-src"
+                title="Edit configuration"
+                (click)="openEditSource(src)"
+              >
+                ✏️
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Screen 7 Drawer: Income Source Details -->
+  @if (selectedSourceForDrawer) {
+    <app-income-source-details-drawer
+      [source]="selectedSourceForDrawer"
+      [sourceIncomes]="getSourceIncomes(selectedSourceForDrawer.id, allIncomes)"
+      (close)="selectedSourceForDrawer = null"
+      (editSource)="openEditSource($event)"
+      (toggleStatus)="onToggleStatus($event)"
+      (recordIncomeNow)="onRecordFromSource($event)"
+    ></app-income-source-details-drawer>
+  }
+
+  <!-- Modals -->
+  @if (showSourceModal) {
+    <app-income-source-modal
+      [source]="selectedSourceForEdit"
+      [accounts]="(accounts$ | async) || []"
+      (close)="showSourceModal = false; selectedSourceForEdit = null"
+      (save)="onSaveSource($event)"
+      (update)="onUpdateSource($event)"
+    ></app-income-source-modal>
+  }
+
+  @if (showAddIncomeModal) {
+    <app-add-income-modal
+      [sources]="allSources"
+      [accounts]="(accounts$ | async) || []"
+      (close)="showAddIncomeModal = false; prefilledSourceForIncome = null"
+      (save)="onSaveIncome($event)"
+    ></app-add-income-modal>
+  }
+</div>
