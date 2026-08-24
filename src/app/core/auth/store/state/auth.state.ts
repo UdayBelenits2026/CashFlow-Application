@@ -1,4 +1,4 @@
-import { AuthError, AuthOperation, AuthUser } from '../../models/auth.models';
+import { AuthError, AuthOperation, AuthUser, ResetPasswordData } from '../../models/auth.models';
 
 export interface AuthState {
   user: AuthUser | null;
@@ -10,6 +10,12 @@ export interface AuthState {
   error: AuthError | null;
   operation: AuthOperation;
   successMessage: string | null;
+  notice: string | null;
+  resetPasswordLoading: boolean;
+  resetPasswordSuccess: boolean;
+  resetPasswordMessage: string | null;
+  resetPasswordError: string | null;
+  resetPasswordData: ResetPasswordData | null;
 }
 
 export const initialAuthState: AuthState = {
@@ -22,4 +28,10 @@ export const initialAuthState: AuthState = {
   error: null,
   operation: null,
   successMessage: null,
+  notice: null,
+  resetPasswordLoading: false,
+  resetPasswordSuccess: false,
+  resetPasswordMessage: null,
+  resetPasswordError: null,
+  resetPasswordData: null,
 };

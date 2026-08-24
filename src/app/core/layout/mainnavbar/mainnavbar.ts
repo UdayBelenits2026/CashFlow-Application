@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { LayoutService } from '../services/layout';
 import { DatePickerComponent, DateRange } from '../../../shared/ui/date-picker/date-picker';
+import { AuthFacade } from '../../auth/facades/auth.facade';
 
 @Component({
   selector: 'app-cf-mainnavbar',
@@ -16,9 +17,14 @@ import { DatePickerComponent, DateRange } from '../../../shared/ui/date-picker/d
 export class Mainnavbar {
   readonly layoutService = inject(LayoutService);
   private readonly router = inject(Router);
+  private readonly authFacade = inject(AuthFacade);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly pageTitle = signal('Dashboard');
+
+  // Collapsed-search and profile menu visibility (small screens / on demand).
+  readonly isSearchOpen = signal(false);
+  readonly isProfileMenuOpen = signal(false);
 
   // Keep the selected range in sync with the shared date picker.
   selectedDate: DateRange = this.getCurrentMonthRange();
@@ -111,8 +117,34 @@ export class Mainnavbar {
     console.log('Open notifications');
   }
 
-  openProfile(): void {
-    console.log('Open profile');
+  toggleSearch(): void {
+    this.isSearchOpen.update((open) => !open);
+    this.isProfileMenuOpen.set(false);
+  }
+
+  toggleProfileMenu(): void {
+    this.isProfileMenuOpen.update((open) => !open);
+    this.isSearchOpen.set(false);
+  }
+
+  closeMenus(): void {
+    this.isSearchOpen.set(false);
+    this.isProfileMenuOpen.set(false);
+  }
+
+  goToProfile(): void {
+    this.closeMenus();
+    void this.router.navigate(['/settings']);
+  }
+
+  goToSettings(): void {
+    this.closeMenus();
+    void this.router.navigate(['/settings']);
+  }
+
+  logout(): void {
+    this.closeMenus();
+    this.authFacade.logout();
   }
 
   private getCurrentMonthRange(): DateRange {

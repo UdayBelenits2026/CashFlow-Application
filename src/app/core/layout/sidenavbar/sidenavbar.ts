@@ -5,6 +5,7 @@ import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LayoutService } from '../services/layout';
 import { navigationList, SideNavItem } from '../data/navigation.data';
+import { AuthFacade } from '../../auth/facades/auth.facade';
 
 @Component({
   selector: 'app-cf-sidenavbar',
@@ -18,6 +19,7 @@ export class Sidenavbar {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   readonly layoutService = inject(LayoutService);
+  private readonly authFacade = inject(AuthFacade);
   readonly navigationItems = navigationList;
   // Stores the parent menus that are currently open
   readonly expandedItems = signal<Set<string>>(new Set());
@@ -37,17 +39,12 @@ export class Sidenavbar {
     return this.expandedItems().has(item.label);
   }
   onParentItemClick(item: SideNavItem): void {
-    const isCurrentlyExpanded = this.isExpanded(item);
-    const isInsideRoute = this.isRouteInsideItem(this.router.url, item);
-
-    if (!isCurrentlyExpanded) {
-      this.updateExpandedItems(item, true);
+    if (item.children?.length) {
+      this.toggleExpand(item);
+      return;
     }
-
-    if (!isInsideRoute && item.route) {
+    if (item.route) {
       void this.router.navigateByUrl(item.route);
-    } else if (isCurrentlyExpanded && isInsideRoute) {
-      this.updateExpandedItems(item, false);
     }
   }
   toggleExpand(item: SideNavItem): void {
@@ -62,6 +59,10 @@ export class Sidenavbar {
   }
   closeMobileMenu(): void {
     this.layoutService.closeMobileMenu();
+  }
+  onLogout(): void {
+    this.layoutService.closeMobileMenu();
+    this.authFacade.logout();
   }
   private updateExpandedItems(item: SideNavItem, expanded: boolean): void {
     const current = new Set(this.expandedItems());

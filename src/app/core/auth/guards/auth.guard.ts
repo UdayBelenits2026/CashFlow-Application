@@ -1,12 +1,14 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
-import { AuthTokenService } from '../services/auth-token.service';
+import { TokenService } from '../services/token.service';
 
 export const authGuard: CanActivateFn = (_route, state): boolean | UrlTree => {
-  const authTokenService = inject(AuthTokenService);
+  const tokenService = inject(TokenService);
   const router = inject(Router);
 
-  if (authTokenService.isAuthenticated()) {
+  // The persisted access token is the source of truth for route access; an
+  // invalid/expired token is handled by the interceptor (refresh, then logout).
+  if (tokenService.hasAccessToken()) {
     return true;
   }
 

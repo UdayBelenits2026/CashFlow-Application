@@ -1,26 +1,27 @@
 @use '../../../../../styles/variables' as *;
 
-// AUTH PAGE
+// AUTH PAGE (MOBILE-FIRST BASE)
 .auth-page {
   position: relative;
   width: 100%;
-  height: 100vh;
   min-height: 100vh;
+  height: auto;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   background: $color-background;
+
   // AUTH CONTAINER
   .auth-container {
-    display: grid;
-    grid-template-columns: 43% 57%;
+    display: block;
     width: 100%;
-    height: 100vh;
+    height: auto;
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    overflow: hidden;
     background: $color-card;
+
     // RIGHT FORM SECTION
     .auth-form-section {
       display: flex;
@@ -28,59 +29,66 @@
       justify-content: center;
       width: 100%;
       min-width: 0;
-      height: 100vh;
-      padding: 2.5rem 4.375rem;
-      overflow-y: auto;
+      height: auto;
+      min-height: calc(100vh - 6rem);
+      padding: 1.75rem 1.125rem;
       background: $color-card;
       box-sizing: border-box;
+
       // FORM WRAPPER
       .auth-form-wrapper {
         width: 100%;
-        max-width: 29.375rem;
+        max-width: 100%;
         margin: 0 auto;
+
         // FORM HEADER
         .form-header {
-          margin: 0 0 1.6875rem;
+          margin: 0 0 1.375rem;
 
           h1 {
             margin: 0 0 0.4375rem;
             color: $color-text-primary;
-            font-size: 1.875rem;
+            font-size: 1.5rem;
             line-height: 1.2;
             font-weight: $font-weight-bold;
             letter-spacing: -0.03125rem;
           }
+
           p {
             margin: 0;
             color: $color-text-secondary;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             line-height: 1.5;
             font-weight: $font-weight-medium;
           }
         }
+
         // FORM
         form {
           width: 100%;
+
           // FORM GROUP
           .form-group {
             width: 100%;
-            margin-bottom: 1.125rem;
+            margin-bottom: 1rem;
+
             // LABEL
             .form-label {
               display: block;
               margin-bottom: 0.4375rem;
               color: $color-text-primary;
-              font-size: 0.6875rem;
+              font-size: 0.625rem;
               line-height: 1.3;
               font-weight: $font-weight-bold;
             }
+
             // INPUT WRAPPER
             .input-wrapper {
               position: relative;
               display: flex;
               align-items: center;
               width: 100%;
-              height: $input-height;
+              height: 2.875rem;
               border: $border-width-sm solid $color-border;
               border-radius: $radius-sm;
               background: $color-card;
@@ -89,28 +97,33 @@
                 border-color $transition-fast,
                 box-shadow $transition-fast,
                 background-color $transition-fast;
+
               &:hover {
                 border-color: $color-border-hover;
               }
+
               &:focus-within {
                 border-color: $color-primary-button;
                 box-shadow: 0 0 0 0.1875rem rgba(21, 84, 232, 0.08);
               }
+
               &.has-error {
                 border-color: #ff5b61;
                 background: #fffdfd;
                 box-shadow: none;
+
                 &:focus-within {
                   border-color: $color-danger;
                   box-shadow: 0 0 0 0.1875rem rgba(220, 38, 38, 0.06);
                 }
               }
+
               // INPUT
               .form-control {
                 display: block;
                 width: 100%;
                 height: 100%;
-                min-height: $input-height;
+                min-height: 2.875rem;
                 margin: 0;
                 padding: 0 2.625rem;
                 border: 0;
@@ -122,14 +135,17 @@
                 font-size: 0.75rem;
                 line-height: 1;
                 box-sizing: border-box;
+
                 &::placeholder {
                   color: $color-placeholder;
                   opacity: 1;
                 }
+
                 &:focus {
                   outline: none;
                 }
               }
+
               // INPUT ICON
               .input-icon {
                 position: absolute;
@@ -144,6 +160,7 @@
                 font-size: 0.8125rem;
                 pointer-events: none;
               }
+
               // PASSWORD TOGGLE
               .password-toggle {
                 position: absolute;
@@ -169,12 +186,14 @@
                   color: $color-primary;
                   background: #f4f7fa;
                 }
+
                 i {
                   font-size: 0.8125rem;
                   line-height: 1;
                 }
               }
             }
+
             // FORM ERROR
             .form-error {
               display: flex;
@@ -191,6 +210,7 @@
                 font-size: 0.625rem;
               }
             }
+
             // TERMS CHECKBOX
             .terms-checkbox {
               display: flex;
@@ -200,6 +220,7 @@
               font-size: 0.625rem;
               line-height: 1.5;
               cursor: pointer;
+
               input {
                 appearance: none;
                 position: relative;
@@ -232,6 +253,7 @@
                   }
                 }
               }
+
               a {
                 color: $color-primary-button;
                 font-weight: $font-weight-semibold;
@@ -244,14 +266,16 @@
               }
             }
           }
+
           // FORM OPTIONS
           .form-options {
             display: flex;
             align-items: center;
             justify-content: space-between;
             width: 100%;
-            margin: 0.0625rem 0 1.1875rem;
+            margin: 0.0625rem 0 1.0625rem;
           }
+
           // REMEMBER ME
           .remember-me {
             display: inline-flex;
@@ -261,6 +285,7 @@
             font-size: 0.625rem;
             line-height: 1;
             cursor: pointer;
+
             input {
               appearance: none;
               position: relative;
@@ -274,9 +299,11 @@
               transition:
                 background-color $transition-fast,
                 border-color $transition-fast;
+
               &:checked {
                 border-color: $color-primary-button;
                 background: $color-primary-button;
+
                 &::after {
                   content: '';
                   position: absolute;
@@ -291,6 +318,7 @@
               }
             }
           }
+
           // FORGOT PASSWORD
           .forgot-link {
             color: $color-primary-button;
@@ -304,6 +332,7 @@
               text-decoration: underline;
             }
           }
+
           // AUTH ERROR
           .auth-error {
             display: flex;
@@ -319,11 +348,13 @@
             background: $color-danger-bg;
             font-size: 0.6875rem;
             line-height: 1.4;
+
             .error-icon {
               flex: 0 0 auto;
               font-size: 0.75rem;
             }
           }
+
           // PRIMARY BUTTON
           .submit-button {
             display: flex;
@@ -331,8 +362,8 @@
             justify-content: center;
             gap: 0.5rem;
             width: 100%;
-            height: 3rem;
-            min-height: 3rem;
+            height: 2.875rem;
+            min-height: 2.875rem;
             margin: 0;
             border: 0;
             border-radius: $radius-sm;
@@ -346,17 +377,21 @@
             transition:
               background-color $transition-fast,
               transform $transition-fast;
+
             &:hover:not(:disabled) {
               background: $color-primary-button-hover;
             }
+
             &:active:not(:disabled) {
               transform: translateY(0.0625rem);
             }
+
             &:disabled {
               opacity: 0.65;
               cursor: not-allowed;
             }
           }
+
           // DIVIDER
           .divider {
             display: flex;
@@ -370,6 +405,7 @@
               height: $border-width-sm;
               background: $color-border-light;
             }
+
             small {
               flex: 0 0 auto;
               color: $color-text-muted;
@@ -377,6 +413,7 @@
               line-height: 1;
             }
           }
+
           // SOCIAL BUTTON
           .social-button {
             display: flex;
@@ -384,8 +421,8 @@
             justify-content: center;
             gap: 0.5625rem;
             width: 100%;
-            height: 2.75rem;
-            min-height: 2.75rem;
+            height: 2.6875rem;
+            min-height: 2.6875rem;
             margin: 0 0 0.5rem;
             padding: 0 1rem;
             box-sizing: border-box;
@@ -401,11 +438,13 @@
               border-color $transition-fast,
               background-color $transition-fast,
               box-shadow $transition-fast;
+
             &:hover {
               border-color: $color-border-hover;
               background: #fafbfc;
               box-shadow: 0 0.125rem 0.4375rem rgba(11, 31, 58, 0.04);
             }
+
             .social-icon {
               display: inline-flex;
               align-items: center;
@@ -420,9 +459,11 @@
                 font-size: 0.9375rem;
                 line-height: 1;
               }
+
               &.google-icon {
                 color: $color-social-google;
               }
+
               &.apple-icon {
                 color: $color-social-apple;
               }
@@ -506,18 +547,59 @@
     transform: translateX(0);
   }
 }
-// LARGE DESKTOP
-@media (min-width: 90rem) {
+
+// ============================================================
+// PROGRESSIVE RESPONSIVE ENHANCEMENTS (MIN-WIDTH ONLY)
+// ============================================================
+
+// ≥ 30rem (480px) - SMALL MOBILE
+@include xs {
   .auth-page {
     .auth-container {
-      grid-template-columns: 43% 57%;
       .auth-form-section {
-        padding: 3.125rem 6.25rem;
+        min-height: calc(100vh - 6.25rem);
+        padding: 2.1875rem 1.5rem;
+
         .auth-form-wrapper {
-          max-width: 30rem;
+          max-width: 28.75rem;
+
           .form-header {
             h1 {
-              font-size: 1.9375rem;
+              font-size: 1.625rem;
+            }
+
+            p {
+              font-size: 0.8125rem;
+            }
+          }
+
+          form {
+            .form-group {
+              .form-label {
+                font-size: 0.6875rem;
+              }
+
+              .input-wrapper {
+                height: $input-height;
+
+                .form-control {
+                  min-height: $input-height;
+                }
+              }
+            }
+
+            .form-options {
+              margin-bottom: 1.1875rem;
+            }
+
+            .submit-button {
+              height: 3rem;
+              min-height: 3rem;
+            }
+
+            .social-button {
+              height: 2.75rem;
+              min-height: 2.75rem;
             }
           }
         }
@@ -525,35 +607,59 @@
     }
   }
 }
-// DESKTOP / LAPTOP
-@media (max-width: 75rem) {
+
+// ≥ 37.5rem (600px) - LARGE MOBILE
+@include sm {
   .auth-page {
     .auth-container {
-      grid-template-columns: 42% 58%;
       .auth-form-section {
-        padding: 2.5rem 3.4375rem;
+        padding: 2.1875rem 2rem;
+
         .auth-form-wrapper {
-          max-width: 28.125rem;
+          .form-header {
+            h1 {
+              font-size: 1.6875rem;
+            }
+
+            p {
+              font-size: 0.875rem;
+            }
+          }
         }
       }
     }
   }
 }
-// TABLET LANDSCAPE
-@media (max-width: 64rem) {
+
+// ≥ 52.5rem (840px) - TABLET
+@include md {
   .auth-page {
+    height: 100vh;
+    overflow: hidden;
+
     .auth-container {
+      display: grid;
       grid-template-columns: 43% 57%;
+      height: 100vh;
+      overflow: hidden;
+
       .auth-form-section {
+        height: 100vh;
+        min-height: 100vh;
         padding: 2.1875rem 2.375rem;
+        overflow-y: auto;
+
         .auth-form-wrapper {
           max-width: 25.625rem;
+
           .form-header {
             margin-bottom: 1.375rem;
+
             h1 {
               font-size: 1.6875rem;
             }
           }
+
           form {
             .form-group {
               margin-bottom: 1rem;
@@ -564,72 +670,53 @@
     }
   }
 }
-// TABLET / MOBILE
-@media (max-width: 48rem) {
+
+// ≥ 60rem (960px) - SMALL DESKTOP / TABLET LANDSCAPE
+@include lg {
   .auth-page {
-    height: auto;
-    min-height: 100vh;
-    overflow-y: auto;
     .auth-container {
-      display: block;
-      width: 100%;
-      height: auto;
-      min-height: 100vh;
+      grid-template-columns: 42% 58%;
+
       .auth-form-section {
-        width: 100%;
-        height: auto;
-        min-height: calc(100vh - 6.25rem);
-        padding: 2.1875rem 1.5rem;
-        box-sizing: border-box;
+        padding: 2.5rem 3.4375rem;
 
         .auth-form-wrapper {
-          width: 100%;
-          max-width: 28.75rem;
+          max-width: 28.125rem;
+
+          .form-header {
+            margin-bottom: 1.6875rem;
+
+            h1 {
+              font-size: 1.875rem;
+            }
+          }
+
+          form {
+            .form-group {
+              margin-bottom: 1.125rem;
+            }
+          }
         }
       }
     }
   }
 }
-// SMALL MOBILE
-@media (max-width: 30rem) {
+
+// ≥ 80rem (1280px) - FULL DESKTOP
+@include xl {
   .auth-page {
     .auth-container {
+      grid-template-columns: 43% 57%;
+
       .auth-form-section {
-        min-height: calc(100vh - 6rem);
-        padding: 1.75rem 1.125rem;
+        padding: 2.5rem 4.375rem;
 
         .auth-form-wrapper {
+          max-width: 29.375rem;
+
           .form-header {
-            margin-bottom: 1.375rem;
-
             h1 {
-              font-size: 1.5rem;
-            }
-
-            p {
-              font-size: 0.75rem;
-            }
-          }
-          form {
-            .form-group {
-              .form-label {
-                font-size: 0.625rem;
-              }
-              .input-wrapper {
-                height: 2.875rem;
-
-                .form-control {
-                  min-height: 2.875rem;
-                }
-              }
-            }
-            .submit-button {
-              height: 2.875rem;
-              min-height: 2.875rem;
-            }
-            .social-button {
-              height: 2.6875rem;
-              min-height: 2.6875rem;
+              font-size: 1.875rem;
             }
           }
         }

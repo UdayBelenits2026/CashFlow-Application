@@ -21,7 +21,7 @@
             [class.active]="isParentRouteActive(item)"
             [attr.aria-expanded]="isExpanded(item)"
             [attr.aria-label]="item.label"
-            [attr.title]="layoutService.isSidebarCollapsed() ? item.label : null"
+            [attr.title]="item.label"
             (click)="onParentItemClick(item)">
             <i [class]="item.icon" aria-hidden="true"></i>
             <span class="nav-label">{{ item.label }}</span>
@@ -39,7 +39,7 @@
                   [routerLink]="child.route"
                   routerLinkActive="active"
                   [routerLinkActiveOptions]="{ exact: child.exact ?? true }"
-                  [attr.title]="layoutService.isSidebarCollapsed() ? child.label : null"
+                  [attr.title]="child.label"
                   (click)="closeMobileMenu()">
                   @if (child.icon) {
                     <i [class]="child.icon" aria-hidden="true"></i>
@@ -58,7 +58,7 @@
           [routerLink]="item.route"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: item.route === '/' || item.route === '/dashboard' }"
-          [attr.title]="layoutService.isSidebarCollapsed() ? item.label : null"
+          [attr.title]="item.label"
           (click)="closeMobileMenu()">
           <i [class]="item.icon" aria-hidden="true"></i>
           <span class="nav-label">{{ item.label }}</span>
@@ -71,8 +71,8 @@
     <button
       type="button"
       class="logout-button"
-      [attr.title]="layoutService.isSidebarCollapsed() ? 'Logout' : null"
-      (click)="closeMobileMenu()">
+      [attr.title]="'Logout'"
+      (click)="onLogout()">
       <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
       <span>Logout</span>
     </button>

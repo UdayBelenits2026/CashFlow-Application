@@ -12,3 +12,9 @@ export const selectPermissions = createSelector(selectUser, (user) => user?.perm
 export const selectLoading = createSelector(selectAuthState, (state) => state.loading);
 export const selectError = createSelector(selectAuthState, (state) => state.error);
 export const selectSuccessMessage = createSelector(selectAuthState, (state) => state.successMessage);
+export const selectNotice = createSelector(selectAuthState, (state) => state.notice);
+export const selectResetPasswordLoading = createSelector(selectAuthState, (state) => state.resetPasswordLoading);
+export const selectResetPasswordSuccess = createSelector(selectAuthState, (state) => state.resetPasswordSuccess);
+export const selectResetPasswordMessage = createSelector(selectAuthState, (state) => state.resetPasswordMessage);
+export const selectResetPasswordError = createSelector(selectAuthState, (state) => state.resetPasswordError);
+export const selectResetPasswordData = createSelector(selectAuthState, (state) => state.resetPasswordData);

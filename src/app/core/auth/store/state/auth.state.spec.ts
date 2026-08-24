@@ -12,6 +12,12 @@ describe('auth.state', () => {
       error: null,
       operation: null,
       successMessage: null,
+      notice: null,
+      resetPasswordLoading: false,
+      resetPasswordSuccess: false,
+      resetPasswordMessage: null,
+      resetPasswordError: null,
+      resetPasswordData: null,
     });
   });
 });

@@ -325,6 +325,26 @@
               font-size: 0.75rem;
             }
           }
+          // SESSION NOTICE
+          .auth-notice {
+            display: flex;
+            align-items: center;
+            gap: 0.4375rem;
+            width: 100%;
+            margin: 0 0 0.9375rem;
+            padding: 0.625rem 0.75rem;
+            box-sizing: border-box;
+            border: $border-width-sm solid rgba(37, 99, 235, 0.2);
+            border-radius: $radius-sm;
+            color: $color-primary;
+            background: rgba(37, 99, 235, 0.08);
+            font-size: 0.6875rem;
+            line-height: 1.4;
+            .notice-icon {
+              flex: 0 0 auto;
+              font-size: 0.75rem;
+            }
+          }
           // PRIMARY BUTTON
           .submit-button {
             display: flex;

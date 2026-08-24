@@ -2,6 +2,11 @@ import {
   selectAccessToken,
   selectIsAuthenticated,
   selectPermissions,
+  selectResetPasswordData,
+  selectResetPasswordError,
+  selectResetPasswordLoading,
+  selectResetPasswordMessage,
+  selectResetPasswordSuccess,
   selectRoles,
   selectUser,
 } from './auth.selectors';
@@ -25,6 +30,12 @@ describe('auth.selectors', () => {
     error: null,
     operation: null,
     successMessage: null,
+    notice: null,
+    resetPasswordLoading: true,
+    resetPasswordSuccess: true,
+    resetPasswordMessage: 'Password reset successfully.',
+    resetPasswordError: 'Email address is not registered.',
+    resetPasswordData: { publicId: 'pub-1', email: 'user@example.com' },
   };
 
   it('should select user, token and auth flag', () => {
@@ -36,5 +47,16 @@ describe('auth.selectors', () => {
   it('should select roles and permissions from user', () => {
     expect(selectRoles.projector(authState.user)).toEqual(['USER']);
     expect(selectPermissions.projector(authState.user)).toEqual(['DASHBOARD_VIEW']);
+  });
+
+  it('should select reset-password state slices', () => {
+    expect(selectResetPasswordLoading.projector(authState)).toBeTrue();
+    expect(selectResetPasswordSuccess.projector(authState)).toBeTrue();
+    expect(selectResetPasswordMessage.projector(authState)).toBe('Password reset successfully.');
+    expect(selectResetPasswordError.projector(authState)).toBe('Email address is not registered.');
+    expect(selectResetPasswordData.projector(authState)).toEqual({
+      publicId: 'pub-1',
+      email: 'user@example.com',
+    });
   });
 });

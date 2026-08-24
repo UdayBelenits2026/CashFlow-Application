@@ -1,15 +1,22 @@
 import { HttpContextToken, HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { catchError, throwError } from 'rxjs';
+import { catchError, switchMap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { AuthTokenService } from '../auth/services/auth-token.service';
+import { TokenService } from '../auth/services/token.service';
+import { SessionService } from '../auth/services/session.service';
+import { TokenRefreshService } from '../auth/services/token-refresh.service';
+import { AUTH_MESSAGES } from '../auth/models/auth.models';
 import * as AuthActions from '../auth/store/actions/auth.actions';
 
 export const SKIP_AUTH = new HttpContextToken<boolean>(() => false);
+// Marks a request already retried after a refresh, preventing infinite loops.
+const REFRESH_RETRIED = new HttpContextToken<boolean>(() => false);
 
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
-  const tokenService = inject(AuthTokenService);
+  const tokenService = inject(TokenService);
+  const sessionService = inject(SessionService);
+  const tokenRefresh = inject(TokenRefreshService);
   const store = inject(Store);
 
   const skipAuth = request.context.get(SKIP_AUTH);
@@ -26,9 +33,36 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   return next(authRequest).pipe(
     catchError((error: unknown) => {
       const httpError = error as HttpErrorResponse;
+      const canHandle =
+        httpError.status === 401 &&
+        isApiRequest &&
+        !skipAuth &&
+        sessionService.isAuthenticated();
 
-      if (httpError.status === 401 && isApiRequest && !skipAuth) {
-        store.dispatch(AuthActions.logout());
+      // Try a one-time refresh + retry before ending the session.
+      if (canHandle && tokenService.hasRefreshToken() && !request.context.get(REFRESH_RETRIED)) {
+        return tokenRefresh.refreshAccessToken().pipe(
+          switchMap((newToken) =>
+            next(
+              request.clone({
+                setHeaders: { Authorization: `${tokenService.getTokenType()} ${newToken}` },
+                context: request.context.set(REFRESH_RETRIED, true),
+              }),
+            ),
+          ),
+          catchError((refreshError: unknown) => {
+            store.dispatch(AuthActions.sessionExpired({ message: AUTH_MESSAGES.unauthorized }));
+            return throwError(() => refreshError);
+          }),
+        );
+      }
+
+      // Refresh not possible: a 401 on a protected request ends the session.
+      if (canHandle) {
+        const backendMessage = (httpError.error as { message?: string } | null)?.message;
+        store.dispatch(
+          AuthActions.sessionExpired({ message: backendMessage || AUTH_MESSAGES.unauthorized }),
+        );
       }
 
       // 403 means authenticated but unauthorized; session should remain intact.

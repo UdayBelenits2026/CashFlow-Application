@@ -198,6 +198,8 @@
     display: flex;
     flex-direction: column;
     height: 290px;
+    box-sizing: border-box;
+    overflow: hidden;
 
     app-cf-line-chart,
     app-cf-doughnut-chart {

@@ -5,6 +5,8 @@
       type="button"
       class="menu-button desktop-menu-button"
       (click)="toggleSidebar()"
+      data-tooltip="Toggle sidebar"
+      data-tooltip-align="start"
       aria-label="Toggle sidebar"
     >
       <i class="fa-solid fa-bars" aria-hidden="true"></i>
@@ -15,6 +17,8 @@
       class="menu-button mobile-menu-button"
       (click)="toggleMobileMenu()"
       [attr.aria-expanded]="layoutService.isMobileMenuOpen()"
+      data-tooltip="Menu"
+      data-tooltip-align="start"
       aria-label="Toggle navigation menu"
     >
       @if (layoutService.isMobileMenuOpen()) {
@@ -33,14 +37,27 @@
 
   <!-- Right side: search, date range and actions -->
   <div class="navbar-actions">
-    <div class="search-box">
-      <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-      <input
-        type="search"
-        placeholder="Search transactions, accounts, categories..."
-        aria-label="Search transactions, accounts, categories"
-        (input)="onSearch($event)"
-      />
+    <div class="search-wrapper">
+      <button
+        type="button"
+        class="search-icon-button"
+        (click)="toggleSearch()"
+        [attr.aria-expanded]="isSearchOpen()"
+        data-tooltip="Search"
+        aria-label="Search"
+      >
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+      </button>
+
+      <div class="search-box" [class.search-box--open]="isSearchOpen()">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input
+          type="search"
+          placeholder="Search transactions, accounts, categories..."
+          aria-label="Search transactions, accounts, categories"
+          (input)="onSearch($event)"
+        />
+      </div>
     </div>
 
     <div class="date-picker-wrapper">
@@ -54,6 +71,7 @@
       type="button"
       class="navbar-control"
       (click)="openFilter()"
+      data-tooltip="Filter"
       aria-label="Filter"
     >
       <i class="fa-solid fa-filter" aria-hidden="true"></i>
@@ -64,6 +82,7 @@
       type="button"
       class="navbar-control"
       (click)="openCustomize()"
+      data-tooltip="Customize dashboard"
       aria-label="Customize dashboard"
     >
       <i class="fa-solid fa-gear" aria-hidden="true"></i>
@@ -74,6 +93,7 @@
       type="button"
       class="navbar-control"
       (click)="refresh()"
+      data-tooltip="Refresh dashboard"
       aria-label="Refresh dashboard"
     >
       <i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>
@@ -84,6 +104,7 @@
       type="button"
       class="navbar-control"
       (click)="exportData()"
+      data-tooltip="Export"
       aria-label="Export"
     >
       <i class="fa-solid fa-download" aria-hidden="true"></i>
@@ -94,26 +115,63 @@
       type="button"
       class="notification-button"
       (click)="openNotifications()"
+      data-tooltip="Notifications"
+      data-tooltip-align="end"
       aria-label="Notifications"
     >
       <i class="fa-regular fa-bell" aria-hidden="true"></i>
       <span class="notification-badge" aria-label="3 notifications">3</span>
     </button>
 
-    <button
-      type="button"
-      class="profile-button"
-      (click)="openProfile()"
-      aria-label="Open profile menu"
-    >
-      <span class="profile-image">
-        <img
-          src="/assets/images/profile.png"
-          alt="Profile"
-        />
-      </span>
-      <span class="profile-name">Neelima</span>
-      <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
-    </button>
+    <div class="profile-menu-wrapper">
+      <button
+        type="button"
+        class="profile-button"
+        (click)="toggleProfileMenu()"
+        [attr.aria-expanded]="isProfileMenuOpen()"
+        aria-haspopup="menu"
+        aria-label="Open profile menu"
+      >
+        <span class="profile-image">
+          <img
+            src="/assets/images/profile.png"
+            alt="Profile"
+          />
+        </span>
+        <span class="profile-name">Neelima</span>
+        <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+      </button>
+
+      @if (isProfileMenuOpen()) {
+        <div class="profile-menu" role="menu">
+          <button type="button" class="profile-menu-item" role="menuitem" (click)="goToProfile()">
+            <i class="fa-solid fa-user" aria-hidden="true"></i>
+            <span>Profile</span>
+          </button>
+          <button type="button" class="profile-menu-item" role="menuitem" (click)="goToSettings()">
+            <i class="fa-solid fa-gear" aria-hidden="true"></i>
+            <span>Settings</span>
+          </button>
+          <button
+            type="button"
+            class="profile-menu-item profile-menu-item--danger"
+            role="menuitem"
+            (click)="logout()"
+          >
+            <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      }
+    </div>
   </div>
 </header>
+
+@if (isProfileMenuOpen() || isSearchOpen()) {
+  <button
+    type="button"
+    class="navbar-backdrop"
+    aria-label="Close menu"
+    (click)="closeMenus()"
+  ></button>
+}

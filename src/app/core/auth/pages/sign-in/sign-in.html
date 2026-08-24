@@ -103,6 +103,15 @@
               Forgot Password?
             </a>
           </div>
+          <!-- SESSION NOTICE -->
+          @if (notice$ | async; as notice) {
+          <div class="auth-notice" role="status">
+            <i class="fa-solid fa-circle-info notice-icon" aria-hidden="true"></i>
+            <span>
+              {{ notice }}
+            </span>
+          </div>
+          }
           <!-- LOGIN ERROR -->
           @if (error$ | async; as error) {
           <div class="auth-error" role="alert">

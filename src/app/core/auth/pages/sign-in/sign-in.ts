@@ -18,6 +18,7 @@ export class SignInComponent {
   private readonly authFacade = inject(AuthFacade);
   readonly loading$ = this.authFacade.loading$;
   readonly error$ = this.authFacade.error$;
+  readonly notice$ = this.authFacade.notice$;
   showPassword:boolean = false;
   // SIDE PANEL
   readonly sidePanelConfig = sidePanelConfig;
