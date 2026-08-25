@@ -24,15 +24,19 @@ import {
 import * as AuthActions from '../actions/auth.actions';
 import { AuthApiService } from '../../services/auth-api.service';
 import {
-  AUTH_MESSAGES,
+  AccountLockData,
+  AccountLockedResponse,
   AuthError,
   AuthUser,
-  INACTIVITY_TIMEOUT_MS,
   LoginData,
   LoginResponse,
   RegisterResponse,
   ResetPasswordResponse,
 } from '../../models/auth.models';
+import {
+  AUTH_MESSAGES,
+  INACTIVITY_TIMEOUT_MS,
+} from '../../constants/auth.constants';
 import { TokenService } from '../../services/token.service';
 import { SessionService } from '../../services/session.service';
 import { TokenRefreshService } from '../../services/token-refresh.service';
@@ -95,9 +99,14 @@ export class AuthEffects {
             void this.router.navigate(['/dashboard']);
             return AuthActions.loginSuccess({ data });
           }),
-          catchError((error: unknown) =>
-            of(AuthActions.loginFailure({ error: this.normalize(error) })),
-          ),
+          catchError((error: unknown) => {
+            const lock = this.extractAccountLock(error);
+            return of(
+              lock
+                ? AuthActions.loginLocked({ lock })
+                : AuthActions.loginFailure({ error: this.normalize(error) }),
+            );
+          }),
         ),
       ),
     ),
@@ -242,6 +251,19 @@ export class AuthEffects {
       expiresIn,
       user: session?.user ?? AuthEffects.EMPTY_USER,
     };
+  }
+
+  // Extracts backend account-lock data from an HTTP 423 ACCOUNT_LOCKED response.
+  private extractAccountLock(error: unknown): AccountLockData | null {
+    const httpError = error as HttpErrorResponse;
+    if (httpError?.status !== 423) {
+      return null;
+    }
+    const body = httpError.error as AccountLockedResponse | undefined;
+    if (body?.code !== 'ACCOUNT_LOCKED' || !body.data) {
+      return null;
+    }
+    return body.data;
   }
 
   private normalize(error: unknown): AuthError {

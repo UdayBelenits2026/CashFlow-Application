@@ -5,7 +5,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthSidePanelComponent } from '../../components/auth-side-panel/auth-side-panel';
-import { ForgotPasswordPanelConfig } from '../../data/auth-page.data';
+import { forgotPasswordPanelConfig } from '../../data/auth-page.data';
 import { AuthFacade } from '../../facades/auth.facade';
 import { ResetPasswordRequest } from '../../models/auth.models';
 import { cashflowPasswordPattern, passwordMatchValidator } from '../../utility/auth.validators';
@@ -24,7 +24,7 @@ export class ForgotPassword {
   private readonly destroyRef = inject(DestroyRef);
 
   // SIDE PANEL
-  readonly sidePanelConfig = ForgotPasswordPanelConfig;
+  readonly sidePanelConfig = forgotPasswordPanelConfig;
 
   // FACADE STATE
   readonly loading$ = this.authFacade.resetPasswordLoading$;

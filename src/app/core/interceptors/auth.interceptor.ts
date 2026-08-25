@@ -6,7 +6,7 @@ import { environment } from '../../../environments/environment';
 import { TokenService } from '../auth/services/token.service';
 import { SessionService } from '../auth/services/session.service';
 import { TokenRefreshService } from '../auth/services/token-refresh.service';
-import { AUTH_MESSAGES } from '../auth/models/auth.models';
+import { AUTH_MESSAGES } from '../auth/constants/auth.constants';
 import * as AuthActions from '../auth/store/actions/auth.actions';
 
 export const SKIP_AUTH = new HttpContextToken<boolean>(() => false);

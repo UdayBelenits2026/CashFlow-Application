@@ -1,7 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import * as AuthActions from '../actions/auth.actions';
 import { initialAuthState } from '../state/auth.state';
-import { AUTH_MESSAGES } from '../../models/auth.models';
+import { AUTH_MESSAGES } from '../../constants/auth.constants';
 
 export const authReducer = createReducer(
   initialAuthState,
@@ -9,6 +9,7 @@ export const authReducer = createReducer(
     ...state,
     loading: true,
     error: null,
+    accountLock: null,
     successMessage: null,
     notice: null,
     operation: action.type.includes('Login') ? 'LOGIN' : 'REGISTER',
@@ -30,6 +31,17 @@ export const authReducer = createReducer(
     loading: false,
     error,
     operation: null,
+  })),
+  on(AuthActions.loginLocked, (state, { lock }) => ({
+    ...state,
+    loading: false,
+    error: null,
+    accountLock: lock,
+    operation: null,
+  })),
+  on(AuthActions.clearAccountLock, (state) => ({
+    ...state,
+    accountLock: null,
   })),
   on(AuthActions.registerSuccess, (state, { response }) => ({
     ...state,

@@ -1,4 +1,5 @@
-import { AuthError, AuthOperation, AuthUser, ResetPasswordData } from '../../models/auth.models';
+import { AccountLockData, AuthError, AuthUser, ResetPasswordData } from '../../models/auth.models';
+import { AuthOperation } from '../../constants/auth.constants';
 
 export interface AuthState {
   user: AuthUser | null;
@@ -8,6 +9,7 @@ export interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   error: AuthError | null;
+  accountLock: AccountLockData | null;
   operation: AuthOperation;
   successMessage: string | null;
   notice: string | null;
@@ -26,6 +28,7 @@ export const initialAuthState: AuthState = {
   isAuthenticated: false,
   loading: false,
   error: null,
+  accountLock: null,
   operation: null,
   successMessage: null,
   notice: null,

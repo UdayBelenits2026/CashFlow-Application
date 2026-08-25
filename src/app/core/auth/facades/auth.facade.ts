@@ -15,6 +15,7 @@ export class AuthFacade {
   readonly isAuthenticated$ = this.store.select(AuthSelectors.selectIsAuthenticated);
   readonly loading$ = this.store.select(AuthSelectors.selectLoading);
   readonly error$ = this.store.select(AuthSelectors.selectError);
+  readonly accountLock$ = this.store.select(AuthSelectors.selectAccountLock);
   readonly successMessage$ = this.store.select(AuthSelectors.selectSuccessMessage);
   readonly notice$ = this.store.select(AuthSelectors.selectNotice);
 
@@ -30,6 +31,7 @@ export class AuthFacade {
   isAuthenticated(): boolean { return this.sessionService.isAuthenticated(); }
   currentUser(): AuthUser | null { return this.sessionService.getUser(); }
   clearError(): void { this.store.dispatch(AuthActions.clearAuthError()); }
+  clearAccountLock(): void { this.store.dispatch(AuthActions.clearAccountLock()); }
   resetPassword(request: ResetPasswordRequest): void { this.store.dispatch(AuthActions.resetPassword({ request })); }
   clearResetPasswordState(): void { this.store.dispatch(AuthActions.clearResetPasswordState()); }
 }

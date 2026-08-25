@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import {
+  AccountLockData,
   AuthError,
   LoginData,
   LoginRequest,
@@ -13,6 +14,8 @@ import {
 export const login = createAction('[Auth] Login', props<{ request: LoginRequest }>());
 export const loginSuccess = createAction('[Auth] Login Success', props<{ data: LoginData }>());
 export const loginFailure = createAction('[Auth] Login Failure', props<{ error: AuthError }>());
+export const loginLocked = createAction('[Auth] Login Locked', props<{ lock: AccountLockData }>());
+export const clearAccountLock = createAction('[Auth] Clear Account Lock');
 export const restoreSession = createAction('[Auth] Restore Session', props<{ data: LoginData }>());
 export const register = createAction('[Auth] Register', props<{ request: RegisterRequest }>());
 export const registerSuccess = createAction('[Auth] Register Success', props<{ response: RegisterResponse }>());
