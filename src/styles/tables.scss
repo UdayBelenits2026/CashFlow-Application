@@ -10,7 +10,7 @@
 
   overflow-x: auto;
 
-  border: 1px solid $color-border;
+  border: 0.0625rem solid $color-border;
 
   border-radius: $radius-lg;
 
@@ -31,11 +31,11 @@ thead {
 
 
 th {
-  padding: 13px 16px;
+  padding: 0.8125rem 1rem;
 
   color: $color-text-primary;
 
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
 
   text-align: left;
@@ -45,13 +45,13 @@ th {
 
 
 td {
-  padding: 13px 16px;
+  padding: 0.8125rem 1rem;
 
-  border-top: 1px solid $color-border-light;
+  border-top: 0.0625rem solid $color-border-light;
 
   color: $color-text-secondary;
 
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 

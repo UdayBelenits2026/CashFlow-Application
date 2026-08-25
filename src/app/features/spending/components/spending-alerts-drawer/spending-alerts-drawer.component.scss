@@ -8,7 +8,7 @@
   width: 100vw;
   height: 100vh;
   background: rgba(11, 31, 58, 0.5);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(0.25rem);
   z-index: $z-index-modal;
   display: flex;
   justify-content: flex-end;
@@ -17,11 +17,11 @@
 
 .drawer-panel {
   width: 100%;
-  max-width: 440px;
+  max-width: 27.5rem;
   height: 100vh;
   background: $color-card;
   box-shadow: $shadow-lg;
-  border-left: 1px solid $color-border;
+  border-left: 0.0625rem solid $color-border;
   display: flex;
   flex-direction: column;
   animation: slideLeft $transition-normal cubic-bezier(0.16, 1, 0.3, 1);
@@ -29,7 +29,7 @@
 
 .drawer-header {
   padding: $spacing-5 $spacing-6;
-  border-bottom: 1px solid $color-border-light;
+  border-bottom: 0.0625rem solid $color-border-light;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -81,7 +81,7 @@
 }
 
 .alert-card {
-  border: 1px solid $color-border;
+  border: 0.0625rem solid $color-border;
   border-radius: $radius-lg;
   padding: $spacing-4;
   background: $color-card;
@@ -91,7 +91,7 @@
   position: relative;
 
   &.unread {
-    border-left: 4px solid $color-primary-button;
+    border-left: 0.25rem solid $color-primary-button;
   }
 
   &.warning { border-left-color: $color-warning; background: $color-warning-bg; }
@@ -107,14 +107,14 @@
 }
 
 .alert-severity-badge {
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: $font-weight-bold;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 2px 6px;
+  padding: 0.125rem 0.375rem;
   border-radius: $radius-sm;
   background: $color-card;
-  border: 1px solid $color-border;
+  border: 0.0625rem solid $color-border;
   color: $color-text-primary;
 }
 
@@ -146,10 +146,10 @@
 
 .btn-mark-read {
   background: $color-card;
-  border: 1px solid $color-border;
+  border: 0.0625rem solid $color-border;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
-  padding: 4px $spacing-2;
+  padding: 0.25rem $spacing-2;
   border-radius: $radius-sm;
   color: $color-primary-button;
   cursor: pointer;
@@ -175,11 +175,11 @@
 
 .empty-alerts {
   text-align: center;
-  padding: 60px $spacing-5;
+  padding: 3.75rem $spacing-5;
 
   .check-icon {
-    width: 48px;
-    height: 48px;
+    width: 3rem;
+    height: 3rem;
     border-radius: 50%;
     background: $color-success-bg;
     color: $color-success;
@@ -197,14 +197,14 @@
 
 .drawer-footer {
   padding: $spacing-4 $spacing-6;
-  border-top: 1px solid $color-border-light;
+  border-top: 0.0625rem solid $color-border-light;
   background: $color-card;
 }
 
 .btn-secondary {
   padding: $spacing-2 $spacing-4;
   background: $color-card;
-  border: 1px solid $color-border;
+  border: 0.0625rem solid $color-border;
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;

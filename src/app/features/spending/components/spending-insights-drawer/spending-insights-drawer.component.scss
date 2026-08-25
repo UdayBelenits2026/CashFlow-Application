@@ -8,7 +8,7 @@
   width: 100vw;
   height: 100vh;
   background: rgba(11, 31, 58, 0.5);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(0.25rem);
   z-index: $z-index-modal;
   display: flex;
   justify-content: flex-end;
@@ -17,11 +17,11 @@
 
 .drawer-panel {
   width: 100%;
-  max-width: 440px;
+  max-width: 27.5rem;
   height: 100vh;
   background: $color-card;
   box-shadow: $shadow-lg;
-  border-left: 1px solid $color-border;
+  border-left: 0.0625rem solid $color-border;
   display: flex;
   flex-direction: column;
   animation: slideLeft $transition-normal cubic-bezier(0.16, 1, 0.3, 1);
@@ -29,7 +29,7 @@
 
 .drawer-header {
   padding: $spacing-5 $spacing-6;
-  border-bottom: 1px solid $color-border-light;
+  border-bottom: 0.0625rem solid $color-border-light;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -81,7 +81,7 @@
 }
 
 .insight-card {
-  border: 1px solid $color-border;
+  border: 0.0625rem solid $color-border;
   border-radius: $radius-lg;
   padding: $spacing-4;
   background: $color-card;
@@ -91,26 +91,26 @@
   transition: transform $transition-fast;
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-0.125rem);
   }
 
   &.positive {
-    border-left: 4px solid $color-success;
+    border-left: 0.25rem solid $color-success;
     background: $color-success-bg;
   }
 
   &.negative {
-    border-left: 4px solid $color-danger;
+    border-left: 0.25rem solid $color-danger;
     background: $color-danger-bg;
   }
 
   &.info {
-    border-left: 4px solid $color-primary-button;
+    border-left: 0.25rem solid $color-primary-button;
     background: $color-info-bg;
   }
 
   &.neutral {
-    border-left: 4px solid $color-warning;
+    border-left: 0.25rem solid $color-warning;
     background: $color-warning-bg;
   }
 }
@@ -125,14 +125,14 @@
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
   background: $color-card;
-  border: 1px solid $color-border;
-  padding: 2px $spacing-2;
+  border: 0.0625rem solid $color-border;
+  padding: 0.125rem $spacing-2;
   border-radius: $radius-sm;
   color: $color-text-primary;
 }
 
 .insight-type-label {
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: $font-weight-bold;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -155,14 +155,14 @@
 
 .drawer-footer {
   padding: $spacing-4 $spacing-6;
-  border-top: 1px solid $color-border-light;
+  border-top: 0.0625rem solid $color-border-light;
   background: $color-card;
 }
 
 .btn-secondary {
   padding: $spacing-2 $spacing-4;
   background: $color-card;
-  border: 1px solid $color-border;
+  border: 0.0625rem solid $color-border;
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;

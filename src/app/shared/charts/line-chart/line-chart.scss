@@ -2,7 +2,7 @@
 
 .chart-card {
   padding: $spacing-5;
-  border: 1px solid $color-border;
+  border: 0.0625rem solid $color-border;
   border-radius: $radius-xl;
   background: $color-card;
   height: 100%;
@@ -49,7 +49,7 @@
   gap: 0.25rem;
   padding: 0.25rem 0.5625rem;
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 0.0625rem solid #e2e8f0;
   border-radius: 0.375rem;
   font-size: 0.75rem;
   font-weight: 500;
@@ -67,7 +67,7 @@
     line-height: 1;
     color: #64748b;
     position: relative;
-    bottom: 5px;
+    bottom: 0.3125rem;
   }
 }
 
@@ -167,7 +167,7 @@
   inset: 0;
   display: flex;
   flex-direction: column;
-  padding-top: 2px;
+  padding-top: 0.125rem;
   background: $color-card;
 }
 
@@ -211,7 +211,7 @@
   flex-direction: column;
   justify-content: space-between;
   color: $color-text-muted;
-  font-size: 9px;
+  font-size: 0.5625rem;
 }
 
 .empty-chart-grid {
@@ -220,9 +220,9 @@
   background: repeating-linear-gradient(
     to bottom,
     transparent 0,
-    transparent calc(16.66% - 1px),
+    transparent calc(16.66% - 0.0625rem),
     $color-border-light 16.66%,
-    $color-border-light calc(16.66% + 1px)
+    $color-border-light calc(16.66% + 0.0625rem)
   );
 }
 
@@ -234,7 +234,7 @@
   display: flex;
   justify-content: space-between;
   color: $color-text-muted;
-  font-size: 9px;
+  font-size: 0.5625rem;
 }
 
 .chart-card.empty-state canvas {
