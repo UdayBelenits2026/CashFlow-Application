@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { DashboardFilter } from './dashboard-filter';
 
@@ -8,9 +9,9 @@ describe('DashboardFilter', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DashboardFilter]
-    })
-    .compileComponents();
+      imports: [DashboardFilter],
+      providers: [provideRouter([])],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DashboardFilter);
     component = fixture.componentInstance;

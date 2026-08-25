@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faA,
@@ -40,6 +40,7 @@ export class TransactionItem {
     icon: '',
     type: 'expense',
   });
+  readonly absAmount = computed(() => Math.abs(this.item().amount));
   readonly fallbackIcon = faCircleQuestion;
   readonly icons: Record<string, any> = {
     'fa-a': faA,

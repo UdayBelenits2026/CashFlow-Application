@@ -1,10 +1,10 @@
-<section class="bar-chart-card" [class.empty-state]="emptyState()">
+<section class="bar-chart-card" [class.empty-state]="isEmpty()">
   <header>
     <h3>{{ title() }}</h3>
   </header>
   <div class="bar-chart-container">
-    <canvas #chartCanvas></canvas>
-    @if (emptyState()) {
+    <canvas #chartCanvas [class.dimmed]="isEmpty()"></canvas>
+    @if (isEmpty()) {
       <div class="empty-message" role="status">No data available yet.</div>
     }
   </div>

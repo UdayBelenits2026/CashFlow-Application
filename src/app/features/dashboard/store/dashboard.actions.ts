@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { DashboardApiResponse } from '../models/dashboard.models';
+import { DashboardWidgetConfig } from '../utility/dashboard-widget-config';
 export const loadDashboard = createAction('[Dashboard] Load Dashboard');
 export const loadDashboardSuccess = createAction(
   '[Dashboard] Load Dashboard Success',
@@ -18,3 +19,18 @@ export const viewAllItems = createAction(
   props<{ section: string }>(),
 );
 export const addReminder = createAction('[Dashboard] Add Reminder');
+
+export const saveDashboardWidgetConfig = createAction(
+  '[Dashboard] Save Widget Config',
+  props<{ widgetConfig: DashboardWidgetConfig[] }>(),
+);
+
+export const saveDashboardWidgetConfigSuccess = createAction(
+  '[Dashboard] Save Widget Config Success',
+  props<{ widgetConfig: DashboardWidgetConfig[] }>(),
+);
+
+export const saveDashboardWidgetConfigFailure = createAction(
+  '[Dashboard] Save Widget Config Failure',
+  props<{ error?: string }>(),
+);

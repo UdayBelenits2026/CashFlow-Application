@@ -1,0 +1,205 @@
+<div class="customize-overlay">
+  <section class="customize-modal">
+    <header class="modal-header">
+      <div class="heading">
+        <h1>Customize Dashboard</h1>
+        <p>Choose and arrange the widgets you want to see on your dashboard.</p>
+      </div>
+
+      <button
+        class="icon-btn"
+        type="button"
+        (click)="close()"
+        aria-label="Close customize dashboard"
+      >
+        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+      </button>
+    </header>
+
+    <nav class="tabs" aria-label="Customize dashboard tabs">
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab() === 'available'"
+        (click)="setTab('available')"
+      >
+        Available Widgets
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab() === 'layout'"
+        (click)="setTab('layout')"
+      >
+        Layout &amp; Order
+      </button>
+    </nav>
+
+    @if (activeTab() === 'available') {
+      <div class="content-grid">
+        <article class="panel available-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Available Widgets</h2>
+              <p>Select widgets to display on your dashboard.</p>
+            </div>
+            <button type="button" class="text-btn" (click)="toggleSelectAll()">Select All</button>
+          </div>
+
+          <div class="widget-list">
+            @for (widget of availableWidgets(); track widget.id) {
+              <label class="widget-row" [class.selected]="widget.selected">
+                <div class="row-icon">
+                  <i class="fa-solid" [class]="'fa-solid ' + widget.icon" aria-hidden="true"></i>
+                </div>
+                <div class="row-copy">
+                  <h3>{{ widget.title }}</h3>
+                  <p>{{ widget.description }}</p>
+                </div>
+                <input
+                  type="checkbox"
+                  [checked]="widget.selected"
+                  (change)="onToggleWidget(widget.id, $any($event.target).checked)"
+                  [attr.aria-label]="'Toggle ' + widget.title"
+                />
+              </label>
+            }
+          </div>
+        </article>
+
+        <article class="panel preview-panel">
+          <div class="panel-head compact">
+            <div>
+              <h2>Dashboard Preview</h2>
+              <p>This is how your dashboard will look.</p>
+            </div>
+            <span class="selected-count"
+              >{{ selectedWidgetCount() }} of {{ widgetDefinitions.length }} widgets selected</span
+            >
+          </div>
+
+          <div class="preview-grid" [class.tablet]="previewMode() === 'tablet'">
+            @for (widget of selectedWidgets(); track widget.id) {
+              <div class="preview-card" [class.wide]="widget.layout === 'wide'">
+                <span class="preview-title">{{ widgetTitle(widget.id) }}</span>
+              </div>
+            }
+          </div>
+        </article>
+      </div>
+    }
+
+    @if (activeTab() === 'layout') {
+      <div class="content-grid">
+        <article class="panel layout-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Layout &amp; Order</h2>
+              <p>Drag and drop widgets to reorder them on your dashboard.</p>
+            </div>
+            <button type="button" class="outline-btn" (click)="resetToDefault()">
+              <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+              Reset to Default
+            </button>
+          </div>
+
+          <div
+            class="layout-list"
+            cdkDropList
+            [cdkDropListData]="selectedWidgets()"
+            (cdkDropListDropped)="onDrop($event)"
+          >
+            @for (widget of selectedWidgets(); track widget.id) {
+              <div class="layout-row" cdkDrag>
+                <button
+                  type="button"
+                  class="drag-handle"
+                  cdkDragHandle
+                  aria-label="Drag to reorder widget"
+                >
+                  <i class="fa-solid fa-grip-vertical" aria-hidden="true"></i>
+                </button>
+
+                <div class="layout-copy">
+                  <h3>{{ widgetTitle(widget.id) }}</h3>
+                </div>
+
+                <select
+                  [ngModel]="widget.layout"
+                  (ngModelChange)="onLayoutChange(widget.id, $event)"
+                  aria-label="Select widget width"
+                >
+                  @for (option of sizeOptions; track option.value) {
+                    <option [value]="option.value">{{ option.label }}</option>
+                  }
+                </select>
+
+                <button
+                  type="button"
+                  class="delete-btn"
+                  (click)="onRemoveWidget(widget.id)"
+                  aria-label="Remove widget"
+                >
+                  <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
+                </button>
+              </div>
+            }
+          </div>
+
+          <p class="tip">
+            Tip: Drag the handle to reorder widgets. Save changes to apply on dashboard.
+          </p>
+        </article>
+
+        <article class="panel preview-panel">
+          <div class="panel-head compact">
+            <div>
+              <h2>Dashboard Preview</h2>
+              <p>This is how your dashboard layout will look.</p>
+            </div>
+
+            <div class="mode-toggle" role="group" aria-label="Preview mode">
+              <button
+                type="button"
+                [class.active]="previewMode() === 'desktop'"
+                (click)="setPreviewMode('desktop')"
+              >
+                <i class="fa-solid fa-desktop" aria-hidden="true"></i>
+                Desktop
+              </button>
+              <button
+                type="button"
+                [class.active]="previewMode() === 'tablet'"
+                (click)="setPreviewMode('tablet')"
+              >
+                <i class="fa-solid fa-tablet-screen-button" aria-hidden="true"></i>
+                Tablet
+              </button>
+            </div>
+          </div>
+
+          <div class="preview-grid order-preview" [class.tablet]="previewMode() === 'tablet'">
+            @for (widget of selectedWidgets(); track widget.id; let index = $index) {
+              <div class="preview-card numbered" [class.wide]="widget.layout === 'wide'">
+                <span class="order-badge">{{ index + 1 }}</span>
+                <span class="preview-title">{{ widgetTitle(widget.id) }}</span>
+              </div>
+            }
+          </div>
+        </article>
+      </div>
+    }
+
+    <footer class="modal-footer">
+      <button type="button" class="outline-btn" (click)="resetToDefault()">
+        <i class="fa-solid fa-arrow-rotate-left" aria-hidden="true"></i>
+        Reset to Default
+      </button>
+
+      <div class="footer-actions">
+        <button type="button" class="cancel-btn" (click)="cancel()">Cancel</button>
+        <button type="button" class="save-btn" (click)="saveChanges()">Save Changes</button>
+      </div>
+    </footer>
+  </section>
+</div>

@@ -27,6 +27,10 @@ export const selectRecentExpenses = createSelector(
   selectDashboardState,
   (state) => state.recentExpenses,
 );
+export const selectDashboardWidgetConfig = createSelector(
+  selectDashboardState,
+  (state) => state.widgetConfig,
+);
 export const selectQuickActions = createSelector(
   selectDashboardState,
   (state) => state.quickActions,
@@ -41,6 +45,24 @@ export const selectOnboardingActions = createSelector(
 );
 export const selectIsNewUser = createSelector(selectDashboardState, (state) => state.isNewUser);
 export const selectCashBalance = createSelector(selectDashboardState, (state) => state.cashBalance);
+export const selectBudgetCategories = createSelector(
+  selectDashboardState,
+  (state) => state.budgetCategories,
+);
+export const selectSavingsGoal = createSelector(selectDashboardState, (state) => state.savingsGoal);
+export const selectIncomeSources = createSelector(
+  selectDashboardState,
+  (state) => state.incomeSources,
+);
+export const selectNetWorth = createSelector(selectDashboardState, (state) => state.netWorth);
+export const selectCashFlowTrendChart = createSelector(
+  selectDashboardState,
+  (state) => state.cashFlowTrendChart,
+);
+export const selectSpendingByCategoryChart = createSelector(
+  selectDashboardState,
+  (state) => state.spendingByCategoryChart,
+);
 export const selectSelectedAction = createSelector(
   selectDashboardState,
   (state) => state.selectedAction,

@@ -1,18 +1,20 @@
+@use '../../../../../styles/variables' as *;
+
 .quick-actions {
   padding: 1.125rem;
-  border: 0.0625rem solid #e5e7eb;
+  border: $border-width-sm solid $color-border;
   border-radius: 0.875rem;
-  background: #fff;
+  background: $color-card;
 }
 h3 {
-  margin: 0 0 1rem;
-  color: #1e293b;
-  font-size: 1rem;
+  margin: 0 0 $spacing-4;
+  color: $color-text-primary;
+  font-size: $font-size-lg;
 }
 .actions-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
+  gap: $spacing-3;
 }
 .action-item {
   min-height: 5.75rem;
@@ -21,13 +23,13 @@ h3 {
   align-items: center;
   justify-content: center;
   gap: 0.5625rem;
-  border: 0.0625rem solid #dbe3ee;
-  border-radius: 0.75rem;
-  background: #fff;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  background: $color-card;
   cursor: pointer;
-}
-.action-item:hover {
-  background: #f8fafc;
+  &:hover {
+    background: $color-background;
+  }
 }
 .action-icon {
   width: 2.625rem;
@@ -35,10 +37,10 @@ h3 {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  color: #2563eb;
-  background: #eff6ff;
+  color: $color-info;
+  background: $color-info-bg;
 }
 span {
-  font-size: 0.75rem;
-  color: #334155;
+  font-size: $font-size-base;
+  color: $color-text-secondary;
 }

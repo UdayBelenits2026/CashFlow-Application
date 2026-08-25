@@ -1,0 +1,63 @@
+<section class="income-by-source">
+  <h3>{{ title() }}</h3>
+
+  @if (isLoading()) {
+    <div class="source-skeleton-state" aria-hidden="true">
+      <div class="source-skeleton-item">
+        <div class="source-meta">
+          <span class="skeleton-line source-name"></span>
+          <span class="skeleton-line source-val"></span>
+        </div>
+        <span class="skeleton-line bar-track"></span>
+      </div>
+      <div class="source-skeleton-item">
+        <div class="source-meta">
+          <span class="skeleton-line source-name"></span>
+          <span class="skeleton-line source-val"></span>
+        </div>
+        <span class="skeleton-line bar-track"></span>
+      </div>
+      <div class="source-skeleton-item">
+        <div class="source-meta">
+          <span class="skeleton-line source-name"></span>
+          <span class="skeleton-line source-val"></span>
+        </div>
+        <span class="skeleton-line bar-track"></span>
+      </div>
+    </div>
+  } @else if (hasError()) {
+    <div class="source-error-state">
+      <div class="error-icon-wrap">
+        <fa-icon [icon]="errorIcon"></fa-icon>
+      </div>
+      <p>We couldn't load your income sources.</p>
+      <small>Please try again.</small>
+      <button class="retry-btn" type="button" (click)="onRetry()">Retry</button>
+    </div>
+  } @else if (sources().length === 0) {
+    <div class="source-empty-state">
+      <p>No income sources found.</p>
+      <small>Add income sources to see your income breakdown.</small>
+    </div>
+  } @else {
+    <div class="source-list">
+      @for (item of sources(); track item.source) {
+        <div class="source-item">
+          <div class="source-meta">
+            <span class="source-name">{{ item.source }}</span>
+            <span class="source-values"
+              >{{ item.amount | currency: 'INR' : 'symbol' : '1.0-0' }} ({{ share(item) }}%)</span
+            >
+          </div>
+          <div class="bar-track">
+            <span
+              class="bar-fill"
+              [style.width.%]="share(item)"
+              [style.background]="item.color"
+            ></span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>

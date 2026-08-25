@@ -1,6 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { filter, take } from 'rxjs';
 import { DashboardFacade } from '../../facades/dashboard.facade';
 
 @Component({
@@ -16,17 +15,15 @@ export class DashboardRouteEntry {
   constructor() {
     this.facade.loadDashboard();
 
-    this.facade.dashboardState$
-      .pipe(
-        filter((state) => !state.loading),
-        take(1),
-      )
-      .subscribe((state) => {
+    effect(() => {
+      const state = this.facade.dashboardState();
+      if (!state.loading) {
         const shouldRouteToNewUser = !state.loadError && state.isNewUser === true;
 
         void this.router.navigate([shouldRouteToNewUser ? '/dashboard/new' : '/dashboard/home'], {
           replaceUrl: true,
         });
-      });
+      }
+    });
   }
 }

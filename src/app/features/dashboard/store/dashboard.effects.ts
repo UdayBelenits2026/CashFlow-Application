@@ -26,4 +26,26 @@ export class DashboardEffects {
       ),
     ),
   );
+
+  saveDashboardWidgetConfig$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(DashboardActions.saveDashboardWidgetConfig),
+      switchMap(({ widgetConfig }) =>
+        this.dashboardApiService.updateWidgetConfig(widgetConfig).pipe(
+          map((savedWidgetConfig) =>
+            DashboardActions.saveDashboardWidgetConfigSuccess({
+              widgetConfig: savedWidgetConfig,
+            }),
+          ),
+          catchError((error: { message?: string }) =>
+            of(
+              DashboardActions.saveDashboardWidgetConfigFailure({
+                error: error?.message ?? 'Failed to save dashboard widget configuration',
+              }),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }

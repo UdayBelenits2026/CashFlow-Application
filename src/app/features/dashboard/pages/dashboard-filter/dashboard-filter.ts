@@ -1,26 +1,8 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-interface DashboardFilterState {
-  dateRange: string;
-  fromDate: string;
-  toDate: string;
-  quickSelect: string;
-  account: string;
-  incomeExpense: string;
-  category: string;
-  merchant: string;
-  minAmount: number | null;
-  maxAmount: number | null;
-  transactionType: string;
-  tag: string;
-  paymentMethod: string;
-  transactionStatus: string;
-  recurring: string;
-  budget: string;
-  applyToAllWidgets: boolean;
-}
+import { Router } from '@angular/router';
+import { DashboardFilterState } from '../../models/dashboard.models';
 
 @Component({
   selector: 'app-cf-dashboard-filter',
@@ -31,6 +13,8 @@ interface DashboardFilterState {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardFilter {
+  private readonly router = inject(Router);
+
   readonly dateRanges = [
     { label: 'Custom Range', value: 'custom' },
     { label: 'Today', value: 'today' },
@@ -199,6 +183,6 @@ export class DashboardFilter {
   }
 
   close(): void {
-    console.log('Close filter');
+    void this.router.navigate(['/dashboard/home']);
   }
 }

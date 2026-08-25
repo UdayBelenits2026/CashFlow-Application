@@ -34,16 +34,16 @@
   } @else {
     <div class="balance-total">
       <small>Total Balance</small>
-      <span>{{ totalBalance() | currency: 'USD' : 'symbol' : '1.2-2' }}</span>
+      <span>{{ totalBalance() | currency: 'INR' : 'symbol' : '1.2-2' }}</span>
     </div>
     <div class="balance-details">
       <div class="balance-row">
         <span>In Accounts</span>
-        <span class="positive">{{ inAccounts() | currency: 'USD' : 'symbol' : '1.2-2' }}</span>
+        <span class="positive">{{ inAccounts() | currency: 'INR' : 'symbol' : '1.2-2' }}</span>
       </div>
       <div class="balance-row">
         <span>Pending</span>
-        <span class="negative">{{ pending() | currency: 'USD' : 'symbol' : '1.2-2' }}</span>
+        <span class="negative">{{ pending() | currency: 'INR' : 'symbol' : '1.2-2' }}</span>
       </div>
     </div>
   }
