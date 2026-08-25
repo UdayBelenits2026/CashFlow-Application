@@ -2,7 +2,6 @@ import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
 import { LayoutService } from '../services/layout';
 import { DatePickerComponent, DateRange } from '../../../shared/ui/date-picker/date-picker';
 import { AuthFacade } from '../../auth/facades/auth.facade';
@@ -19,14 +18,9 @@ export class Mainnavbar {
   private readonly router = inject(Router);
   private readonly authFacade = inject(AuthFacade);
   private readonly destroyRef = inject(DestroyRef);
-
   readonly pageTitle = signal('Dashboard');
-
-  // Collapsed-search and profile menu visibility (small screens / on demand).
   readonly isSearchOpen = signal(false);
   readonly isProfileMenuOpen = signal(false);
-
-  // Keep the selected range in sync with the shared date picker.
   selectedDate: DateRange = this.getCurrentMonthRange();
 
   constructor() {
@@ -42,34 +36,38 @@ export class Mainnavbar {
   }
 
   private updateTitle(url: string): void {
-    if (url.includes('/spending/expenses')) {
-      this.pageTitle.set('Expenses');
-    } else if (url.includes('/spending/calendar')) {
-      this.pageTitle.set('Expense Calendar');
-    } else if (url.includes('/spending/recurring')) {
-      this.pageTitle.set('Recurring & Subscriptions');
-    } else if (url.includes('/spending/tags')) {
-      this.pageTitle.set('Spending Tags');
-    } else if (url.includes('/spending')) {
-      this.pageTitle.set('Spending Overview');
-    } else if (url.includes('/transactions')) {
-      this.pageTitle.set('Transactions');
-    } else if (url.includes('/income')) {
-      this.pageTitle.set('Income');
-    } else if (url.includes('/cash-flow')) {
-      this.pageTitle.set('Cash Flow');
-    } else if (url.includes('/budget')) {
-      this.pageTitle.set('Budget');
-    } else if (url.includes('/goals')) {
-      this.pageTitle.set('Goals');
-    } else if (url.includes('/accounts')) {
-      this.pageTitle.set('Accounts');
-    } else if (url.includes('/reports')) {
-      this.pageTitle.set('Reports');
-    } else if (url.includes('/settings')) {
-      this.pageTitle.set('Settings');
-    } else {
-      this.pageTitle.set('Dashboard');
+    const path = url.split('?')[0].split('#')[0];
+    switch (true) {
+      case path.startsWith('/spending'):
+        this.pageTitle.set('Spending');
+        break;
+      case path.startsWith('/transactions'):
+        this.pageTitle.set('Transactions');
+        break;
+      case path.startsWith('/income'):
+        this.pageTitle.set('Income');
+        break;
+      case path.startsWith('/cash-flow'):
+        this.pageTitle.set('Cash Flow');
+        break;
+      case path.startsWith('/budget'):
+        this.pageTitle.set('Budget');
+        break;
+      case path.startsWith('/goals'):
+        this.pageTitle.set('Goals');
+        break;
+      case path.startsWith('/accounts'):
+        this.pageTitle.set('Accounts');
+        break;
+      case path.startsWith('/reports'):
+        this.pageTitle.set('Reports');
+        break;
+      case path.startsWith('/settings'):
+        this.pageTitle.set('Settings');
+        break;
+      default:
+        this.pageTitle.set('Dashboard');
+        break;
     }
   }
 
@@ -88,16 +86,12 @@ export class Mainnavbar {
 
   onDateChange(range: DateRange): void {
     this.selectedDate = range;
-
     console.log('Selected date range:', range);
-
-    // Connect this payload to API or store filtering when wiring real data.
   }
 
   onSearch(event: Event): void {
     const input = event.target as HTMLInputElement;
     const searchValue = input.value.trim();
-
     console.log('Search:', searchValue);
   }
 
@@ -151,7 +145,6 @@ export class Mainnavbar {
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), 1);
     const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
     return { start, end };
   }
 }

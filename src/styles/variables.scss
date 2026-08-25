@@ -170,3 +170,34 @@ $breakpoint-xl: 80rem;
     @content;
   }
 }
+
+// RESPONSIVE MIXINS (max-width / desktop-first)
+@mixin max-xs {
+  @media (max-width: $breakpoint-xs) {
+    @content;
+  }
+}
+
+@mixin max-sm {
+  @media (max-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+@mixin max-md {
+  @media (max-width: $breakpoint-md) {
+    @content;
+  }
+}
+
+@mixin max-lg {
+  @media (max-width: $breakpoint-lg) {
+    @content;
+  }
+}
+
+@mixin max-xl {
+  @media (max-width: $breakpoint-xl) {
+    @content;
+  }
+}

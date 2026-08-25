@@ -1,0 +1,5 @@
+// Centralized Google Fonts for CashFlow.
+// Roboto is the base UI font; Inter is used by the charts (axis ticks).
+// Keep all Google Font URLs here only — do not duplicate them in styles.scss,
+// component SCSS, or index.html.
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@300;400;500;600;700&display=swap');

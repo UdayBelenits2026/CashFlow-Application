@@ -5,7 +5,6 @@ import {
   computed,
   effect,
   ElementRef,
-  effect,
   input,
   OnDestroy,
   output,
@@ -72,7 +71,7 @@ export class LineChart implements AfterViewInit, OnDestroy {
   constructor() {
     effect(() => {
       const labels = this.labels();
-      const datasets = this.datasets();
+      const datasets = this.applyEnhancedStyling(this.datasets());
       if (this.chart) {
         this.chart.data.labels = labels;
         this.chart.data.datasets = datasets;
@@ -195,6 +194,22 @@ export class LineChart implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.chart?.destroy();
+  }
+
+  // Applies chart defaults while preserving any caller-provided dataset options.
+  private applyEnhancedStyling(
+    datasets: ChartConfiguration<'line'>['data']['datasets'],
+  ): ChartConfiguration<'line'>['data']['datasets'] {
+    return (datasets ?? []).map((dataset) => ({
+      fill: false,
+      tension: 0.4,
+      borderWidth: 2.5,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      pointBackgroundColor: '#ffffff',
+      pointBorderWidth: 2,
+      ...dataset,
+    }));
   }
 
   onRetry(): void {
