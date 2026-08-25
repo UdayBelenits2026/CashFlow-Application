@@ -95,51 +95,16 @@ export class DashboardApiService {
   }
 
   getDashboard(): Observable<DashboardApiResponse> {
-    return forkJoin({
-      summaryCards: this.getSummaryCards(),
-      upcomingBills: this.getUpcomingBills(),
-      recentTransactions: this.getRecentTransactions(),
-      recentIncome: this.getRecentIncome(),
-      recentExpenses: this.getRecentExpenses(),
-      widgetConfig: this.getWidgetConfig(),
-      quickActions: this.getQuickActions(),
-      onboardingSteps: this.getOnboardingSteps(),
-      onboardingActions: this.getOnboardingActions(),
-      cashBalance: this.getCashBalance(),
-      budgetCategories: this.getBudgetCategories(),
-      savingsGoal: this.getSavingsGoal(),
-      incomeSources: this.getIncomeSources(),
-      netWorth: this.getNetWorth(),
-      cashFlowTrendChart: this.getCashFlowTrendChart(),
-      spendingByCategoryChart: this.getSpendingByCategoryChart(),
-      settings: this.getDashboardSettings(),
-    }).pipe(
-      map((res) => ({
-        summaryCards: res.summaryCards,
-        upcomingBills: res.upcomingBills,
-        recentTransactions: res.recentTransactions,
-        recentIncome: res.recentIncome,
-        recentExpenses: res.recentExpenses,
-        widgetConfig: res.widgetConfig,
-        quickActions: res.quickActions,
-        onboardingSteps: res.onboardingSteps,
-        onboardingActions: res.onboardingActions,
-        isNewUser: res.settings?.isNewUser ?? false,
-        cashBalance: res.cashBalance,
-        budgetCategories: res.budgetCategories,
-        savingsGoal: res.savingsGoal,
-        incomeSources: res.incomeSources,
-        netWorth: res.netWorth,
-        cashFlowTrendChart: res.cashFlowTrendChart,
-        spendingByCategoryChart: res.spendingByCategoryChart,
-      })),
-    );
+    return this.http.get<DashboardApiResponse>(`${this.baseUrl}/dashboard`);
   }
 
   updateWidgetConfig(widgetConfig: DashboardWidgetConfig[]): Observable<DashboardWidgetConfig[]> {
-    const requests = widgetConfig.map((item) =>
+    const putTopLevel = widgetConfig.map((item) =>
       this.http.put<DashboardWidgetConfig>(`${this.baseUrl}/widgetConfig/${item.id}`, item),
     );
-    return forkJoin(requests);
+    const patchDashboard = this.http.patch<DashboardApiResponse>(`${this.baseUrl}/dashboard`, {
+      widgetConfig,
+    });
+    return forkJoin([...putTopLevel, patchDashboard]).pipe(map(() => widgetConfig));
   }
 }

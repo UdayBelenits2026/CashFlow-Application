@@ -39,6 +39,7 @@ export class DashboardCustomize implements OnInit {
   readonly activeTab = signal<CustomizeTab>('available');
   readonly previewMode = signal<PreviewMode>('desktop');
   readonly draftWidgets = signal<DashboardWidgetConfig[]>([]);
+  readonly isEdited = signal<boolean>(false);
 
   readonly allWidgetsSelected = computed(() =>
     this.draftWidgets().every((widget) => widget.selected),
@@ -68,16 +69,14 @@ export class DashboardCustomize implements OnInit {
   constructor() {
     effect(() => {
       const state = this.facade.dashboardState();
-      if (!state.loading) {
+      if (!state.loading && !this.isEdited()) {
         untracked(() => {
-          if (this.draftWidgets().length === 0) {
-            const loadedConfig = state.widgetConfig.length
-              ? this.customizationService.normalizeConfig(state.widgetConfig)
-              : cloneWidgetConfig(DASHBOARD_WIDGET_DEFAULT_CONFIG);
+          const loadedConfig = state.widgetConfig.length
+            ? this.customizationService.normalizeConfig(state.widgetConfig)
+            : cloneWidgetConfig(DASHBOARD_WIDGET_DEFAULT_CONFIG);
 
-            this.draftWidgets.set(sortWidgetConfig(loadedConfig));
-            this.resequenceOrders();
-          }
+          this.draftWidgets.set(sortWidgetConfig(loadedConfig));
+          this.resequenceOrders();
         });
       }
     });
@@ -96,6 +95,7 @@ export class DashboardCustomize implements OnInit {
   }
 
   toggleSelectAll(): void {
+    this.isEdited.set(true);
     const shouldSelectAll = !this.allWidgetsSelected();
     this.draftWidgets.update((widgets) =>
       widgets.map((widget) => ({
@@ -108,6 +108,7 @@ export class DashboardCustomize implements OnInit {
   }
 
   onToggleWidget(widgetId: DashboardWidgetId, checked: boolean): void {
+    this.isEdited.set(true);
     const selectedOrders = this.draftWidgets()
       .filter((widget) => widget.selected)
       .map((widget) => widget.order);
@@ -129,6 +130,7 @@ export class DashboardCustomize implements OnInit {
   }
 
   onLayoutChange(widgetId: DashboardWidgetId, layout: 'medium' | 'wide'): void {
+    this.isEdited.set(true);
     this.draftWidgets.update((widgets) =>
       widgets.map((widget) => (widget.id === widgetId ? { ...widget, layout } : widget)),
     );
@@ -139,12 +141,14 @@ export class DashboardCustomize implements OnInit {
   }
 
   onDrop(event: CdkDragDrop<DashboardWidgetConfig[]>): void {
+    this.isEdited.set(true);
     const selected = [...this.selectedWidgets()];
     moveItemInArray(selected, event.previousIndex, event.currentIndex);
     this.resequenceOrders(selected.map((widget) => widget.id));
   }
 
   resetToDefault(): void {
+    this.isEdited.set(true);
     this.draftWidgets.set(cloneWidgetConfig(DASHBOARD_WIDGET_DEFAULT_CONFIG));
     this.resequenceOrders();
   }
