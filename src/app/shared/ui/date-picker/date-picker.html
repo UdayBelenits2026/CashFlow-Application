@@ -4,8 +4,9 @@
     type="button"
     class="date-picker-trigger"
     [class.active]="isOpen()"
+    [disabled]="disabled"
     (click)="toggle()"
-    aria-label="Select date range"
+    aria-label="Select date"
     [attr.aria-expanded]="isOpen()"
   >
     <span class="calendar-icon">
@@ -52,41 +53,45 @@
       </div>
 
       <div class="quick-actions">
-        <button
-          type="button"
-          class="quick-action"
-          (click)="setThisMonth()"
-        >
-          <i class="fa-solid fa-calendar" aria-hidden="true"></i>
-          This Month
-        </button>
+        @if (mode === 'range') {
+          <button
+            type="button"
+            class="quick-action"
+            (click)="setThisMonth()"
+          >
+            <i class="fa-solid fa-calendar" aria-hidden="true"></i>
+            This Month
+          </button>
+        }
       </div>
 
-      <div class="selected-range">
-        <div class="range-item">
-          <span class="range-label">FROM</span>
-          <span class="range-value">
-            @if (tempStart()) {
-              {{ tempStart() | date }}
-            } @else {
-              Select date
-            }
-          </span>
+      @if (mode === 'range') {
+        <div class="selected-range">
+          <div class="range-item">
+            <span class="range-label">FROM</span>
+            <span class="range-value">
+              @if (tempStart()) {
+                {{ tempStart() | date }}
+              } @else {
+                Select date
+              }
+            </span>
+          </div>
+          <div class="range-arrow">
+            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+          </div>
+          <div class="range-item">
+            <span class="range-label">TO</span>
+            <span class="range-value">
+              @if (tempEnd()) {
+                {{ tempEnd() | date }}
+              } @else {
+                Select date
+              }
+            </span>
+          </div>
         </div>
-        <div class="range-arrow">
-          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-        </div>
-        <div class="range-item">
-          <span class="range-label">TO</span>
-          <span class="range-value">
-            @if (tempEnd()) {
-              {{ tempEnd() | date }}
-            } @else {
-              Select date
-            }
-          </span>
-        </div>
-      </div>
+      }
 
       <div class="calendar">
         <div class="week-days">
@@ -117,32 +122,34 @@
         </div>
       </div>
 
-      <div class="calendar-footer">
-        <button
-          type="button"
-          class="clear-button"
-          (click)="clear()"
-        >
-          Clear
-        </button>
-        <div class="footer-actions">
+      @if (mode === 'range') {
+        <div class="calendar-footer">
           <button
             type="button"
-            class="cancel-button"
-            (click)="close()"
+            class="clear-button"
+            (click)="clear()"
           >
-            Cancel
+            Clear
           </button>
-          <button
-            type="button"
-            class="apply-button"
-            [disabled]="!tempStart() || !tempEnd()"
-            (click)="apply()"
-          >
-            Apply
-          </button>
+          <div class="footer-actions">
+            <button
+              type="button"
+              class="cancel-button"
+              (click)="close()"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="apply-button"
+              [disabled]="!tempStart() || !tempEnd()"
+              (click)="apply()"
+            >
+              Apply
+            </button>
+          </div>
         </div>
-      </div>
+      }
     </div>
   }
 </div>

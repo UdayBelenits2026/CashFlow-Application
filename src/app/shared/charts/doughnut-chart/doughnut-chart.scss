@@ -75,4 +75,52 @@
   position: relative;
 }
 
+// Centered total label shown inside the ring when the chart is embedded.
+.doughnut-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  pointer-events: none;
+  text-align: center;
+
+  small {
+    color: $color-text-muted;
+    font-size: $font-size-xs;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  span {
+    color: $color-text-primary;
+    font-size: $font-size-base;
+    font-weight: $font-weight-bold;
+  }
+}
+
+// Compact/embedded mode: drop the card chrome and fixed heights so the chart
+// fills a small parent-controlled box (used by the Accounts by Type section).
+.chart-card.embedded {
+  min-height: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+
+  &:hover {
+    box-shadow: none;
+    border-color: transparent;
+  }
+
+  .chart-container {
+    min-height: 0;
+  }
+}
+
 

@@ -63,9 +63,9 @@ export const routes: Routes = [
       },
       {
         path: 'transactions',
-        loadComponent: () =>
-          import('./features/transactions/transactions.component').then(
-            (m) => m.TransactionsComponent,
+        loadChildren: () =>
+          import('./features/transactions/transactions.routes').then(
+            (m) => m.TRANSACTIONS_ROUTES,
           ),
       },
       {
@@ -105,9 +105,9 @@ export const routes: Routes = [
       },
       {
         path: 'accounts',
-        loadComponent: () =>
-          import('./features/accounts/accounts.component').then(
-            (m) => m.AccountsComponent,
+        loadChildren: () =>
+          import('./features/accounts/accounts.route').then(
+            (m) => m.ACCOUNTS_ROUTES,
           ),
       },
       {

@@ -1,0 +1,142 @@
+@use '../../../../../styles/variables' as *;
+
+// Account card
+.account-card {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 3.75rem;
+  padding: $spacing-2 $spacing-3;
+
+  box-sizing: border-box;
+  background: $color-card;
+
+  border-bottom: $border-width-sm solid $color-border-light;
+
+  transition: $transition-fast;
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+// Account icon
+.account-icon {
+  width: 2.125rem;
+  height: 2.125rem;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-right: $spacing-3;
+
+  background: $color-info-bg;
+  border: $border-width-sm solid $color-border-light;
+  border-radius: $radius-md;
+
+  color: $color-primary-button;
+
+  i,
+  span {
+    font-size: $font-size-md;
+    font-weight: $font-weight-bold;
+  }
+}
+
+// Account information
+.account-info {
+  flex: 1;
+  min-width: 0;
+
+  h3 {
+    margin: 0;
+
+    color: $color-text-primary;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+
+    line-height: $line-height-tight;
+  }
+
+  p {
+    margin: $spacing-1 0 0;
+
+    color: $color-text-secondary;
+    font-size: $font-size-md;
+    line-height: $line-height-tight;
+  }
+}
+
+// Masked account number
+.account-number {
+  font-weight: $font-weight-medium;
+}
+
+// Balance
+.account-balance {
+  min-width: 6.5625rem;
+
+  text-align: right;
+
+  p {
+    margin: 0;
+
+    color: $color-text-muted;
+    font-size: $font-size-xs;
+    line-height: $line-height-tight;
+  }
+
+  h3 {
+    margin: $spacing-1 0 0;
+
+    color: $color-text-primary;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    line-height: $line-height-tight;
+  }
+
+  // Negative balance
+  &.negative {
+    h3 {
+      color: $color-danger;
+    }
+  }
+}
+
+// Mobile
+@media (max-width: 37.5rem) {
+  .account-card {
+    padding: $spacing-2;
+  }
+
+  .account-icon {
+    width: 2rem;
+    height: 2rem;
+    margin-right: $spacing-2;
+  }
+
+  .account-info {
+    h3 {
+      font-size: $font-size-md;
+    }
+
+    p {
+      font-size: $font-size-sm;
+    }
+  }
+
+  .account-balance {
+    min-width: 5.5rem;
+
+    h3 {
+      font-size: $font-size-md;
+    }
+  }
+}

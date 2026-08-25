@@ -36,6 +36,10 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
   readonly total = input<number>(2650);
   readonly datasets = input<ChartConfiguration<'doughnut'>['data']['datasets']>([]);
   readonly labels = input<string[]>([]);
+  // Opt-in flags: hide the built-in legend/header or drop the card chrome for compact embedding.
+  readonly showLegend = input<boolean>(true);
+  readonly showTitle = input<boolean>(true);
+  readonly embedded = input<boolean>(false);
 
   private chart: Chart<'doughnut'> | null = null;
 
@@ -95,6 +99,7 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
             },
             plugins: {
               legend: {
+                display: this.showLegend(),
                 position: 'right',
                 align: 'center',
                 labels: {
@@ -162,6 +167,9 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
             {
               id: 'centerDoughnutText',
               afterDraw: (chart: any) => {
+                if (this.embedded()) {
+                  return;
+                }
                 const { top, bottom, left, right } = chart.chartArea;
                 const canvasCtx = chart.ctx;
                 canvasCtx.save();
@@ -202,8 +210,6 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
           ],
         };
         this.chart = new Chart(ctx, config);
-      }
-    }
   }
 
   ngOnDestroy(): void {

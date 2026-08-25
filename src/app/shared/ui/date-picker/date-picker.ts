@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, signal, computed, HostListener } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, signal, computed, HostListener, forwardRef } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 export interface DateRange {
   start: Date | null;
@@ -12,13 +13,30 @@ export interface DateRange {
   imports: [DatePipe],
   templateUrl: './date-picker.html',
   styleUrl: './date-picker.scss',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => DatePickerComponent),
+      multi: true,
+    },
+  ],
 })
-export class DatePickerComponent implements OnChanges {
+export class DatePickerComponent implements OnChanges, ControlValueAccessor {
+  // 'range' keeps the original two-ended behavior; 'single' picks one date and works with formControlName.
+  @Input()
+  mode: 'single' | 'range' = 'range';
+
+  @Input()
+  disabled = false;
+
   @Input()
   selectedDate: DateRange | null = null;
 
   @Output()
   selectedDateChange = new EventEmitter<DateRange>();
+
+  private onChange: (value: unknown) => void = () => {};
+  private onTouched: () => void = () => {};
 
   readonly isOpen = signal(false);
 
@@ -123,6 +141,9 @@ export class DatePickerComponent implements OnChanges {
   }
 
   toggle(): void {
+    if (this.disabled) {
+      return;
+    }
     this.isOpen.update((value) => !value);
 
     if (this.isOpen()) {
@@ -155,6 +176,20 @@ export class DatePickerComponent implements OnChanges {
   }
 
   selectDate(date: Date): void {
+    // Single mode: pick one date, emit immediately, and close.
+    if (this.mode === 'single') {
+      const normalized = this.normalizeDate(date);
+      this.selectedStart.set(normalized);
+      this.selectedEnd.set(normalized);
+      this.tempStart.set(normalized);
+      this.tempEnd.set(normalized);
+      this.isOpen.set(false);
+      this.onChange(this.formatIsoDate(normalized));
+      this.onTouched();
+      this.selectedDateChange.emit({ start: normalized, end: normalized });
+      return;
+    }
+
     const start = this.tempStart();
     const end = this.tempEnd();
 
@@ -254,6 +289,10 @@ export class DatePickerComponent implements OnChanges {
     const start = this.selectedStart();
     const end = this.selectedEnd();
 
+    if (this.mode === 'single') {
+      return start ? this.formatShortDate(start) : 'Select Date';
+    }
+
     if (!start && !end) {
       return 'Select Date';
     }
@@ -276,6 +315,10 @@ export class DatePickerComponent implements OnChanges {
   getDisplaySubtitle(): string {
     const start = this.selectedStart();
     const end = this.selectedEnd();
+
+    if (this.mode === 'single') {
+      return '';
+    }
 
     if (!start) {
       return '';
@@ -342,5 +385,61 @@ export class DatePickerComponent implements OnChanges {
     if (this.isOpen()) {
       this.close();
     }
+  }
+
+  // --- ControlValueAccessor (single mode with formControlName) ---
+  writeValue(value: unknown): void {
+    if (this.mode === 'single') {
+      const date =
+        typeof value === 'string' && value
+          ? this.parseIsoDate(value)
+          : value instanceof Date
+            ? this.normalizeDate(value)
+            : null;
+      this.selectedStart.set(date);
+      this.selectedEnd.set(date);
+      this.tempStart.set(date);
+      this.tempEnd.set(date);
+      if (date) {
+        this.currentMonth.set(new Date(date.getFullYear(), date.getMonth(), 1));
+      }
+      return;
+    }
+
+    const range = value as DateRange | null;
+    const normalizedStart = range?.start ? this.normalizeDate(range.start) : null;
+    const normalizedEnd = range?.end ? this.normalizeDate(range.end) : null;
+    this.selectedStart.set(normalizedStart);
+    this.selectedEnd.set(normalizedEnd);
+    this.tempStart.set(normalizedStart);
+    this.tempEnd.set(normalizedEnd);
+  }
+
+  registerOnChange(fn: (value: unknown) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
+
+  private parseIsoDate(value: string): Date | null {
+    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
+    if (match) {
+      return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+    }
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : this.normalizeDate(parsed);
+  }
+
+  private formatIsoDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }

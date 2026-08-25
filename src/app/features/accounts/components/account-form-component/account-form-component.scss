@@ -1,0 +1,303 @@
+@use '../../../../../styles/variables' as *;
+
+.account-form-page {
+  max-width: 61.25rem;
+  margin: 0 auto;
+  padding: $spacing-8;
+  color: $color-text-primary;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: $font-size-xl;
+}
+
+.page-header p {
+  margin: $spacing-1 0 0;
+  color: $color-text-muted;
+  font-size: $font-size-sm;
+}
+
+.form-card {
+  margin-top: $spacing-6;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-md;
+  background: $color-card;
+  overflow: hidden;
+}
+
+.message {
+  margin: $spacing-4 $spacing-6 0;
+  padding: $spacing-3 $spacing-4;
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+}
+
+.message.success {
+  border: $border-width-sm solid $color-success;
+  background: $color-success-bg;
+  color: $color-success;
+}
+
+.message.error {
+  border: $border-width-sm solid $color-danger;
+  background: $color-danger-bg;
+  color: $color-danger;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  padding: $spacing-4 $spacing-6;
+  border-bottom: $border-width-sm solid $color-border-light;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: $color-text-muted;
+  cursor: pointer;
+  font: inherit;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  span {
+    display: grid;
+    width: 1.625rem;
+    height: 1.625rem;
+    place-items: center;
+    border: $border-width-sm solid $color-border;
+    border-radius: 50%;
+    font-size: $font-size-md;
+  }
+
+  strong {
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+  }
+
+  &.active,
+  &.complete {
+    color: $color-primary-button;
+
+    span {
+      border-color: $color-primary-button;
+      background: $color-primary-button;
+      color: $color-white;
+    }
+  }
+}
+
+.step-divider {
+  flex: 1;
+  height: $border-width-sm;
+  margin: 0 $spacing-3;
+  background: $color-border;
+}
+
+.form-step {
+  padding: $spacing-6;
+
+  h3 {
+    margin: 0 0 $spacing-4;
+    font-size: $font-size-md;
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $spacing-4;
+}
+
+label {
+  display: block;
+  color: $color-text-secondary;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+
+  span {
+    color: $color-danger;
+    margin-left: $spacing-1;
+  }
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: $spacing-2 $spacing-3;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-sm;
+  background: $color-card;
+  color: $color-text-primary;
+  font: inherit;
+  font-weight: $font-weight-medium;
+  margin-top: $spacing-1;
+
+  &:focus {
+    outline: $border-width-md solid $color-info;
+    border-color: $color-primary-button;
+  }
+}
+
+input[readonly] {
+  background: $color-background;
+  cursor: not-allowed;
+}
+
+textarea {
+  resize: vertical;
+}
+
+label small {
+  color: $color-danger;
+  font-weight: $font-weight-medium;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.review-actions {
+  display: flex;
+  gap: $spacing-4;
+  margin-bottom: $spacing-4;
+}
+
+.text-button {
+  border: 0;
+  background: transparent;
+  color: $color-primary-button;
+  cursor: pointer;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  padding: 0;
+}
+
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $spacing-3;
+  border: $border-width-sm solid $color-border-light;
+  border-radius: $radius-sm;
+  padding: $spacing-4;
+}
+
+.review-grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+}
+
+.review-grid span {
+  color: $color-text-muted;
+  font-size: $font-size-md;
+}
+
+.review-grid strong {
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-3;
+  padding: $spacing-4 $spacing-6 $spacing-6;
+}
+
+.primary-button,
+.secondary-button {
+  padding: $spacing-2 $spacing-4;
+  border-radius: $radius-sm;
+  font: inherit;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+.primary-button {
+  border: $border-width-sm solid $color-primary-button;
+  background: $color-primary-button;
+  color: $color-white;
+}
+
+.secondary-button {
+  border: $border-width-sm solid $color-border;
+  background: $color-card;
+  color: $color-text-secondary;
+}
+
+.skeleton-line,
+.skeleton-field {
+  border-radius: $radius-sm;
+  background: linear-gradient(90deg, $color-border-light 0%, $color-background 40%, $color-border-light 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
+
+.skeleton-line {
+  height: 1.5rem;
+  margin: $spacing-6;
+}
+
+.skeleton-grid {
+  display: grid;
+  gap: $spacing-4;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 0 $spacing-6 $spacing-6;
+}
+
+.skeleton-field {
+  height: 2.75rem;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (max-width: 45rem) {
+  .account-form-page {
+    padding: $spacing-4;
+  }
+
+  .stepper,
+  .form-step,
+  .form-footer {
+    padding-left: $spacing-4;
+    padding-right: $spacing-4;
+  }
+
+  .step strong {
+    display: none;
+  }
+
+  .form-grid,
+  .review-grid,
+  .skeleton-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .full-width {
+    grid-column: auto;
+  }
+}

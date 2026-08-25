@@ -1,0 +1,559 @@
+{
+  "accounts": [
+    {
+      "id": "ACC001",
+      "accountName": "Main Checking",
+      "accountType": "Bank Account",
+      "accountNumber": "1234567890",
+      "balance": 12450,
+      "availableBalance": 12300,
+      "bankName": "Chase Bank",
+      "ifscCode": "HDFC0001234",
+      "currency": "USD",
+      "openDate": "2024-01-15",
+      "status": "Active",
+      "overdraftLimit": 500,
+      "description": "Primary checking account used for daily expenses and income."
+    },
+    {
+      "id": "ACC002",
+      "accountName": "Savings Account",
+      "accountType": "Bank Account",
+      "accountNumber": "9876543210",
+      "balance": 10000,
+      "availableBalance": 10000,
+      "bankName": "Chase Bank",
+      "ifscCode": "HDFC0005678",
+      "currency": "USD",
+      "openDate": "2024-02-10",
+      "status": "Active",
+      "overdraftLimit": 0,
+      "description": "Savings account for emergency funds and long-term savings."
+    },
+    {
+      "id": "ACC003",
+      "accountName": "Credit Card",
+      "accountType": "Credit Card",
+      "accountNumber": "4567890123",
+      "balance": -2310,
+      "availableBalance": 2690,
+      "creditLimit": 5000,
+      "bankName": "Chase Bank",
+      "currency": "USD",
+      "openDate": "2024-03-20",
+      "status": "Active",
+      "overdraftLimit": 0,
+      "description": "Primary credit card for everyday purchases."
+    },
+    {
+      "id": "ACC004",
+      "accountName": "Cash Wallet",
+      "accountType": "Cash / Wallet",
+      "accountNumber": "CASH001",
+      "balance": 1250,
+      "availableBalance": 1250,
+      "currency": "USD",
+      "openDate": "2024-04-01",
+      "status": "Active",
+      "overdraftLimit": 0,
+      "description": "Cash balance tracked for personal expenses.",
+      "creditLimit": 0
+    },
+    {
+      "id": "ACC005",
+      "accountName": "Investment Account",
+      "accountType": "Investment",
+      "accountNumber": "INV001",
+      "balance": 2000,
+      "availableBalance": 2000,
+      "currency": "USD",
+      "openDate": "2024-05-15",
+      "status": "Active",
+      "overdraftLimit": 0,
+      "description": "Investment account for stocks and other investments."
+    },
+    {
+      "id": "ACC006",
+      "accountName": "Business Account",
+      "accountType": "Bank Account",
+      "accountNumber": "3456789012",
+      "balance": 8960,
+      "availableBalance": 8960,
+      "bankName": "Chase Bank",
+      "ifscCode": "HDFC0007890",
+      "currency": "USD",
+      "openDate": "2024-06-01",
+      "status": "Active",
+      "overdraftLimit": 1000,
+      "description": "Business checking account for company-related transactions."
+    },
+    {
+      "id": "ImFYRuqH27E",
+      "accountName": "Credit card",
+      "accountType": "Credit Card",
+      "accountNumber": "876543211",
+      "currency": "USD",
+      "bankName": "Nithish",
+      "ifscCode": "HDFC0009876",
+      "balance": 10000,
+      "availableBalance": 100000,
+      "creditLimit": 600,
+      "overdraftLimit": 0,
+      "openDate": "2026-08-20",
+      "status": "Active"
+    },
+    {
+      "id": "KOj4Uy5mFRs",
+      "accountName": "Nithish",
+      "accountType": "LOAN",
+      "accountNumber": "126255",
+      "balance": 122323,
+      "availableBalance": 122323,
+      "currency": "USD",
+      "openDate": "2026-08-18",
+      "status": "Active",
+      "institutionName": "Belen",
+      "interestRate": 1,
+      "loanBalance": 2121,
+      "accountCategory": "Personal",
+      "notes": "hi",
+      "description": "hi"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "TXN001",
+      "accountId": "ACC001",
+      "date": "2025-07-30",
+      "description": "Amazon Purchase",
+      "category": "Shopping",
+      "amount": -86.65,
+      "type": "Debit",
+      "status": "Completed",
+      "merchant": "Amazon",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN002",
+      "accountId": "ACC001",
+      "date": "2025-07-29",
+      "description": "Salary Deposit",
+      "category": "Income",
+      "amount": 4870,
+      "type": "Credit",
+      "status": "Completed",
+      "merchant": "Employer",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN003",
+      "accountId": "ACC001",
+      "date": "2025-07-29",
+      "description": "Starbucks",
+      "category": "Food & Dining",
+      "amount": -6.45,
+      "type": "Debit",
+      "status": "Completed",
+      "merchant": "Starbucks",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN004",
+      "accountId": "ACC001",
+      "date": "2025-07-27",
+      "description": "Electricity Bill",
+      "category": "Utilities",
+      "amount": -120,
+      "type": "Debit",
+      "status": "Completed",
+      "merchant": "Electric Company",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN005",
+      "accountId": "ACC001",
+      "date": "2025-07-26",
+      "description": "Transfer to Savings",
+      "category": "Transfer",
+      "amount": -500,
+      "type": "Debit",
+      "status": "Completed",
+      "merchant": "Internal Transfer",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN006",
+      "accountId": "ACC001",
+      "date": "2025-07-24",
+      "description": "Grocery Shopping",
+      "category": "Groceries",
+      "amount": -145.25,
+      "type": "Debit",
+      "status": "Completed",
+      "merchant": "Walmart",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN007",
+      "accountId": "ACC002",
+      "date": "2025-07-29",
+      "description": "Transfer from Checking",
+      "category": "Transfer",
+      "amount": 500,
+      "type": "Credit",
+      "status": "Completed",
+      "merchant": "Internal Transfer",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN008",
+      "accountId": "ACC002",
+      "date": "2025-07-20",
+      "description": "Monthly Interest",
+      "category": "Interest",
+      "amount": 42.35,
+      "type": "Credit",
+      "status": "Completed",
+      "merchant": "Chase Bank",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN009",
+      "accountId": "ACC002",
+      "date": "2025-07-15",
+      "description": "Transfer from Checking",
+      "category": "Transfer",
+      "amount": 750,
+      "type": "Credit",
+      "status": "Completed",
+      "merchant": "Internal Transfer",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN010",
+      "accountId": "ACC002",
+      "date": "2025-07-10",
+      "description": "Emergency Fund Deposit",
+      "category": "Savings",
+      "amount": 1000,
+      "type": "Credit",
+      "status": "Completed",
+      "merchant": "Internal Transfer",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN011",
+      "accountId": "ACC003",
+      "date": "2025-07-30",
+      "description": "Online Shopping",
+      "category": "Shopping",
+      "amount": -125.75,
+      "type": "Debit",
+      "status": "Completed",
+      "merchant": "Amazon",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN012",
+      "accountId": "ACC003",
+      "date": "2025-07-28",
+      "description": "Restaurant Payment",
+      "category": "Food & Dining",
+      "amount": -74.5,
+      "type": "Debit",
+      "status": "Completed",
+      "merchant": "Olive Garden",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN013",
+      "accountId": "ACC003",
+      "date": "2025-07-25",
+      "description": "Credit Card Payment",
+      "category": "Payment",
+      "amount": 500,
+      "type": "Credit",
+      "status": "Completed",
+      "merchant": "Chase Bank",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN014",
+      "accountId": "ACC003",
+      "date": "2025-07-22",
+      "description": "Fuel Purchase",
+      "category": "Transportation",
+      "amount": -65.3,
+      "type": "Debit",
+      "status": "Completed",
+      "merchant": "Shell",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN015",
+      "accountId": "ACC004",
+      "date": "2025-07-28",
+      "description": "Cash Withdrawal",
+      "category": "Cash",
+      "amount": -100,
+      "type": "Debit",
+      "status": "Completed",
+      "merchant": "ATM",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN016",
+      "accountId": "ACC004",
+      "date": "2025-07-25",
+      "description": "Cash Deposit",
+      "category": "Cash",
+      "amount": 300,
+      "type": "Credit",
+      "status": "Completed",
+      "merchant": "Cash Deposit",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN017",
+      "accountId": "ACC004",
+      "date": "2025-07-20",
+      "description": "Coffee Shop",
+      "category": "Food & Dining",
+      "amount": -15,
+      "type": "Debit",
+      "status": "Completed",
+      "merchant": "Coffee Shop",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN018",
+      "accountId": "ACC005",
+      "date": "2025-07-30",
+      "description": "Stock Purchase",
+      "category": "Investment",
+      "amount": -500,
+      "type": "Debit",
+      "status": "Completed",
+      "merchant": "Investment Platform",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN019",
+      "accountId": "ACC005",
+      "date": "2025-07-25",
+      "description": "Dividend Received",
+      "category": "Investment",
+      "amount": 75,
+      "type": "Credit",
+      "status": "Completed",
+      "merchant": "Investment Platform",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN020",
+      "accountId": "ACC005",
+      "date": "2025-07-15",
+      "description": "Stock Purchase",
+      "category": "Investment",
+      "amount": -250,
+      "type": "Debit",
+      "status": "Completed",
+      "merchant": "Investment Platform",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN021",
+      "accountId": "ACC006",
+      "date": "2025-07-30",
+      "description": "Client Payment",
+      "category": "Income",
+      "amount": 3500,
+      "type": "Credit",
+      "status": "Completed",
+      "merchant": "Client Payment",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN022",
+      "accountId": "ACC006",
+      "date": "2025-07-29",
+      "description": "Office Supplies",
+      "category": "Business Expense",
+      "amount": -235.75,
+      "type": "Debit",
+      "status": "Completed",
+      "merchant": "Office Depot",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN023",
+      "accountId": "ACC006",
+      "date": "2025-07-27",
+      "description": "Internet Bill",
+      "category": "Utilities",
+      "amount": -89.99,
+      "type": "Debit",
+      "status": "Completed",
+      "merchant": "Internet Provider",
+      "currency": "USD"
+    },
+    {
+      "id": "TXN024",
+      "accountId": "ACC006",
+      "date": "2025-07-25",
+      "description": "Business Insurance",
+      "category": "Business Expense",
+      "amount": -450,
+      "type": "Debit",
+      "status": "Completed",
+      "merchant": "Insurance Company",
+      "currency": "USD"
+    }
+  ],
+  "accountTypes": [
+    {
+      "id": "1",
+      "name": "Bank Account"
+    },
+    {
+      "id": "2",
+      "name": "Credit Card"
+    },
+    {
+      "id": "3",
+      "name": "Cash / Wallet"
+    },
+    {
+      "id": "4",
+      "name": "Investment"
+    },
+    {
+      "id": "5",
+      "name": "Loan"
+    },
+    {
+      "id": "6",
+      "name": "Others"
+    }
+  ],
+  "accountSubTypes": [
+    {
+      "id": "1",
+      "accountType": "Bank Account",
+      "name": "Current"
+    },
+    {
+      "id": "2",
+      "accountType": "Bank Account",
+      "name": "Savings"
+    },
+    {
+      "id": "3",
+      "accountType": "Bank Account",
+      "name": "Salary"
+    },
+    {
+      "id": "4",
+      "accountType": "Credit Card",
+      "name": "Standard"
+    },
+    {
+      "id": "5",
+      "accountType": "Cash / Wallet",
+      "name": "Cash"
+    },
+    {
+      "id": "6",
+      "accountType": "Cash / Wallet",
+      "name": "Digital Wallet"
+    },
+    {
+      "id": "7",
+      "accountType": "Investment",
+      "name": "Fixed Deposit"
+    },
+    {
+      "id": "8",
+      "accountType": "Investment",
+      "name": "Mutual Funds"
+    },
+    {
+      "id": "9",
+      "accountType": "Investment",
+      "name": "Stocks"
+    },
+    {
+      "id": "10",
+      "accountType": "Investment",
+      "name": "Other Investments"
+    },
+    {
+      "id": "11",
+      "accountType": "Loan",
+      "name": "Education Loan"
+    },
+    {
+      "id": "12",
+      "accountType": "Loan",
+      "name": "Home"
+    },
+    {
+      "id": "13",
+      "accountType": "Loan",
+      "name": "Personal"
+    },
+    {
+      "id": "14",
+      "accountType": "Loan",
+      "name": "Vehicle"
+    },
+    {
+      "accountType": "Others",
+      "name": "Crypto Wallet",
+      "id": "sPPUfLu0KWY"
+    },
+    {
+      "accountType": "Others",
+      "name": "Education",
+      "id": "2tfU_j2Z3Vk"
+    }
+  ],
+  "banks": [
+    {
+      "id": "1",
+      "name": "Chase Bank"
+    },
+    {
+      "id": "2",
+      "name": "Bank of America"
+    },
+    {
+      "id": "3",
+      "name": "Wells Fargo"
+    },
+    {
+      "id": "4",
+      "name": "Citibank"
+    },
+    {
+      "id": "5",
+      "name": "Capital One"
+    },
+    {
+      "id": "6",
+      "name": "US Bank"
+    },
+    {
+      "id": "7",
+      "name": "Other"
+    }
+  ],
+  "currencies": [
+    {
+      "id": "1",
+      "code": "INR",
+      "label": "INR - Indian Rupee"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
