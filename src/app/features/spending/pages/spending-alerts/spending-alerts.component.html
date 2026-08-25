@@ -1,0 +1,56 @@
+<div class="alerts-page">
+  <div class="page-header">
+    <div class="header-left">
+      <a class="back-link" routerLink="/spending/dashboard">← Back to Spending Dashboard</a>
+      <h1 class="page-title">Spend Alerts</h1>
+      <p class="page-subtitle">Stay on top of budget limits and unusual activity.</p>
+    </div>
+    <button type="button" class="btn-secondary" [disabled]="unreadCount() === 0" (click)="markAllAsRead()">
+      Mark all as read
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button type="button" class="tab" [class.active]="activeTab() === 'ALL'" (click)="setTab('ALL')">
+      All <span class="tab-count">{{ allAlerts().length }}</span>
+    </button>
+    <button type="button" class="tab" [class.active]="activeTab() === 'UNREAD'" (click)="setTab('UNREAD')">
+      Unread <span class="tab-count">{{ unreadCount() }}</span>
+    </button>
+    <button type="button" class="tab" [class.active]="activeTab() === 'READ'" (click)="setTab('READ')">
+      Read <span class="tab-count">{{ readCount() }}</span>
+    </button>
+  </div>
+
+  <!-- Alerts List -->
+  @if (filteredAlerts().length > 0) {
+    <div class="alerts-list">
+      @for (alert of filteredAlerts(); track alert.id) {
+        <div class="alert-card" [ngClass]="severityClass(alert.severity)" [class.unread]="!alert.isRead">
+          <span class="alert-icon">{{ severityIcon(alert.severity) }}</span>
+          <div class="alert-body">
+            <div class="alert-top">
+              <h3 class="alert-title">{{ alert.title }}</h3>
+              @if (!alert.isRead) { <span class="unread-dot" title="Unread"></span> }
+            </div>
+            <p class="alert-message">{{ alert.message }}</p>
+            <span class="alert-date">{{ alert.date | date:'medium' }}</span>
+          </div>
+          <div class="alert-actions">
+            @if (!alert.isRead) {
+              <button type="button" class="btn-link" (click)="markAsRead(alert.id)">Mark read</button>
+            }
+            <button type="button" class="btn-link danger" (click)="dismiss(alert.id)">Dismiss</button>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <span class="empty-icon">🔔</span>
+      <h4>No alerts here</h4>
+      <p>You're all caught up for this view.</p>
+    </div>
+  }
+</div>

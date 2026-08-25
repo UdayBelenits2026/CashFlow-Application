@@ -1,0 +1,136 @@
+<div class="income-dashboard-page">
+  <!-- Header -->
+  <div class="top-bar">
+    <div class="title-wrap">
+      <h1 class="page-title">Income Dashboard</h1>
+      <p class="page-subtitle">Manage upcoming scheduled inflows and verify recently received payments</p>
+    </div>
+  </div>
+
+  @if (error(); as err) {
+    <app-income-error-state
+      [title]="'Unable to load income overview'"
+      [message]="err"
+      (retry)="reload()"
+    ></app-income-error-state>
+  } @else if (isLoading()) {
+    <div class="dashboard-loading">
+      <div class="spinner"></div>
+      <p>Loading your income overview…</p>
+    </div>
+  } @else if (!hasData()) {
+    <div class="dashboard-empty">
+      <span class="empty-emoji">💰</span>
+      <h3 class="empty-title">No income recorded yet</h3>
+      <p class="empty-sub">Once you record income, your totals, trends, and recent activity will appear here.</p>
+    </div>
+  } @else {
+
+  <!-- KPI Row -->
+  <app-income-kpi-cards [overview]="overview()"></app-income-kpi-cards>
+
+  <!-- Analytics Row -->
+  <section class="analytics-grid">
+    <div class="card chart-card">
+      <app-cf-line-chart
+        [title]="'Income Trends'"
+        [subtitle]="'Monthly comparison of total incoming funds against previous periods'"
+        [labels]="trendLabels()"
+        [datasets]="trendDatasets()"
+      ></app-cf-line-chart>
+    </div>
+
+    <div class="card chart-card">
+      <app-cf-doughnut-chart
+        [title]="'Income by Source'"
+        [subtitle]="'Revenue distribution across all active streams'"
+        [labels]="sourceLabels()"
+        [datasets]="sourceDatasets()"
+        [total]="totalReceived()"
+      ></app-cf-doughnut-chart>
+    </div>
+  </section>
+
+  <!-- Secondary Row: Upcoming Scheduled Income + Top Revenue Streams -->
+  <section class="secondary-grid">
+    <app-upcoming-income
+      [upcomingItems]="upcomingIncomes()"
+      (recordIncome)="onRecordRecurring($event)"
+    ></app-upcoming-income>
+
+    <div class="card panel-card">
+      <div class="panel-header">
+        <h3 class="panel-title">Top Revenue Streams</h3>
+        <a routerLink="/income/reports" class="panel-link">View Full Report →</a>
+      </div>
+
+      <div class="sources-progress-list">
+        @for (item of sourceBreakdown(); track item.sourceId) {
+          <div class="source-progress-item">
+            <div class="source-info-row">
+              <div class="source-left">
+                <span class="color-dot" [style.backgroundColor]="item.color"></span>
+                <span class="source-name">{{ item.sourceName }}</span>
+              </div>
+              <div class="source-right">
+                <span class="source-amt">₹{{ item.amount | number:'1.2-2' }}</span>
+                <span class="source-pct">{{ item.percentage }}%</span>
+              </div>
+            </div>
+            <div class="progress-track">
+              <div
+                class="progress-fill"
+                [style.width]="item.barWidth"
+                [style.backgroundColor]="item.color"
+              ></div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Income (full width) -->
+  <section class="recent-income-section">
+    <app-recent-income
+      [incomes]="recentIncomes()"
+      (selectIncome)="onIncomeSelected($event)"
+      (editIncome)="openEditModal($event)"
+      (deleteIncome)="openDeleteDialog($event)"
+    ></app-recent-income>
+  </section>
+  }
+
+  <!-- Drawers & Modals -->
+  @if (showDetailsDrawer()) {
+    <app-income-details-drawer
+      [income]="activeIncome()"
+      (close)="showDetailsDrawer.set(false)"
+      (edit)="openEditModal($event)"
+      (delete)="openDeleteDialog($event)"
+    ></app-income-details-drawer>
+  }
+
+  @if (showAddModal()) {
+    <app-add-income-modal
+      [income]="activeIncome()"
+      [sources]="sources()"
+      [accounts]="accounts()"
+      (close)="showAddModal.set(false); activeIncome.set(null)"
+      (save)="onSaveIncome($event)"
+      (update)="onUpdateIncome($event)"
+    ></app-add-income-modal>
+  }
+
+  @if (showDeleteDialog()) {
+    <app-income-delete-confirm-dialog
+      [itemAmount]="activeIncome()?.amount"
+      [itemDescription]="activeIncome()?.description"
+      [itemDate]="activeIncome()?.date"
+      [itemAccount]="activeIncome()?.accountName"
+      [itemSource]="activeIncome()?.sourceName"
+      (close)="showDeleteDialog.set(false)"
+      (confirm)="onConfirmDelete()"
+    ></app-income-delete-confirm-dialog>
+  }
+</div>

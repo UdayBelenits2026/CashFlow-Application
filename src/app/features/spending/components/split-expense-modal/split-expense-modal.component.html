@@ -15,18 +15,18 @@
     </div>
 
     <!-- Summary Box -->
-    <div class="split-balance-bar" [ngClass]="{ balanced: remainingAmount === 0, warning: remainingAmount !== 0 }">
+    <div class="split-balance-bar" [ngClass]="{ balanced: remainingAmount() === 0, warning: remainingAmount() !== 0 }">
       <div class="balance-item">
         <span class="b-lbl">Original Amount:</span>
-        <span class="b-val">₹{{ totalOriginalAmount | number:'1.2-2' }}</span>
+        <span class="b-val">₹{{ totalOriginalAmount() | number:'1.2-2' }}</span>
       </div>
       <div class="balance-item">
         <span class="b-lbl">Allocated:</span>
-        <span class="b-val">₹{{ allocatedAmount | number:'1.2-2' }}</span>
+        <span class="b-val">₹{{ allocatedAmount() | number:'1.2-2' }}</span>
       </div>
       <div class="balance-item">
         <span class="b-lbl">Remaining:</span>
-        <span class="b-val highlight">₹{{ remainingAmount | number:'1.2-2' }}</span>
+        <span class="b-val highlight">₹{{ remainingAmount() | number:'1.2-2' }}</span>
       </div>
     </div>
 
@@ -95,7 +95,7 @@
       <button
         type="button"
         class="btn-primary-success"
-        [disabled]="!isSplitValid"
+        [disabled]="!isSplitValid()"
         (click)="onSaveSplits()"
       >
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">

@@ -28,19 +28,6 @@ export const loadSpendingDashboardFailure = createAction(
   props<{ error: string }>()
 );
 
-// Backward-compatible alias
-export const loadSpendingOverview = loadSpendingDashboard;
-
-// --- Expenses CRUD ---
-export const loadExpenses = createAction(
-  '[Spending] Load Expenses'
-);
-
-export const loadExpensesSuccess = createAction(
-  '[Spending] Load Expenses Success',
-  props<{ expenses: Expense[] }>()
-);
-
 export const addExpense = createAction(
   '[Spending] Add Expense',
   props<{ expense: Partial<Expense> }>()
@@ -84,12 +71,6 @@ export const deleteExpenseSuccess = createAction(
 export const deleteExpenseFailure = createAction(
   '[Spending] Delete Expense Failure',
   props<{ error: string }>()
-);
-
-// --- Active Selection ---
-export const selectExpense = createAction(
-  '[Spending] Select Expense',
-  props<{ id: string | null }>()
 );
 
 // --- Filters ---
@@ -163,6 +144,12 @@ export const markAlertAsRead = createAction(
 export const dismissAlert = createAction(
   '[Spending] Dismiss Alert',
   props<{ id: string }>()
+);
+
+// --- Generic operation failure (tags, recurring) ---
+export const spendingOperationFailure = createAction(
+  '[Spending] Operation Failure',
+  props<{ error: string }>()
 );
 
 // --- Feedback clear ---

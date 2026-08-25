@@ -1,0 +1,58 @@
+<div class="modal-backdrop" (click)="onCancel()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="icon-warning">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <h3 class="modal-title">{{ title() }}</h3>
+    </div>
+
+    <div class="modal-body">
+      <p class="warning-text">{{ message() }}</p>
+
+      @if (itemDescription()) {
+        <div class="item-summary-box">
+          <div class="summary-row">
+            <span class="summary-label">Description:</span>
+            <span class="summary-val">{{ itemDescription() }}</span>
+          </div>
+          @if (itemSource()) {
+            <div class="summary-row">
+              <span class="summary-label">Source:</span>
+              <span class="summary-val">{{ itemSource() }}</span>
+            </div>
+          }
+          @if (itemAccount()) {
+            <div class="summary-row">
+              <span class="summary-label">Account:</span>
+              <span class="summary-val">{{ itemAccount() }}</span>
+            </div>
+          }
+          @if (itemDate()) {
+            <div class="summary-row">
+              <span class="summary-label">Date:</span>
+              <span class="summary-val">{{ itemDate() }}</span>
+            </div>
+          }
+          @if (itemAmount() !== undefined) {
+            <div class="summary-row">
+              <span class="summary-label">Amount:</span>
+              <span class="summary-val amount-highlight">₹{{ (itemAmount() || 0) | number:'1.2-2' }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="onCancel()" [disabled]="isDeleting()">Cancel</button>
+      <button type="button" class="btn-danger" (click)="onConfirm()" [disabled]="isDeleting()">
+        {{ isDeleting() ? 'Deleting…' : 'Delete Permanently' }}
+      </button>
+    </div>
+  </div>
+</div>

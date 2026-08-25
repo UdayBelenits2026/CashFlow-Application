@@ -1,0 +1,500 @@
+@use '../../../../../styles/variables' as *;
+
+:host {
+  display: block;
+  font-family: $font-family-base;
+  color: $color-text-primary;
+  background-color: $color-background;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
+.dashboard-page {
+  max-width: 85rem;
+=======
+.full-dashboard-page {
+  max-width: 1360px;
+>>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
+  margin: 0 auto;
+  padding: $spacing-6 $spacing-6 $spacing-16 $spacing-6;
+  box-sizing: border-box;
+}
+
+// TOAST
+.toast-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-3 $spacing-4;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-5;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+
+  &.success {
+    background: $color-success-bg;
+<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
+    border: 0.0625rem solid rgba(25, 169, 116, 0.2);
+=======
+    border: $border-width-sm solid rgba(25, 169, 116, 0.2);
+>>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
+    color: $color-success;
+  }
+
+  &.error {
+    background: $color-danger-bg;
+<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
+    border: 0.0625rem solid rgba(220, 38, 38, 0.2);
+=======
+    border: $border-width-sm solid rgba(220, 38, 38, 0.2);
+>>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
+    color: $color-danger;
+  }
+}
+
+.btn-toast-close {
+  background: none;
+  border: none;
+  color: currentColor;
+  font-size: $font-size-lg;
+  cursor: pointer;
+}
+
+.btn-retry {
+  background: $color-danger;
+  color: $color-white;
+  border: none;
+  padding: $spacing-1 $spacing-3;
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+}
+
+// HEADER
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-6;
+  flex-wrap: wrap;
+  gap: $spacing-4;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+}
+
+.back-link {
+  font-size: $font-size-base;
+  color: $color-info;
+  text-decoration: none;
+  font-weight: $font-weight-semibold;
+  margin-bottom: $spacing-1;
+
+  &:hover { text-decoration: underline; }
+}
+
+.page-title {
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  font-size: $font-size-base;
+  color: $color-text-muted;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  flex-wrap: wrap;
+}
+
+.select-box {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  background: $color-card;
+<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
+  border: 0.0625rem solid $color-border;
+  border-radius: $radius-md;
+  padding: 0 $spacing-3;
+  height: 2.375rem;
+=======
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-md;
+  padding: 0 $spacing-3;
+  height: $spacing-10;
+>>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
+  box-shadow: $shadow-sm;
+
+  i { font-size: $font-size-base; color: $color-text-muted; }
+
+  select {
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+    cursor: pointer;
+    outline: none;
+  }
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
+  background: $color-card;
+  color: $color-text-primary;
+  border: 0.0625rem solid $color-border;
+=======
+  height: $spacing-10;
+  padding: 0 $spacing-4;
+  background: $color-primary-button;
+  color: $color-white;
+  border: none;
+>>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
+  border-radius: $radius-md;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: $shadow-sm;
+
+<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
+  i {
+    font-size: $font-size-base;
+    color: $color-text-muted;
+    transition: color $transition-fast;
+  }
+
+  &:hover {
+    background: $color-background;
+    border-color: $color-border-hover;
+    color: $color-primary;
+
+    i {
+      color: $color-primary-button;
+    }
+  }
+
+  &:active {
+    transform: translateY(0.0625rem);
+  }
+}
+
+.badge-alert {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding: 0 $spacing-1;
+  border-radius: 624.9375rem;
+  background: $color-danger;
+  color: $color-white;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  line-height: 1;
+=======
+  &:hover { background: $color-primary-button-hover; }
+>>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
+}
+
+// SECTIONS
+.section-kpis { margin-bottom: $spacing-6; }
+
+.section-analytics {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: $spacing-5;
+  margin-bottom: $spacing-6;
+  align-items: stretch;
+
+  .analytics-left,
+  .analytics-right {
+    display: flex;
+    flex-direction: column;
+    height: 18.125rem;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    app-cf-line-chart,
+    app-cf-doughnut-chart {
+      display: block;
+      width: 100%;
+      height: 100%;
+
+      ::ng-deep .chart-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
+        border: 0.0625rem solid $color-border-light;
+=======
+        border: $border-width-sm solid $color-border-light;
+>>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
+        border-radius: $radius-lg;
+        background: $color-card;
+        box-shadow: $shadow-sm;
+        padding: $spacing-4;
+      }
+
+      ::ng-deep .chart-container {
+        flex: 1;
+        width: 100%;
+        height: 100%;
+        min-height: 12.5rem;
+        max-height: 13.75rem;
+      }
+    }
+  }
+
+<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
+  @media (max-width: 64rem) {
+    grid-template-columns: 1fr;
+
+    .analytics-left,
+    .analytics-right {
+      height: 16.875rem;
+    }
+=======
+  @include respond-max($bp-960) {
+    grid-template-columns: 1fr;
+    .analytics-left, .analytics-right { height: 270px; }
+>>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
+  }
+}
+
+.recent-expenses-section {
+  width: 100%;
+  min-width: 0;
+  margin-bottom: $spacing-6;
+}
+
+.bottom-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: $spacing-5;
+  margin-bottom: $spacing-6;
+  align-items: start;
+
+  > * { min-width: 0; }
+
+  @include respond-max($bp-960) {
+    grid-template-columns: 1fr;
+  }
+}
+
+app-recent-expenses,
+app-top-merchants,
+app-budget-vs-actual {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.section-insights { margin-bottom: $spacing-6; }
+
+// INSIGHTS
+.insights-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-5 $spacing-6;
+  box-shadow: $shadow-sm;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-5;
+}
+
+.card-title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.card-subtitle {
+  font-size: $font-size-md;
+  color: $color-text-muted;
+  margin: $spacing-1 0 0;
+}
+
+.btn-view-all {
+  background: transparent;
+  border: none;
+  color: $color-info;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: $spacing-4;
+}
+
+.insight-item {
+  border: $border-width-sm solid $color-border-light;
+  border-left-width: 4px;
+  border-radius: $radius-md;
+  padding: $spacing-4;
+  background: $color-background;
+
+  &.accent-positive { border-left-color: $color-success; }
+  &.accent-negative { border-left-color: $color-danger; }
+  &.accent-info { border-left-color: $color-info; }
+  &.accent-neutral { border-left-color: $color-text-light; }
+}
+
+.insight-badge {
+  display: inline-block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: 999px;
+  padding: $spacing-1 $spacing-2;
+  margin-bottom: $spacing-2;
+}
+
+.insight-title {
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0 0 $spacing-1;
+}
+
+.insight-message {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  margin: 0;
+  line-height: $line-height-normal;
+}
+
+// SKELETON
+.skeleton-container {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-5;
+}
+
+.skeleton-kpis {
+  height: 7.5rem;
+  background: $color-border-light;
+  border-radius: $radius-lg;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-charts {
+  height: 16.25rem;
+  background: $color-border-light;
+  border-radius: $radius-lg;
+  animation: pulse 1.5s infinite;
+}
+
+<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
+.skeleton-table {
+  height: 18.75rem;
+  background: $color-border-light;
+  border-radius: $radius-lg;
+  animation: pulse 1.5s infinite;
+}
+
+=======
+>>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@include respond-max($bp-1280) {
+  .full-dashboard-page {
+    max-width: 100%;
+  }
+}
+
+<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 48rem) {
+  .dashboard-page {
+=======
+@include respond-max($bp-840) {
+  .full-dashboard-page {
+>>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
+    padding: $spacing-4 $spacing-4 $spacing-10 $spacing-4;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .insights-card {
+    padding: $spacing-4 $spacing-4;
+  }
+}
+
+@include respond-max($bp-600) {
+  .header-actions {
+    .select-box, .btn-primary { flex: 1 1 auto; }
+  }
+
+  .insights-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-header {
+    flex-direction: column;
+    gap: $spacing-2;
+  }
+}
+
+@include respond-max($bp-480) {
+  .full-dashboard-page {
+    padding: $spacing-3 $spacing-3 $spacing-8 $spacing-3;
+  }
+
+  .page-title {
+    font-size: $font-size-2xl;
+  }
+
+  .section-analytics {
+    .analytics-left, .analytics-right { height: 240px; }
+  }
+}

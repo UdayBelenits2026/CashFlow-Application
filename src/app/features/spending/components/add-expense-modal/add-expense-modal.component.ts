@@ -1,8 +1,9 @@
-import { Component, OnInit, inject, input, output, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, input, output, signal, computed, InputSignal, OutputEmitterRef, WritableSignal, Signal } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Expense } from '../../models/expense.model';
 import { SpendingCategoryItem } from '../../models/spending-summary.model';
+import { DEFAULT_CATEGORIES } from '../../utility/spending.constants';
 
 @Component({
   selector: 'app-add-expense-modal',
@@ -13,39 +14,27 @@ import { SpendingCategoryItem } from '../../models/spending-summary.model';
 })
 export class AddExpenseModalComponent implements OnInit {
   // Modern Signal Inputs and Outputs
-  readonly expense = input<Expense | null>(null);
-  readonly categories = input<SpendingCategoryItem[]>([]);
-  readonly close = output<void>();
-  readonly save = output<Partial<Expense>>();
-  readonly update = output<{ id: string; expense: Partial<Expense> }>();
+  readonly expense: InputSignal<Expense | null> = input<Expense | null>(null);
+  readonly categories: InputSignal<SpendingCategoryItem[]> = input<SpendingCategoryItem[]>([]);
+  readonly close: OutputEmitterRef<void> = output<void>();
+  readonly save: OutputEmitterRef<Partial<Expense>> = output<Partial<Expense>>();
+  readonly update: OutputEmitterRef<{ id: string; expense: Partial<Expense> }> = output<{ id: string; expense: Partial<Expense> }>();
 
-  private readonly fb = inject(FormBuilder);
+  private readonly fb: FormBuilder = inject(FormBuilder);
 
   // Modern Signal State
-  readonly currentStep = signal<number>(1);
-  readonly selectedCategoryId = signal<string>('cat-1');
-  readonly selectedCategoryName = signal<string>('Food & Dining');
-  readonly selectedCategoryColor = signal<string>('#0F172A');
-
-  readonly defaultCategories: SpendingCategoryItem[] = [
-    { id: 'cat-1', name: 'Food & Dining', color: '#0F172A', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-2', name: 'Shopping', color: '#1D4ED8', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-3', name: 'Transportation', color: '#EA580C', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-4', name: 'Utilities', color: '#D97706', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-5', name: 'Entertainment', color: '#6366F1', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-6', name: 'Health', color: '#10B981', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-7', name: 'Travel', color: '#06B6D4', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-8', name: 'Education', color: '#8B5CF6', amount: 0, percentage: 0, barWidth: '0%' },
-    { id: 'cat-9', name: 'Others', color: '#64748B', amount: 0, percentage: 0, barWidth: '0%' }
-  ];
+  readonly currentStep: WritableSignal<number> = signal<number>(1);
+  readonly selectedCategoryId: WritableSignal<string> = signal<string>('cat-1');
+  readonly selectedCategoryName: WritableSignal<string> = signal<string>('Food & Dining');
+  readonly selectedCategoryColor: WritableSignal<string> = signal<string>('#0F172A');
 
   expenseForm!: FormGroup;
 
   // Computed signals
-  readonly isEditMode = computed(() => !!this.expense());
-  readonly availableCategories = computed(() => {
+  readonly isEditMode: Signal<boolean> = computed(() => !!this.expense());
+  readonly availableCategories: Signal<SpendingCategoryItem[]> = computed(() => {
     const cats = this.categories();
-    return cats && cats.length > 0 ? cats : this.defaultCategories;
+    return cats && cats.length > 0 ? cats : DEFAULT_CATEGORIES;
   });
 
   ngOnInit(): void {
@@ -87,10 +76,17 @@ export class AddExpenseModalComponent implements OnInit {
   }
 
   nextStep(): void {
-    if (this.currentStep() === 1 && this.isStep1Valid()) {
-      this.currentStep.set(2);
-    } else if (this.currentStep() === 2 && this.selectedCategoryId()) {
-      this.currentStep.set(3);
+    switch (this.currentStep()) {
+      case 1:
+        if (this.isStep1Valid()) {
+          this.currentStep.set(2);
+        }
+        break;
+      case 2:
+        if (this.selectedCategoryId()) {
+          this.currentStep.set(3);
+        }
+        break;
     }
   }
 

@@ -1,0 +1,495 @@
+@use '../../../../../styles/variables' as *;
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: $spacing-4;
+}
+
+.modal-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-xl;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: $shadow-lg;
+  display: flex;
+  flex-direction: column;
+  max-height: 92vh;
+  overflow: hidden;
+  animation: modalIn 0.2s ease-out;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Header */
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: $spacing-5 $spacing-6;
+  border-bottom: $border-width-sm solid $color-border;
+  background: linear-gradient(135deg, $color-info-bg 0%, $color-card 65%);
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+}
+
+.modal-title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.step-indicator {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $color-info;
+  background: rgba(37, 99, 235, 0.1);
+  padding: 2px 10px;
+  border-radius: 9999px;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  color: $color-text-muted;
+  cursor: pointer;
+  padding: $spacing-1;
+  border-radius: $radius-sm;
+  display: flex;
+
+  &:hover {
+    color: $color-text-primary;
+    background: $color-background;
+  }
+}
+
+/* Stepper */
+.wizard-progress {
+  display: flex;
+  align-items: center;
+  padding: $spacing-4 $spacing-6;
+  background: $color-background;
+  border-bottom: $border-width-sm solid $color-border;
+}
+
+.progress-step {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  color: $color-text-muted;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  transition: color $transition-fast;
+
+  &.active { color: $color-info; }
+  &.current { color: $color-primary; font-weight: $font-weight-bold; }
+}
+
+.step-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: $color-card;
+  border: 1.5px solid $color-border;
+  color: $color-text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  transition: all $transition-fast;
+}
+
+.progress-step.active .step-num {
+  border-color: $color-info;
+  color: $color-info;
+}
+
+.progress-step.current .step-num {
+  background: $color-info;
+  border-color: $color-info;
+  color: $color-white;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+.progress-step.completed .step-num {
+  background: $color-info;
+  border-color: $color-info;
+  color: $color-white;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 2px;
+  background: $color-border;
+  margin: 0 $spacing-3;
+  transition: background $transition-fast;
+
+  &.filled { background: $color-info; }
+}
+
+/* Body */
+.modal-body {
+  padding: $spacing-6;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.step-content {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+}
+
+.form-row {
+  display: flex;
+  gap: $spacing-4;
+
+  &.checkbox-row {
+    margin-top: $spacing-1;
+    gap: $spacing-3;
+  }
+}
+
+.flex-1 { flex: 1; }
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+}
+
+.form-label {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+}
+
+.help-text {
+  font-size: 11px;
+  color: $color-text-muted;
+}
+
+.form-input, .form-textarea, select.form-input {
+  padding: $spacing-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  background: $color-card;
+  color: $color-text-primary;
+  outline: none;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &::placeholder { color: $color-placeholder; }
+
+  &:focus {
+    border-color: $color-info;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+}
+
+.text-lg { font-size: $font-size-lg; }
+.font-bold { font-weight: $font-weight-bold; }
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .currency-symbol {
+    position: absolute;
+    left: $spacing-3;
+    font-weight: $font-weight-bold;
+    color: $color-info;
+  }
+
+  .form-input {
+    padding-left: $spacing-8;
+    width: 100%;
+  }
+}
+
+.error-text {
+  font-size: 11px;
+  color: $color-danger;
+  font-weight: $font-weight-semibold;
+}
+
+.form-input.ng-invalid.ng-touched,
+.form-textarea.ng-invalid.ng-touched,
+select.form-input.ng-invalid.ng-touched {
+  border-color: $color-danger;
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+  }
+}
+
+.guard-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: $spacing-3 $spacing-4;
+  border-radius: $radius-md;
+  background: $color-warning-bg;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #92400e;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+
+  .guard-sub {
+    font-weight: $font-weight-regular;
+    font-size: 11px;
+    color: #b45309;
+  }
+}
+
+/* Checkbox pills */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  flex: 1;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  cursor: pointer;
+  padding: $spacing-2 $spacing-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  transition: all $transition-fast;
+
+  input {
+    accent-color: $color-info;
+    width: 15px;
+    height: 15px;
+  }
+
+  &:hover { border-color: $color-border-hover; }
+
+  &:has(input:checked) {
+    border-color: $color-info;
+    background: $color-info-bg;
+    color: $color-primary;
+  }
+}
+
+/* Step 2 - source selection */
+.sources-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-2;
+}
+
+.sources-sub {
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+}
+
+.btn-toggle-new {
+  background: $color-info-bg;
+  border: none;
+  color: $color-info;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+  padding: $spacing-1 $spacing-3;
+  border-radius: 9999px;
+
+  &:hover { background: rgba(37, 99, 235, 0.16); }
+}
+
+.sources-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-3;
+}
+
+.source-option-card {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  padding: $spacing-3;
+  border: 1.5px solid $color-border;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+  position: relative;
+
+  &:hover {
+    border-color: $color-border-hover;
+    background: $color-background;
+  }
+
+  &.selected {
+    border-color: $color-info;
+    background: $color-info-bg;
+  }
+}
+
+.source-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.source-option-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  overflow: hidden;
+}
+
+.source-option-name {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.source-option-type {
+  font-size: 11px;
+  color: $color-text-muted;
+}
+
+.selected-check {
+  margin-left: auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: $color-info;
+  color: $color-white;
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.new-source-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+}
+
+/* Step 3 - review */
+.review-card {
+  background: $color-card;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-4;
+  background: linear-gradient(135deg, $color-info-bg 0%, #DBEAFE 100%);
+  border-bottom: 1px solid #BFDBFE;
+}
+
+.review-source-badge {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  color: $color-white;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+}
+
+.review-amount {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary-button-hover;
+  letter-spacing: -0.02em;
+}
+
+.review-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-4;
+  padding: $spacing-4;
+}
+
+.review-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  &.full-width { grid-column: span 2; }
+}
+
+.review-label {
+  font-size: 11px;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.review-val {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+/* Footer */
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-3;
+  padding-top: $spacing-4;
+  margin-top: $spacing-2;
+  border-top: $border-width-sm solid $color-border;
+}
+
+.btn-secondary {
+  padding: $spacing-3 $spacing-5;
+  border: 1px solid $color-border;
+  background: $color-card;
+  color: $color-text-secondary;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+
+  &:hover { background: $color-background; }
+}
+
+.btn-primary {
+  padding: $spacing-3 $spacing-6;
+  border: none;
+  background: $color-info;
+  color: $color-white;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+
+  &:hover { background: $color-primary-button-hover; }
+
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}

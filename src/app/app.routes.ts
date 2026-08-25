@@ -88,9 +88,7 @@ export const routes: Routes = [
       {
         path: 'income',
         loadComponent: () =>
-          import('./features/income/income.component').then(
-            (m) => m.IncomeComponent,
-          ),
+          import('./features/income/income.component').then((m) => m.IncomeComponent),
       },
       {
         path: 'spending',

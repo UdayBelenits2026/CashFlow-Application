@@ -1,0 +1,241 @@
+<div class="income-reports-page">
+  @let items = reportItems();
+
+  <!-- Header -->
+  <div class="top-bar">
+    <div class="title-wrap">
+      <h1 class="page-title">Income by Source Report</h1>
+      <p class="page-subtitle">Analyze revenue concentration, stream growth, and portfolio diversification</p>
+    </div>
+
+    <div class="action-wrap">
+      <select
+        class="period-select"
+        [ngModel]="selectedPeriod()"
+        (ngModelChange)="onPeriodChange($event)"
+      >
+        @for (opt of periodOptions(); track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+
+      <button type="button" class="btn-secondary" [disabled]="items.length === 0" (click)="onExportReport()">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Export Report
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Row -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <span class="kpi-icon icon-total">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+      </span>
+      <div class="kpi-text">
+        <span class="kpi-label">Total Income</span>
+        <span class="kpi-val">₹{{ totalIncome() | number:'1.2-2' }}</span>
+        <span class="kpi-sub">selected period</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <span class="kpi-icon icon-receipts">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1z"/>
+          <line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/>
+        </svg>
+      </span>
+      <div class="kpi-text">
+        <span class="kpi-label">Receipts</span>
+        <span class="kpi-val">{{ receiptsCount() }}</span>
+        <span class="kpi-sub">recorded transactions</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <span class="kpi-icon icon-avg">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+        </svg>
+      </span>
+      <div class="kpi-text">
+        <span class="kpi-label">Average / Receipt</span>
+        <span class="kpi-val">₹{{ averageReceipt() | number:'1.2-2' }}</span>
+        <span class="kpi-sub">{{ activeSourcesCount() }} active sources</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <span class="kpi-icon icon-tax">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>
+        </svg>
+      </span>
+      <div class="kpi-text">
+        <span class="kpi-label">Taxable Ratio</span>
+        <span class="kpi-val">{{ taxableRatio() }}%</span>
+        <span class="kpi-sub">₹{{ taxableTotal() | number:'1.0-0' }} taxable</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Highlights & Doughnut Grid -->
+  <div class="report-overview-grid">
+    <!-- Top Source Spotlight -->
+    <div class="spotlight-card">
+      <div class="spotlight-top">
+        <span class="spotlight-label">Primary Revenue Contributor</span>
+        <span class="spotlight-badge">Top Source</span>
+      </div>
+
+      <div class="spotlight-identity">
+        <span
+          class="spotlight-avatar"
+          [style.backgroundColor]="(topSource()?.color || '#2563EB') + '1A'"
+          [style.color]="topSource()?.color || '#2563EB'"
+        >
+          {{ (topSource()?.sourceName || 'N').charAt(0).toUpperCase() }}
+        </span>
+        <div class="spotlight-id-text">
+          <h2 class="spotlight-title">{{ topSource()?.sourceName || 'No data' }}</h2>
+          @if (topSource(); as ts) {
+            <span
+              class="spotlight-cat"
+              [style.backgroundColor]="(ts.color || '#2563EB') + '1A'"
+              [style.color]="ts.color || '#2563EB'"
+            >
+              {{ ts.sourceType }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <div class="spotlight-amount-block">
+        <span class="spotlight-amount">₹{{ (topSource()?.amount || 0) | number:'1.2-2' }}</span>
+        <span class="spotlight-share">{{ topSource()?.percentage || 0 }}% of total portfolio</span>
+      </div>
+
+      <div class="spotlight-bar">
+        <div class="spotlight-bar-caption">
+          <span>Contribution</span>
+          <span>{{ topSource()?.percentage || 0 }}%</span>
+        </div>
+        <div class="spotlight-bar-track">
+          <div
+            class="spotlight-bar-fill"
+            [style.width.%]="topSource()?.percentage || 0"
+            [style.backgroundColor]="topSource()?.color || '#2563EB'"
+          ></div>
+        </div>
+      </div>
+
+      <div class="spotlight-footer">
+        <div class="sf-stat">
+          <span class="sf-val">{{ activeSourcesCount() }}</span>
+          <span class="sf-lbl">Active Sources</span>
+        </div>
+        <div class="sf-stat">
+          <span class="sf-val">{{ receiptsCount() }}</span>
+          <span class="sf-lbl">Receipts</span>
+        </div>
+        <div class="sf-stat">
+          <span class="sf-val">{{ taxableRatio() }}%</span>
+          <span class="sf-lbl">Taxable</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Doughnut Chart (component renders its own card) -->
+    @if (items.length > 0) {
+      <app-cf-doughnut-chart
+        class="dist-card"
+        [title]="'Source Distribution'"
+        [subtitle]="'Percentage share per income channel'"
+        [labels]="chartLabels()"
+        [datasets]="chartDatasets()"
+        [total]="totalIncome()"
+      ></app-cf-doughnut-chart>
+    } @else {
+      <div class="dist-card chart-empty-card">
+        <div class="chart-empty">
+          <span class="chart-empty-icon">📊</span>
+          <p>No income data for this period.</p>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Detailed Table -->
+  <div class="table-card">
+    <div class="table-header">
+      <h3 class="table-title">Source Breakdown &amp; Contribution</h3>
+      <span class="table-count">{{ items.length }} source{{ items.length === 1 ? '' : 's' }}</span>
+    </div>
+
+    @if (items.length === 0) {
+      <div class="empty-state">
+        <span class="empty-icon">📭</span>
+        <p class="empty-title">No income recorded for this period</p>
+        <p class="empty-sub">Try selecting a different reporting period above.</p>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Income Source</th>
+              <th>Category</th>
+              <th>Receipts</th>
+              <th class="text-right">Total Amount</th>
+              <th class="share-col">Portfolio Share</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of items; track item.sourceId) {
+              <tr>
+                <td class="source-cell">
+                  <div class="source-item">
+                    <span
+                      class="source-avatar"
+                      [style.backgroundColor]="(item.color || '#2563EB') + '1A'"
+                      [style.color]="item.color || '#2563EB'"
+                    >
+                      {{ (item.sourceName || 'S').charAt(0).toUpperCase() }}
+                    </span>
+                    <span class="name-text">{{ item.sourceName }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="cat-pill">{{ item.sourceType }}</span>
+                </td>
+                <td>{{ item.transactionCount || 0 }} receipt{{ (item.transactionCount || 0) === 1 ? '' : 's' }}</td>
+                <td class="amount-cell text-right">
+                  ₹{{ item.amount | number:'1.2-2' }}
+                </td>
+                <td class="share-cell">
+                  <div class="share-inline">
+                    <div class="progress-track">
+                      <div
+                        class="progress-fill"
+                        [style.width]="item.barWidth"
+                        [style.backgroundColor]="item.color"
+                      ></div>
+                    </div>
+                    <span class="share-pct">{{ item.percentage }}%</span>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

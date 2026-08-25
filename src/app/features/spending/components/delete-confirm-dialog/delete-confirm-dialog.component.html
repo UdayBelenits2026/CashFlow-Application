@@ -9,17 +9,21 @@
       </svg>
     </div>
 
-    <h3 class="dialog-title">Delete Expense?</h3>
+    <h3 class="dialog-title">{{ title() }}</h3>
     <p class="dialog-message">
-      Are you sure you want to delete
-      <strong>"{{ expense()?.merchantName }}"</strong>
-      for <strong>₹{{ (expense()?.amount || 0) | number:'1.2-2' }}</strong>? This action cannot be undone.
+      @if (message()) {
+        {{ message() }}
+      } @else {
+        Are you sure you want to delete
+        <strong>"{{ expense()?.merchantName }}"</strong>
+        for <strong>₹{{ (expense()?.amount || 0) | number:'1.2-2' }}</strong>? This action cannot be undone.
+      }
     </p>
 
     <div class="dialog-actions">
       <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
       <button type="button" class="btn-delete" (click)="onConfirm()">
-        Delete Expense
+        {{ confirmLabel() }}
       </button>
     </div>
   </div>

@@ -1,0 +1,119 @@
+<div class="kpi-grid">
+  <!-- 1. Total Income -->
+  <div class="kpi-card">
+    <div class="kpi-header">
+      <span class="kpi-label">Total Income</span>
+      <div class="kpi-icon-badge emerald">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-amount">
+      ₹{{ (overview()?.totalIncome || 0) | number:'1.2-2' }}
+    </div>
+    <div class="kpi-trend trend-up">
+      <span class="trend-badge positive">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
+        +{{ (overview()?.incomeGrowthPercentage ?? 0) | number:'1.1-1' }}%
+      </span>
+      <span class="trend-context">vs last period</span>
+    </div>
+  </div>
+
+  <!-- 2. Receipts / Transactions -->
+  <div class="kpi-card">
+    <div class="kpi-header">
+      <span class="kpi-label">Receipts</span>
+      <div class="kpi-icon-badge blue">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="5" width="20" height="14" rx="2"/>
+          <line x1="2" y1="10" x2="22" y2="10"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-amount">
+      {{ overview()?.receiptsCount || 0 }}
+    </div>
+    <div class="kpi-trend">
+      <span class="trend-badge neutral">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
+        +{{ overview()?.receiptsGrowthCount ?? 0 }} received
+      </span>
+      <span class="trend-context">this month</span>
+    </div>
+  </div>
+
+  <!-- 3. Average Monthly -->
+  <div class="kpi-card">
+    <div class="kpi-header">
+      <span class="kpi-label">Avg. Monthly</span>
+      <div class="kpi-icon-badge amber">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-amount">
+      ₹{{ (overview()?.averageMonthly || 0) | number:'1.2-2' }}
+    </div>
+    <div class="kpi-trend">
+      <span class="trend-badge positive">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
+        +{{ (overview()?.averageMonthlyGrowthPercentage ?? 0) | number:'1.1-1' }}%
+      </span>
+      <span class="trend-context">steady run-rate</span>
+    </div>
+  </div>
+
+  <!-- 4. Top Income Source -->
+  <div class="kpi-card">
+    <div class="kpi-header">
+      <span class="kpi-label">Top Income Source</span>
+      <div class="kpi-icon-badge purple">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-category-name" [title]="overview()?.topSourceName || '—'">
+      {{ overview()?.topSourceName || '—' }}
+    </div>
+    <div class="kpi-category-sub">
+      ₹{{ (overview()?.topSourceAmount || 0) | number:'1.2-2' }} ({{ overview()?.topSourcePercentage || 0 }}%)
+    </div>
+  </div>
+
+  <!-- 5. Recurring Expected -->
+  <div class="kpi-card">
+    <div class="kpi-header">
+      <span class="kpi-label">Recurring Expected</span>
+      <div class="kpi-icon-badge cyan">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+      </div>
+    </div>
+    <div class="kpi-amount">
+      ₹{{ (overview()?.totalRecurringExpected || 0) | number:'1.2-2' }}
+    </div>
+    <div class="kpi-trend">
+      <span class="trend-badge positive">
+        {{ overview()?.activeSourcesCount || 0 }} sources
+      </span>
+      <span class="trend-context">active streams</span>
+    </div>
+  </div>
+</div>

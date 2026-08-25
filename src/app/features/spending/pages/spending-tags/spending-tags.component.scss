@@ -55,7 +55,11 @@
   padding: $spacing-2 $spacing-5;
   background: $color-primary-button;
   color: $color-white;
+<<<<<<< HEAD
   border: 0.0625rem solid $color-primary-button;
+=======
+  border: $border-width-sm solid $color-primary-button;
+>>>>>>> origin/spendingIncome
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
@@ -91,7 +95,11 @@
   gap: $spacing-3;
   padding: $spacing-4 $spacing-5;
   background: $color-card;
+<<<<<<< HEAD
   border: 0.0625rem solid $color-border;
+=======
+  border: $border-width-sm solid $color-border;
+>>>>>>> origin/spendingIncome
   border-radius: $radius-lg;
   box-shadow: $shadow-sm;
 }
@@ -100,8 +108,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+<<<<<<< HEAD
   width: 2.5rem;
   height: 2.5rem;
+=======
+  width: $spacing-10;
+  height: $spacing-10;
+>>>>>>> origin/spendingIncome
   border-radius: $radius-md;
   font-size: $font-size-lg;
 
@@ -124,7 +137,11 @@
 .stat-info {
   display: flex;
   flex-direction: column;
+<<<<<<< HEAD
   gap: 0.125rem;
+=======
+  gap: $spacing-1;
+>>>>>>> origin/spendingIncome
 }
 
 .stat-label {
@@ -165,9 +182,15 @@
 
   .search-input {
     width: 100%;
+<<<<<<< HEAD
     height: 2.375rem;
     padding: 0 $spacing-8;
     border: 0.0625rem solid $color-border;
+=======
+    height: $spacing-10;
+    padding: 0 $spacing-8;
+    border: $border-width-sm solid $color-border;
+>>>>>>> origin/spendingIncome
     border-radius: $radius-md;
     background: $color-card;
     font-size: $font-size-base;
@@ -212,7 +235,11 @@
   justify-content: space-between;
   padding: $spacing-4;
   background: $color-card;
+<<<<<<< HEAD
   border: 0.0625rem solid $color-border;
+=======
+  border: $border-width-sm solid $color-border;
+>>>>>>> origin/spendingIncome
   border-radius: $radius-lg;
   box-shadow: $shadow-sm;
   transition: all $transition-fast;
@@ -233,32 +260,52 @@
 .tag-badge {
   display: inline-flex;
   align-items: center;
+<<<<<<< HEAD
   gap: 0.375rem;
   padding: 0.25rem $spacing-2;
   border: 0.0625rem solid transparent;
+=======
+  gap: $spacing-2;
+  padding: $spacing-1 $spacing-2;
+  border: $border-width-sm solid transparent;
+>>>>>>> origin/spendingIncome
   border-radius: $radius-sm;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
 }
 
 .tag-color-dot {
+<<<<<<< HEAD
   width: 0.5rem;
   height: 0.5rem;
+=======
+  width: $spacing-2;
+  height: $spacing-2;
+>>>>>>> origin/spendingIncome
   border-radius: 50%;
 }
 
 .tag-actions {
   display: flex;
   align-items: center;
+<<<<<<< HEAD
   gap: 0.25rem;
+=======
+  gap: $spacing-1;
+>>>>>>> origin/spendingIncome
 }
 
 .btn-icon {
   display: flex;
   align-items: center;
   justify-content: center;
+<<<<<<< HEAD
   width: 1.75rem;
   height: 1.75rem;
+=======
+  width: $spacing-7;
+  height: $spacing-7;
+>>>>>>> origin/spendingIncome
   border: 0;
   border-radius: $radius-sm;
   background: transparent;
@@ -283,7 +330,11 @@
   color: $color-text-secondary;
   line-height: 1.4;
   margin: 0 0 $spacing-3 0;
+<<<<<<< HEAD
   min-height: 2.1875rem;
+=======
+  min-height: $spacing-8;
+>>>>>>> origin/spendingIncome
 
   &.empty-desc {
     color: $color-text-light;
@@ -296,19 +347,31 @@
   align-items: center;
   justify-content: space-between;
   padding-top: $spacing-2;
+<<<<<<< HEAD
   border-top: 0.0625rem solid $color-border-light;
+=======
+  border-top: $border-width-sm solid $color-border-light;
+>>>>>>> origin/spendingIncome
 }
 
 .tag-count-pill {
   display: inline-flex;
   align-items: center;
+<<<<<<< HEAD
   gap: 0.3125rem;
+=======
+  gap: $spacing-1;
+>>>>>>> origin/spendingIncome
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
   color: $color-text-muted;
 
   i {
+<<<<<<< HEAD
     font-size: 0.6875rem;
+=======
+    font-size: $font-size-sm;
+>>>>>>> origin/spendingIncome
   }
 }
 
@@ -318,9 +381,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+<<<<<<< HEAD
   padding: 3.75rem $spacing-6;
   background: $color-card;
   border: 0.0625rem dashed $color-border;
+=======
+  padding: $spacing-16 $spacing-6;
+  background: $color-card;
+  border: $border-width-sm dashed $color-border;
+>>>>>>> origin/spendingIncome
   border-radius: $radius-lg;
   text-align: center;
 
@@ -328,8 +397,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+<<<<<<< HEAD
     width: 3.5rem;
     height: 3.5rem;
+=======
+    width: $spacing-12;
+    height: $spacing-12;
+>>>>>>> origin/spendingIncome
     border-radius: 50%;
     background: $color-info-bg;
     color: $color-info;
@@ -376,7 +450,11 @@
   border-radius: $radius-xl;
   box-shadow: $shadow-lg;
   overflow: hidden;
+<<<<<<< HEAD
   border: 0.0625rem solid $color-border;
+=======
+  border: $border-width-sm solid $color-border;
+>>>>>>> origin/spendingIncome
   animation: popIn $transition-normal cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -396,7 +474,11 @@
   align-items: center;
   justify-content: space-between;
   padding: $spacing-4 $spacing-5;
+<<<<<<< HEAD
   border-bottom: 0.0625rem solid $color-border-light;
+=======
+  border-bottom: $border-width-sm solid $color-border-light;
+>>>>>>> origin/spendingIncome
 }
 
 .modal-title-wrap {
@@ -409,8 +491,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+<<<<<<< HEAD
   width: 2.25rem;
   height: 2.25rem;
+=======
+  width: $spacing-8;
+  height: $spacing-8;
+>>>>>>> origin/spendingIncome
   border-radius: $radius-md;
   background: $color-info-bg;
   color: $color-info;
@@ -467,9 +554,15 @@
 
 .form-control {
   width: 100%;
+<<<<<<< HEAD
   height: 2.375rem;
   padding: 0 $spacing-3;
   border: 0.0625rem solid $color-border;
+=======
+  height: $spacing-10;
+  padding: 0 $spacing-3;
+  border: $border-width-sm solid $color-border;
+>>>>>>> origin/spendingIncome
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-family: inherit;
@@ -507,11 +600,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
+<<<<<<< HEAD
   width: 1.75rem;
   height: 1.75rem;
   border-radius: 50%;
   border: 0.125rem solid $color-white;
   box-shadow: 0 0 0 0.0625rem $color-border;
+=======
+  width: $spacing-7;
+  height: $spacing-7;
+  border-radius: 50%;
+  border: $border-width-md solid $color-white;
+  box-shadow: 0 0 0 1px $color-border;
+>>>>>>> origin/spendingIncome
   cursor: pointer;
   color: $color-white;
   font-size: $font-size-xs;
@@ -530,7 +631,11 @@
   padding: $spacing-2 $spacing-3;
   background: $color-background;
   border-radius: $radius-md;
+<<<<<<< HEAD
   border: 0.0625rem solid $color-border;
+=======
+  border: $border-width-sm solid $color-border;
+>>>>>>> origin/spendingIncome
 }
 
 .preview-label {
@@ -545,12 +650,20 @@
   justify-content: flex-end;
   gap: $spacing-2;
   padding-top: $spacing-2;
+<<<<<<< HEAD
   border-top: 0.0625rem solid $color-border-light;
+=======
+  border-top: $border-width-sm solid $color-border-light;
+>>>>>>> origin/spendingIncome
 }
 
 .btn-cancel {
   padding: $spacing-2 $spacing-3;
+<<<<<<< HEAD
   border: 0.0625rem solid $color-border;
+=======
+  border: $border-width-sm solid $color-border;
+>>>>>>> origin/spendingIncome
   border-radius: $radius-md;
   background: $color-card;
   color: $color-text-primary;
@@ -566,13 +679,25 @@
   }
 }
 
+<<<<<<< HEAD
 @media (max-width: 48rem) {
+=======
+// RESPONSIVE
+@include respond-max($bp-1280) {
+  .tags-page { max-width: 100%; }
+}
+
+@include respond-max($bp-840) {
+>>>>>>> origin/spendingIncome
   .tags-page {
     padding: $spacing-4 $spacing-4 $spacing-10 $spacing-4;
   }
 
-  .tags-stats-grid {
-    grid-template-columns: 1fr;
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .btn-primary { width: 100%; justify-content: center; }
   }
 
   .tags-toolbar {
@@ -583,4 +708,20 @@
   .search-box {
     width: 100%;
   }
+}
+
+@include respond-max($bp-600) {
+  .tags-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@include respond-max($bp-480) {
+  .tags-page {
+    padding: $spacing-3 $spacing-3 $spacing-8 $spacing-3;
+  }
+
+  .page-title { font-size: $font-size-2xl; }
+
+  .modal-header, .modal-body { padding: $spacing-4; }
 }

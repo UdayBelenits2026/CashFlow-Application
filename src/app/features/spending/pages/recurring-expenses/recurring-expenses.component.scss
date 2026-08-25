@@ -47,7 +47,7 @@
   padding: $spacing-2 $spacing-5;
   background: $color-primary-button;
   color: $color-white;
-  border: 0.0625rem solid $color-primary-button;
+  border: $border-width-sm solid $color-primary-button;
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
@@ -67,14 +67,18 @@
   gap: $spacing-4;
   margin-bottom: $spacing-6;
 
-  @media (max-width: 48rem) {
+  @include respond-max($bp-840) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include respond-max($bp-600) {
     grid-template-columns: 1fr;
   }
 }
 
 .stat-card {
   background: $color-card;
-  border: 0.0625rem solid $color-border;
+  border: $border-width-sm solid $color-border;
   border-radius: $radius-lg;
   padding: $spacing-4 $spacing-5;
   display: flex;
@@ -102,18 +106,18 @@
   grid-template-columns: repeat(3, 1fr);
   gap: $spacing-5;
 
-  @media (max-width: 64rem) {
+  @include respond-max($bp-960) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (max-width: 40rem) {
+  @include respond-max($bp-600) {
     grid-template-columns: 1fr;
   }
 }
 
 .subscription-card {
   background: $color-card;
-  border: 0.0625rem solid $color-border;
+  border: $border-width-sm solid $color-border;
   border-radius: $radius-lg;
   padding: $spacing-5;
   display: flex;
@@ -146,12 +150,12 @@
 }
 
 .brand-avatar {
-  width: 2.625rem;
-  height: 2.625rem;
+  width: $spacing-10;
+  height: $spacing-10;
   border-radius: $radius-md;
   background: $color-info-bg;
   color: $color-info;
-  border: 0.0625rem solid rgba(37, 99, 235, 0.15);
+  border: $border-width-sm solid rgba(37, 99, 235, 0.15);
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
   display: flex;
@@ -163,7 +167,7 @@
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
   color: $color-text-primary;
-  margin: 0 0 0.125rem 0;
+  margin: 0 0 $spacing-1 0;
 }
 
 .sub-cat {
@@ -174,8 +178,8 @@
 .switch-toggle {
   position: relative;
   display: inline-block;
-  width: 2.5rem;
-  height: 1.375rem;
+  width: $spacing-10;
+  height: $spacing-6;
 
   input { opacity: 0; width: 0; height: 0; }
   .slider {
@@ -189,10 +193,10 @@
     &:before {
       position: absolute;
       content: "";
-      height: 1rem;
-      width: 1rem;
-      left: 0.1875rem;
-      bottom: 0.1875rem;
+      height: $spacing-4;
+      width: $spacing-4;
+      left: $spacing-1;
+      bottom: $spacing-1;
       background-color: $color-white;
       transition: $transition-fast;
       border-radius: 50%;
@@ -204,7 +208,7 @@
   }
 
   input:checked + .slider:before {
-    transform: translateX(1.125rem);
+    transform: translateX($spacing-4);
   }
 }
 
@@ -239,11 +243,11 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.125rem;
+  gap: $spacing-1;
 }
 
 .due-label {
-  font-size: 0.625rem;
+  font-size: $font-size-xs;
   font-weight: $font-weight-bold;
   color: $color-text-light;
   text-transform: uppercase;
@@ -259,7 +263,7 @@
   display: flex;
   justify-content: flex-end;
   padding-top: $spacing-2;
-  border-top: 0.0625rem solid $color-border-light;
+  border-top: $border-width-sm solid $color-border-light;
 }
 
 .btn-del {
@@ -272,7 +276,7 @@
   display: flex;
   align-items: center;
   gap: $spacing-1;
-  padding: 0.25rem $spacing-2;
+  padding: $spacing-1 $spacing-2;
   border-radius: $radius-sm;
   transition: all $transition-fast;
 
@@ -299,12 +303,12 @@
   max-width: 30rem;
   box-shadow: $shadow-lg;
   overflow: hidden;
-  border: 0.0625rem solid $color-border;
+  border: $border-width-sm solid $color-border;
 }
 
 .modal-header {
   padding: $spacing-5 $spacing-6;
-  border-bottom: 0.0625rem solid $color-border-light;
+  border-bottom: $border-width-sm solid $color-border-light;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -328,7 +332,7 @@
 .form-input, .form-select {
   width: 100%;
   padding: $spacing-2 $spacing-3;
-  border: 0.0625rem solid $color-border;
+  border: $border-width-sm solid $color-border;
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-family: inherit;
@@ -353,7 +357,7 @@
 .btn-secondary {
   padding: $spacing-2 $spacing-4;
   background: $color-card;
-  border: 0.0625rem solid $color-border;
+  border: $border-width-sm solid $color-border;
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
@@ -365,5 +369,35 @@
     background: $color-background;
     border-color: $color-border-hover;
   }
+}
+
+// RESPONSIVE
+@include respond-max($bp-1280) {
+  .recurring-page { max-width: 100%; }
+}
+
+@include respond-max($bp-840) {
+  .recurring-page {
+    padding: $spacing-4 $spacing-4 $spacing-10 $spacing-4;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .btn-primary { width: 100%; justify-content: center; }
+  }
+}
+
+@include respond-max($bp-480) {
+  .recurring-page {
+    padding: $spacing-3 $spacing-3 $spacing-8 $spacing-3;
+  }
+
+  .page-title { font-size: $font-size-2xl; }
+
+  .form-row { flex-direction: column; }
+
+  .modal-header, .modal-body { padding: $spacing-4; }
 }
 

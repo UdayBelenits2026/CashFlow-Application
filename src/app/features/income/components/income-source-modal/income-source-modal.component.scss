@@ -1,0 +1,160 @@
+@use '../../../../../styles/variables' as *;
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: $spacing-4;
+}
+
+.modal-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-xl;
+  width: 100%;
+  max-width: 540px;
+  box-shadow: $shadow-lg;
+  display: flex;
+  flex-direction: column;
+  animation: modalIn 0.2s ease-out;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-5 $spacing-6;
+  border-bottom: $border-width-sm solid $color-border;
+}
+
+.modal-title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  color: $color-text-muted;
+  cursor: pointer;
+  padding: $spacing-1;
+  display: flex;
+
+  &:hover {
+    color: $color-text-primary;
+  }
+}
+
+.modal-body {
+  padding: $spacing-6;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+}
+
+.form-row {
+  display: flex;
+  gap: $spacing-4;
+
+  &.checkbox-row {
+    margin-top: $spacing-1;
+  }
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+}
+
+.form-label {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+}
+
+.form-input, .form-textarea, select.form-input {
+  padding: $spacing-2 $spacing-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  background: $color-card;
+  color: $color-text-primary;
+  outline: none;
+  transition: border-color $transition-fast;
+
+  &:focus {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+  }
+}
+
+.error-text {
+  font-size: 11px;
+  color: #DC2626;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  font-size: $font-size-xs;
+  color: $color-text-primary;
+  cursor: pointer;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $spacing-3;
+  padding-top: $spacing-4;
+  border-top: $border-width-sm solid $color-border;
+  margin-top: $spacing-2;
+}
+
+.btn-secondary {
+  padding: $spacing-2 $spacing-4;
+  border: 1px solid $color-border;
+  background: $color-card;
+  color: $color-text-secondary;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.btn-primary {
+  padding: $spacing-2 $spacing-5;
+  border: none;
+  background: #2563EB;
+  color: #ffffff;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+
+  &:hover {
+    background: #1D4ED8;
+  }
+}

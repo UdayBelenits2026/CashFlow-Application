@@ -1,37 +1,45 @@
-import { Component } from '@angular/core';
+import { Component, inject, Signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
+import { timer } from 'rxjs';
+import { filter, switchMap } from 'rxjs/operators';
+import { IncomeFacade } from './facades/income.facade';
+import { IncomeErrorStateComponent } from './components/income-error-state/income-error-state.component';
 
 @Component({
   selector: 'app-income',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="module-page">
-      <div class="module-header">
-        <h1 class="module-title">{{ title }}</h1>
-        <p class="module-subtitle">Track your income sources, streams, and recurring earnings</p>
-      </div>
-      <div class="module-card">
-        <div class="placeholder-content">
-          <i class="fa-solid fa-wallet module-icon"></i>
-          <h2>{{ title }} Module</h2>
-          <p>Salary, dividends, investments, and revenue streams will be displayed here.</p>
-        </div>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .module-page { padding: 1.5rem 2rem; }
-    .module-header { margin-bottom: 1.5rem; }
-    .module-title { font-size: 1.5rem; font-weight: 700; color: #0f172a; margin: 0; }
-    .module-subtitle { font-size: 0.875rem; color: #64748b; margin-top: 0.25rem; margin-bottom: 0; }
-    .module-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 3rem 2rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
-    .placeholder-content { text-align: center; max-width: 420px; margin: 0 auto; }
-    .module-icon { font-size: 2.5rem; color: #10b981; margin-bottom: 1rem; }
-    .placeholder-content h2 { font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem; }
-    .placeholder-content p { font-size: 0.875rem; color: #64748b; margin: 0; }
-  `]
+  imports: [CommonModule, RouterOutlet, IncomeErrorStateComponent],
+  templateUrl: './income.component.html',
+  styleUrl: './income.component.scss'
 })
 export class IncomeComponent {
-  title = 'Income';
+  private readonly facade: IncomeFacade = inject(IncomeFacade);
+  readonly error: Signal<string | null> = toSignal(this.facade.error$, { initialValue: null });
+  readonly successMessage: Signal<string | null> = toSignal(this.facade.successMessage$, { initialValue: null });
+  readonly hasData: Signal<boolean> = toSignal(this.facade.hasData$, { initialValue: false });
+
+  constructor() {
+    // Auto-dismiss success toasts after a short delay.
+    this.facade.successMessage$
+      .pipe(
+        filter((msg): msg is string => !!msg),
+        switchMap(() => timer(4000)),
+        takeUntilDestroyed()
+      )
+      .subscribe(() => this.facade.clearFeedback());
+  }
+
+  onRetry(): void {
+    this.facade.loadDashboard();
+  }
+
+  dismissError(): void {
+    this.facade.clearFeedback();
+  }
+
+  dismissSuccess(): void {
+    this.facade.clearFeedback();
+  }
 }

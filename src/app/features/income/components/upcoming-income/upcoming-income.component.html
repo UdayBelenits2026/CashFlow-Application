@@ -1,0 +1,61 @@
+<div class="upcoming-card">
+  <div class="card-header">
+    <div class="header-left">
+      <h3 class="card-title">Upcoming Scheduled Income</h3>
+      <span class="card-subtitle">Expected future earnings (not yet recorded)</span>
+    </div>
+  </div>
+
+  @if (upcomingItems().length === 0) {
+    <div class="empty-state">
+      <p class="empty-text">No upcoming recurring income scheduled.</p>
+    </div>
+  } @else {
+    <div class="upcoming-list">
+      @for (item of upcomingItems(); track item.recurringId) {
+        <div class="upcoming-item">
+          <div class="item-left">
+            <div
+              class="source-indicator"
+              [style.backgroundColor]="item.sourceColor"
+            ></div>
+            <div class="item-info">
+              <div class="title-row">
+                <span class="source-title">{{ item.sourceName }}</span>
+                <span class="account-pill">{{ item.accountName }}</span>
+              </div>
+              <span class="date-info">
+                Expected: {{ item.expectedDate | date:'mediumDate' }}
+                @if (item.status === 'DUE_TODAY') {
+                  <span class="badge-due-today">Due Today</span>
+                } @else if (item.status === 'OVERDUE') {
+                  <span class="badge-overdue">Past Expected Date</span>
+                } @else {
+                  <span class="badge-upcoming">in {{ item.daysRemaining }} days</span>
+                }
+              </span>
+            </div>
+          </div>
+
+          <div class="item-right">
+            <div class="amount-wrap">
+              <span class="amount-val">₹{{ item.amount | number:'1.2-2' }}</span>
+              <span class="amount-type">Scheduled</span>
+            </div>
+            <button
+              type="button"
+              class="btn-record"
+              (click)="onRecord(item.recurringId)"
+              title="Record this income now into your active transactions"
+            >
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Record Income
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

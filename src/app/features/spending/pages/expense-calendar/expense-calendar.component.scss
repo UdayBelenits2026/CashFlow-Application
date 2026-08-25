@@ -44,9 +44,15 @@
   align-items: center;
   gap: $spacing-3;
   background: $color-card;
+<<<<<<< HEAD
   border: 0.0625rem solid $color-border;
   border-radius: $radius-md;
   padding: 0.375rem $spacing-3;
+=======
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-md;
+  padding: $spacing-2 $spacing-3;
+>>>>>>> origin/spendingIncome
   box-shadow: $shadow-sm;
 }
 
@@ -65,7 +71,11 @@
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
   cursor: pointer;
+<<<<<<< HEAD
   padding: 0.125rem $spacing-2;
+=======
+  padding: $spacing-1 $spacing-2;
+>>>>>>> origin/spendingIncome
   border-radius: $radius-sm;
   transition: all $transition-fast;
 
@@ -77,14 +87,22 @@
   grid-template-columns: 65% 35%;
   gap: $spacing-6;
 
+<<<<<<< HEAD
   @media (max-width: 64rem) {
+=======
+  @include respond-max($bp-960) {
+>>>>>>> origin/spendingIncome
     grid-template-columns: 1fr;
   }
 }
 
 .calendar-card {
   background: $color-card;
+<<<<<<< HEAD
   border: 0.0625rem solid $color-border;
+=======
+  border: $border-width-sm solid $color-border;
+>>>>>>> origin/spendingIncome
   border-radius: $radius-lg;
   padding: $spacing-5;
   box-shadow: $shadow-sm;
@@ -105,6 +123,7 @@
 .days-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+<<<<<<< HEAD
   gap: 0.375rem;
 }
 
@@ -112,6 +131,15 @@
   border: 0.0625rem solid $color-border-light;
   border-radius: $radius-md;
   min-height: 5rem;
+=======
+  gap: $spacing-2;
+}
+
+.day-cell {
+  border: $border-width-sm solid $color-border-light;
+  border-radius: $radius-md;
+  min-height: $spacing-20;
+>>>>>>> origin/spendingIncome
   padding: $spacing-2;
   display: flex;
   flex-direction: column;
@@ -139,12 +167,81 @@
     background: $color-primary;
     color: $color-white;
     border-radius: 50%;
+<<<<<<< HEAD
     width: 1.375rem;
     height: 1.375rem;
+=======
+    width: $spacing-5;
+    height: $spacing-5;
+>>>>>>> origin/spendingIncome
     display: flex;
     align-items: center;
     justify-content: center;
   }
+
+  &.sev-low {
+    border-left: 3px solid $color-success;
+    background: $color-success-bg;
+  }
+
+  &.sev-medium {
+    border-left: 3px solid $color-warning;
+    background: $color-warning-bg;
+  }
+
+  &.sev-high {
+    border-left: 3px solid $color-danger;
+    background: $color-danger-bg;
+  }
+
+  &.selected {
+    border-color: $color-primary-button;
+    background: $color-info-bg;
+  }
+}
+
+// SEVERITY LEGEND
+.calendar-legend {
+  display: flex;
+  gap: $spacing-5;
+  flex-wrap: wrap;
+  margin-bottom: $spacing-4;
+  padding: $spacing-3 $spacing-4;
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-md;
+  box-shadow: $shadow-sm;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.legend-swatch {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: $radius-sm;
+  display: inline-block;
+
+  &.sev-low { background: $color-success; }
+  &.sev-medium { background: $color-warning; }
+  &.sev-high { background: $color-danger; }
+}
+
+.btn-day-details {
+  display: inline-block;
+  margin-top: $spacing-3;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-info;
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
 }
 
 .day-header {
@@ -162,10 +259,17 @@
 .expense-count-dot {
   background: $color-primary-button;
   color: $color-white;
+<<<<<<< HEAD
   font-size: 0.625rem;
   font-weight: $font-weight-bold;
   width: 1rem;
   height: 1rem;
+=======
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  width: $spacing-4;
+  height: $spacing-4;
+>>>>>>> origin/spendingIncome
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -173,6 +277,7 @@
 }
 
 .day-spending-badge {
+<<<<<<< HEAD
   font-size: 0.6875rem;
   font-weight: $font-weight-bold;
   color: $color-danger;
@@ -181,11 +286,25 @@
   border-radius: $radius-sm;
   text-align: center;
   margin-top: 0.25rem;
+=======
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-danger;
+  background: $color-danger-bg;
+  padding: $spacing-1 $spacing-1;
+  border-radius: $radius-sm;
+  text-align: center;
+  margin-top: $spacing-1;
+>>>>>>> origin/spendingIncome
 }
 
 .day-details-card {
   background: $color-card;
+<<<<<<< HEAD
   border: 0.0625rem solid $color-border;
+=======
+  border: $border-width-sm solid $color-border;
+>>>>>>> origin/spendingIncome
   border-radius: $radius-lg;
   padding: $spacing-5;
   box-shadow: $shadow-sm;
@@ -196,7 +315,11 @@
 .details-header {
   margin-bottom: $spacing-5;
   padding-bottom: $spacing-4;
+<<<<<<< HEAD
   border-bottom: 0.0625rem solid $color-border-light;
+=======
+  border-bottom: $border-width-sm solid $color-border-light;
+>>>>>>> origin/spendingIncome
 
   .d-header-top {
     display: flex;
@@ -216,10 +339,17 @@
     .btn-export-day {
       display: inline-flex;
       align-items: center;
+<<<<<<< HEAD
       gap: 0.3125rem;
       padding: 0.375rem $spacing-2;
       background: $color-background;
       border: 0.0625rem solid $color-border;
+=======
+      gap: $spacing-1;
+      padding: $spacing-2 $spacing-2;
+      background: $color-background;
+      border: $border-width-sm solid $color-border;
+>>>>>>> origin/spendingIncome
       border-radius: $radius-sm;
       font-size: $font-size-xs;
       font-weight: $font-weight-bold;
@@ -242,7 +372,11 @@
 
 .daily-total-banner {
   background: $color-background;
+<<<<<<< HEAD
   border: 0.0625rem solid $color-border;
+=======
+  border: $border-width-sm solid $color-border;
+>>>>>>> origin/spendingIncome
   border-radius: $radius-md;
   padding: $spacing-3 $spacing-4;
   display: flex;
@@ -278,7 +412,11 @@
   justify-content: space-between;
   align-items: center;
   padding: $spacing-2 $spacing-3;
+<<<<<<< HEAD
   border: 0.0625rem solid $color-border-light;
+=======
+  border: $border-width-sm solid $color-border-light;
+>>>>>>> origin/spendingIncome
   border-radius: $radius-md;
   cursor: pointer;
   transition: all $transition-fast;
@@ -296,8 +434,13 @@
 }
 
 .de-avatar {
+<<<<<<< HEAD
   width: 2rem;
   height: 2rem;
+=======
+  width: $spacing-8;
+  height: $spacing-8;
+>>>>>>> origin/spendingIncome
   border-radius: $radius-sm;
   background: $color-info-bg;
   color: $color-info;
@@ -340,10 +483,63 @@
 
 .empty-day {
   text-align: center;
+<<<<<<< HEAD
   padding: 3.75rem $spacing-5;
+=======
+  padding: $spacing-16 $spacing-5;
+>>>>>>> origin/spendingIncome
 
   .empty-day-icon { font-size: $font-size-4xl; margin-bottom: $spacing-2; }
   h4 { margin: 0 0 $spacing-1 0; color: $color-text-primary; }
   p { margin: 0; font-size: $font-size-xs; color: $color-text-muted; }
+}
+
+// RESPONSIVE
+@include respond-max($bp-1280) {
+  .calendar-page { max-width: 100%; }
+}
+
+@include respond-max($bp-840) {
+  .calendar-page {
+    padding: $spacing-4 $spacing-4 $spacing-10 $spacing-4;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .month-controls { width: 100%; justify-content: space-between; }
+
+  .day-cell { min-height: $spacing-16; }
+}
+
+@include respond-max($bp-600) {
+  .calendar-card { padding: $spacing-3; }
+
+  .day-cell {
+    min-height: $spacing-12;
+    padding: $spacing-1;
+  }
+
+  .day-spending-badge { font-size: $font-size-xs; }
+}
+
+@include respond-max($bp-480) {
+  .calendar-page {
+    padding: $spacing-3 $spacing-2 $spacing-8 $spacing-2;
+  }
+
+  .page-title { font-size: $font-size-2xl; }
+
+  .days-grid { gap: $spacing-1; }
+
+  .day-cell {
+    min-height: $spacing-10;
+
+    .day-spending-badge { display: none; }
+  }
+
+  .calendar-legend { gap: $spacing-3; }
 }
 

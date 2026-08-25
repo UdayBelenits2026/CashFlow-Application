@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, InputSignal, OutputEmitterRef } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { Expense } from '../../models/expense.model';
 
@@ -7,16 +7,17 @@ import { Expense } from '../../models/expense.model';
   standalone: true,
   imports: [CommonModule, DatePipe, DecimalPipe],
   templateUrl: './expense-details-drawer.component.html',
-  styleUrl: './expense-details-drawer.component.scss'
+  styleUrl: './expense-details-drawer.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExpenseDetailsDrawerComponent {
-  readonly expense = input<Expense | null>(null);
-  readonly close = output<void>();
-  readonly edit = output<Expense>();
-  readonly delete = output<Expense>();
-  readonly viewReceipt = output<Expense>();
-  readonly uploadReceipt = output<Expense>();
-  readonly split = output<Expense>();
+  readonly expense: InputSignal<Expense | null> = input<Expense | null>(null);
+  readonly close: OutputEmitterRef<void> = output<void>();
+  readonly edit: OutputEmitterRef<Expense> = output<Expense>();
+  readonly delete: OutputEmitterRef<Expense> = output<Expense>();
+  readonly viewReceipt: OutputEmitterRef<Expense> = output<Expense>();
+  readonly uploadReceipt: OutputEmitterRef<Expense> = output<Expense>();
+  readonly split: OutputEmitterRef<Expense> = output<Expense>();
 
   formatPaymentMethod(method?: string): string {
     switch (method) {

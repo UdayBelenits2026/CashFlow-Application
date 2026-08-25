@@ -1,0 +1,145 @@
+<div class="day-details-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <a class="back-link" routerLink="/spending/calendar">← Back to Expense Calendar</a>
+      <h1 class="page-title">{{ selectedDate | date:'fullDate' }}</h1>
+      <p class="page-subtitle">Detailed breakdown of the day's spending activity.</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn-secondary" (click)="exportDayReport()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Export Day Report
+      </button>
+      <button type="button" class="btn-primary" (click)="showAddModal = true">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add Expense
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <span class="kpi-label">Total Spent</span>
+      <span class="kpi-value">₹{{ totalSpent | number:'1.2-2' }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-label">Transactions</span>
+      <span class="kpi-value">{{ transactionCount }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-label">Top Merchant</span>
+      <span class="kpi-value small">{{ topMerchant }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-label">Top Category</span>
+      <span class="kpi-value small">{{ topCategory }}</span>
+    </div>
+  </div>
+
+  <!-- Transactions + Category -->
+  <div class="content-grid">
+    <div class="transactions-card">
+      <div class="card-header">
+        <h3 class="card-title">Transactions</h3>
+        <span class="count-pill">{{ transactionCount }}</span>
+      </div>
+
+      @if (dayExpenses.length > 0) {
+        <div class="table-responsive">
+          <table class="txn-table">
+            <thead>
+              <tr>
+                <th>Merchant</th>
+                <th>Category</th>
+                <th>Payment Method</th>
+                <th>Account</th>
+                <th class="text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (exp of dayExpenses; track exp.id) {
+                <tr (click)="openExpenseDetails(exp)">
+                  <td>
+                    <div class="merchant-cell">
+                      <span class="avatar">{{ (exp.merchantName || 'E').charAt(0).toUpperCase() }}</span>
+                      <span>{{ exp.merchantName }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="cat-dot" [style.background]="exp.categoryColor || '#3B82F6'"></span>
+                    {{ exp.categoryName }}
+                  </td>
+                  <td>{{ formatPayment(exp.paymentMethod) }}</td>
+                  <td>{{ exp.accountName }}</td>
+                  <td class="text-right amount">-₹{{ exp.amount | number:'1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="empty-state">
+          <span class="empty-icon">🌿</span>
+          <h4>No expenses on this day</h4>
+          <p>Nothing was recorded for {{ selectedDate | date:'mediumDate' }}.</p>
+        </div>
+      }
+    </div>
+
+    <div class="side-column">
+      <div class="chart-card">
+        <app-cf-doughnut-chart
+          [title]="'Spending by Category'"
+          [subtitle]="'Category split for the day'"
+          [total]="categoryTotal"
+          [labels]="categoryLabels"
+          [datasets]="categoryDatasets"
+        ></app-cf-doughnut-chart>
+      </div>
+
+      <div class="summary-card">
+        <h3 class="card-title">Day Summary</h3>
+        <ul class="summary-list">
+          <li><span>Total Outflow</span><strong>₹{{ totalSpent | number:'1.2-2' }}</strong></li>
+          <li><span>Transactions</span><strong>{{ transactionCount }}</strong></li>
+          <li><span>Top Merchant</span><strong>{{ topMerchant }}</strong></li>
+          <li><span>Top Category</span><strong>{{ topCategory }}</strong></li>
+        </ul>
+        <label class="notes-label" for="day-notes">Notes</label>
+        <textarea
+          id="day-notes"
+          class="notes-input"
+          rows="3"
+          placeholder="Add a note about this day's spending..."
+          [(ngModel)]="notes"
+          [ngModelOptions]="{ standalone: true }"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Drawer & Modal -->
+  @if (showDetailsDrawer && activeExpense) {
+    <app-expense-details-drawer
+      [expense]="activeExpense"
+      (close)="showDetailsDrawer = false"
+    ></app-expense-details-drawer>
+  }
+
+  @if (showAddModal) {
+    <app-add-expense-modal
+      [categories]="(categories$ | async) || []"
+      (close)="showAddModal = false"
+      (save)="onSaveNewExpense($event)"
+    ></app-add-expense-modal>
+  }
+</div>
