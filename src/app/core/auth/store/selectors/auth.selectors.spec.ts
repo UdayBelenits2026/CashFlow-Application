@@ -28,6 +28,7 @@ describe('auth.selectors', () => {
     isAuthenticated: true,
     loading: false,
     error: null,
+    accountLock: null,
     operation: null,
     successMessage: null,
     notice: null,

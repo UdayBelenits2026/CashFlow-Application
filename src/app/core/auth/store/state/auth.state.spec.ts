@@ -10,6 +10,7 @@ describe('auth.state', () => {
       isAuthenticated: false,
       loading: false,
       error: null,
+      accountLock: null,
       operation: null,
       successMessage: null,
       notice: null,
