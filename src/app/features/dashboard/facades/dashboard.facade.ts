@@ -2,7 +2,7 @@ import { Injectable, Signal, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Store } from '@ngrx/store';
 import { initialDashboardState } from '../data/dashboard.data';
-import { DashboardState } from '../models/dashboard.models';
+import { DashboardItem, DashboardState } from '../models/dashboard.models';
 import * as DashboardActions from '../store/dashboard.actions';
 import * as DashboardSelectors from '../store/dashboard.selectors';
 import { DashboardWidgetConfig } from '../utility/dashboard-widget-config';
@@ -12,14 +12,14 @@ import { DashboardWidgetConfig } from '../utility/dashboard-widget-config';
 })
 export class DashboardFacade {
   private readonly store = inject<Store<DashboardState>>(Store, { optional: true });
-
+  // Helper to create signals from store selectors with fallback values
   private select<T>(selector: (state: any) => T, fallback: T): Signal<T> {
     if (this.store) {
       return toSignal(this.store.select(selector), { initialValue: fallback });
     }
     return signal(fallback);
   }
-
+  // Reactive selectors for dashboard state slices
   readonly summaryCards = this.select(
     DashboardSelectors.selectSummaryCards,
     initialDashboardState.summaryCards,
@@ -104,31 +104,51 @@ export class DashboardFacade {
     DashboardSelectors.selectIsNewUser,
     initialDashboardState.isNewUser,
   );
-
+  // Dispatches action to load full dashboard data
   loadDashboard(): void {
     this.store?.dispatch(DashboardActions.loadDashboard());
   }
-
+  // Dispatches action for failed dashboard data load
   failDashboardLoad(error?: string): void {
     this.store?.dispatch(DashboardActions.loadDashboardFailure({ error }));
   }
-
+  // Dispatches action when user selects a quick action
   selectQuickAction(actionId: string): void {
     this.store?.dispatch(DashboardActions.selectQuickAction({ actionId }));
   }
-
+  // Dispatches action to view all items for a section
   viewAll(section: string): void {
     this.store?.dispatch(DashboardActions.viewAllItems({ section }));
   }
-
+  // Dispatches action to add reminder
   addReminder(): void {
     this.store?.dispatch(DashboardActions.addReminder());
   }
-
+  // Creates and dispatches action to add a new upcoming bill
+  addUpcomingBill(bill: { title: string; amount: number; dueDate: string; icon?: string }): void {
+    const item: DashboardItem = {
+      id: Date.now().toString(),
+      title: bill.title,
+      date: bill.dueDate,
+      amount: bill.amount,
+      icon: bill.icon || 'fa-receipt',
+      type: 'bill',
+    };
+    this.store?.dispatch(DashboardActions.addUpcomingBill({ item }));
+  }
+  // Dispatches action to update an existing upcoming bill
+  updateUpcomingBill(item: DashboardItem): void {
+    this.store?.dispatch(DashboardActions.updateUpcomingBill({ item }));
+  }
+  // Dispatches action to delete an upcoming bill by ID
+  deleteUpcomingBill(id: number | string): void {
+    this.store?.dispatch(DashboardActions.deleteUpcomingBill({ id }));
+  }
+  // Dispatches action to save updated widget configuration
   saveWidgetConfig(widgetConfig: DashboardWidgetConfig[]): void {
     this.store?.dispatch(DashboardActions.saveDashboardWidgetConfig({ widgetConfig }));
   }
-
+  // Dispatches action to start onboarding step
   startOnboarding(actionId: string): void {
     this.store?.dispatch(DashboardActions.selectQuickAction({ actionId }));
   }

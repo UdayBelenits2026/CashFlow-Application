@@ -11,6 +11,7 @@ import { faBuildingColumns, faCircleXmark } from '@fortawesome/free-solid-svg-ic
   styleUrl: './cash-balance.scss',
 })
 export class CashBalance {
+  // Inputs for title, balance figures, loading and error indicators
   readonly title = input<string>('Cash Balance');
   readonly totalBalance = input<number>(8450);
   readonly inAccounts = input<number>(8760);
@@ -20,7 +21,7 @@ export class CashBalance {
   readonly retry = output<void>();
   readonly icon = faBuildingColumns;
   readonly errorIcon = faCircleXmark;
-
+  // Emits retry event on load failure
   onRetry(): void {
     this.retry.emit();
   }

@@ -32,6 +32,7 @@ import { DashboardItem } from '../../models/dashboard.models';
   styleUrl: './transaction-item.scss',
 })
 export class TransactionItem {
+  // Input transaction item model
   readonly item = input<DashboardItem>({
     id: 0,
     title: '',
@@ -40,8 +41,10 @@ export class TransactionItem {
     icon: '',
     type: 'expense',
   });
+  // Computes absolute numerical value of amount for display
   readonly absAmount = computed(() => Math.abs(this.item().amount));
   readonly fallbackIcon = faCircleQuestion;
+  // FontAwesome icon map for transaction categories
   readonly icons: Record<string, any> = {
     'fa-a': faA,
     'fa-arrow-right-arrow-left': faArrowRightArrowLeft,
@@ -61,5 +64,6 @@ export class TransactionItem {
     'fa-shield-halved': faShieldHalved,
     'fa-utensils': faUtensils,
     'fa-wifi': faWifi,
+    'fa-circle-question': faCircleQuestion,
   };
 }

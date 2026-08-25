@@ -10,10 +10,30 @@
 }
 .list-card {
   height: 100%;
-  h3 {
-    margin: 0 0 $spacing-3;
-    color: $color-text-primary;
-    font-size: $font-size-lg;
+  .list-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-3;
+    h3 {
+      margin: 0;
+      color: $color-text-primary;
+      font-size: $font-size-lg;
+    }
+  }
+}
+.view-all-btn {
+  border: 0;
+  background: transparent;
+  color: $color-info;
+  font-size: 0.8125rem;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: $radius-md;
+  transition: background 0.15s ease;
+  &:hover {
+    background: $color-info-bg;
   }
 }
 .list-error-state {

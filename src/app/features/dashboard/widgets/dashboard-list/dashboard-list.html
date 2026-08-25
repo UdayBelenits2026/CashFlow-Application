@@ -1,7 +1,10 @@
 <section class="dashboard-list">
   <article class="list-card">
-    <header>
+    <header class="list-card-header">
       <h3>{{ title() }}</h3>
+      @if (showViewAll()) {
+        <button class="view-all-btn" type="button" (click)="viewAll.emit()">View All</button>
+      }
     </header>
     @if (isLoading()) {
       <div class="list-skeleton-state" aria-hidden="true">
@@ -25,7 +28,9 @@
         <small>When new items are added, they will appear here.</small>
         @if (showAddReminder()) {
           <div class="reminder-btn-container">
-            <button class="reminder-btn">+ Add Reminder</button>
+            <button class="reminder-btn" type="button" (click)="addReminder.emit()">
+              + Add Reminder
+            </button>
           </div>
         }
       </div>
@@ -35,7 +40,9 @@
       }
       @if (showAddReminder()) {
         <div class="reminder-btn-container">
-          <button class="reminder-btn">+ Add Reminder</button>
+          <button class="reminder-btn" type="button" (click)="addReminder.emit()">
+            + Add Reminder
+          </button>
         </div>
       }
     }

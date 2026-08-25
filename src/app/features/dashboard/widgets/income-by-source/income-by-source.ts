@@ -13,27 +13,27 @@ import { IncomeSourceItem } from '../../models/dashboard.models';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IncomeBySource {
+  // Inputs for widget title, sources array, loading and error states
   readonly title = input<string>('Income by Source');
   readonly sources = input<IncomeSourceItem[]>([]);
   readonly isLoading = input<boolean>(false);
   readonly hasError = input<boolean>(false);
   readonly retry = output<void>();
   readonly errorIcon = faCircleXmark;
-
+  // Emits retry event on load failure
   onRetry(): void {
     this.retry.emit();
   }
-
+  // Calculates sum total of all income sources
   totalIncome(): number {
     return this.sources().reduce((total, item) => total + item.amount, 0);
   }
-
+  // Calculates percentage share of single income source
   share(item: IncomeSourceItem): number {
     const total = this.totalIncome();
     if (total <= 0) {
       return 0;
     }
-
     return Math.round((item.amount / total) * 100);
   }
 }

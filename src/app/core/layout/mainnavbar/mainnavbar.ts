@@ -18,6 +18,10 @@ export class Mainnavbar {
   // Keep the selected range in sync with the shared date picker.
   selectedDate: DateRange = this.getCurrentMonthRange();
 
+  get isCustomizeActive(): boolean {
+    return this.router.url.includes('/dashboard/customize');
+  }
+
   toggleSidebar(): void {
     this.layoutService.toggleSidebar();
     this.layoutService.closeMobileMenu();
@@ -46,8 +50,8 @@ export class Mainnavbar {
     console.log('Search:', searchValue);
   }
 
-  openFilter(): void {
-    void this.router.navigate(['/dashboard/filter']);
+  toggleFilter(): void {
+    this.layoutService.toggleFilter();
   }
 
   openCustomize(): void {

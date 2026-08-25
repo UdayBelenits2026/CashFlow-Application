@@ -50,10 +50,10 @@ export const routes: Routes = [
               ),
           },
           {
-            path: 'filter',
+            path: 'upcoming-bills',
             loadComponent: () =>
-              import('./features/dashboard/pages/dashboard-filter/dashboard-filter').then(
-                (m) => m.DashboardFilter,
+              import('./features/dashboard/pages/dashboard-upcoming-bills/dashboard-upcoming-bills').then(
+                (m) => m.DashboardUpcomingBills,
               ),
           },
         ],

@@ -1,41 +1,51 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faFilter,
+  faXmark,
+  faCircleInfo,
+  faBookmark,
+  faEllipsisVertical,
+  faMagnifyingGlass,
+  faCalendarDays,
+} from '@fortawesome/free-solid-svg-icons';
 import { DashboardFilterState } from '../../models/dashboard.models';
 
 @Component({
   selector: 'app-cf-dashboard-filter',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FontAwesomeModule],
   templateUrl: './dashboard-filter.html',
   styleUrl: './dashboard-filter.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardFilter {
-  private readonly router = inject(Router);
+export class DashboardFilterComponent {
+  // Inputs and outputs for filter modal visibility and actions
+  readonly isOpen = input<boolean>(false);
+  readonly closeModal = output<void>();
+  readonly applyFilter = output<DashboardFilterState>();
 
+  // FontAwesome icon definitions
+  readonly filterIcon = faFilter;
+  readonly closeIcon = faXmark;
+  readonly infoIcon = faCircleInfo;
+  readonly bookmarkIcon = faBookmark;
+  readonly ellipsisIcon = faEllipsisVertical;
+  readonly searchIcon = faMagnifyingGlass;
+  readonly calendarIcon = faCalendarDays;
+
+  // Options for filter selection dropdowns
   readonly dateRanges = [
     { label: 'Custom Range', value: 'custom' },
     { label: 'Today', value: 'today' },
-    { label: 'Yesterday', value: 'yesterday' },
     { label: 'This Week', value: 'this-week' },
     { label: 'Last Week', value: 'last-week' },
     { label: 'This Month', value: 'this-month' },
     { label: 'Last Month', value: 'last-month' },
-    { label: 'This Year', value: 'this-year' },
-    { label: 'Last Year', value: 'last-year' },
-  ];
-
-  readonly quickSelectOptions = [
-    { label: 'Select Range', value: '' },
-    { label: 'Today', value: 'today' },
-    { label: 'Yesterday', value: 'yesterday' },
-    { label: 'This Week', value: 'this-week' },
-    { label: 'Last 7 Days', value: 'last-7-days' },
-    { label: 'This Month', value: 'this-month' },
-    { label: 'Last Month', value: 'last-month' },
-    { label: 'Last 30 Days', value: 'last-30-days' },
+    { label: 'This Quarter', value: 'this-quarter' },
+    { label: 'Last Quarter', value: 'last-quarter' },
     { label: 'This Year', value: 'this-year' },
     { label: 'Last Year', value: 'last-year' },
   ];
@@ -120,11 +130,12 @@ export class DashboardFilter {
     { label: 'Monthly Expenses', value: 'monthly-expenses' },
   ];
 
+  // Reactive state signal for dashboard filter parameters
   readonly filter = signal<DashboardFilterState>({
-    dateRange: 'custom',
+    dateRange: 'this-month',
     fromDate: '2026-05-01',
     toDate: '2026-05-29',
-    quickSelect: 'this-month',
+    quickSelect: '',
     account: '',
     incomeExpense: '',
     category: '',
@@ -142,6 +153,20 @@ export class DashboardFilter {
 
   readonly savedFilters = signal(['This Month - All Accounts', 'Business Expenses', 'Income Only']);
 
+  // Validation computed signals
+  readonly isDateInvalid = computed(() => {
+    const from = this.filter().fromDate;
+    const to = this.filter().toDate;
+    return Boolean(from && to && from > to);
+  });
+
+  readonly isAmountInvalid = computed(() => {
+    const min = this.filter().minAmount;
+    const max = this.filter().maxAmount;
+    return Boolean(min !== null && max !== null && min > max);
+  });
+
+  // Updates specific filter property value in signal state
   updateFilter<K extends keyof DashboardFilterState>(key: K, value: DashboardFilterState[K]): void {
     this.filter.update((currentFilter) => ({
       ...currentFilter,
@@ -149,6 +174,7 @@ export class DashboardFilter {
     }));
   }
 
+  // Toggles apply to all widgets flag
   toggleApplyToAll(): void {
     this.filter.update((currentFilter) => ({
       ...currentFilter,
@@ -156,9 +182,10 @@ export class DashboardFilter {
     }));
   }
 
+  // Resets all filter signals to initial state
   resetFilters(): void {
     this.filter.set({
-      dateRange: 'custom',
+      dateRange: 'this-month',
       fromDate: '',
       toDate: '',
       quickSelect: '',
@@ -178,11 +205,14 @@ export class DashboardFilter {
     });
   }
 
+  // Emits selected filters and closes modal
   applyFilters(): void {
-    console.log(this.filter());
+    this.applyFilter.emit(this.filter());
+    this.onClose();
   }
 
-  close(): void {
-    void this.router.navigate(['/dashboard/home']);
+  // Emits close modal event
+  onClose(): void {
+    this.closeModal.emit();
   }
 }

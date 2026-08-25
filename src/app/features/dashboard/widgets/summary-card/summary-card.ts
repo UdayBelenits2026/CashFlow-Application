@@ -21,10 +21,13 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SummaryCardComponent {
+  // Input property for summary card data model
   readonly data = input<SummaryCard>({
     id: 'income',
     title: '',
     amount: 0,
+    selectedMonthAmount: 0,
+    previousMonthAmount: 0,
     percentage: 0,
     trend: 'up',
     comparison: '',
@@ -32,6 +35,7 @@ export class SummaryCardComponent {
   });
   readonly hasError = input<boolean>(false);
   readonly isLoading = input<boolean>(false);
+  // FontAwesome icon lookup table for summary card types
   readonly icons: Record<string, any> = {
     'fa-wallet': faWallet,
     'fa-money-bill-transfer': faMoneyBillTransfer,

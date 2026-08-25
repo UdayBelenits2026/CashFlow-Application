@@ -18,10 +18,8 @@
       aria-label="Toggle navigation menu"
     >
       @if (layoutService.isMobileMenuOpen()) {
-
         <i class="fa-solid fa-xmark" aria-hidden="true"></i>
       } @else {
-
         <i class="fa-solid fa-bars" aria-hidden="true"></i>
       }
     </button>
@@ -44,16 +42,14 @@
     </div>
 
     <div class="date-picker-wrapper">
-      <app-date-picker
-        [selectedDate]="selectedDate"
-        (selectedDateChange)="onDateChange($event)"
-      />
+      <app-date-picker [selectedDate]="selectedDate" (selectedDateChange)="onDateChange($event)" />
     </div>
 
     <button
       type="button"
       class="navbar-control"
-      (click)="openFilter()"
+      [class.active]="layoutService.isFilterOpen()"
+      (click)="toggleFilter()"
       aria-label="Filter"
     >
       <i class="fa-solid fa-filter" aria-hidden="true"></i>
@@ -63,6 +59,7 @@
     <button
       type="button"
       class="navbar-control"
+      [class.active]="isCustomizeActive"
       (click)="openCustomize()"
       aria-label="Customize dashboard"
     >
@@ -70,22 +67,12 @@
       <span>Customize</span>
     </button>
 
-    <button
-      type="button"
-      class="navbar-control"
-      (click)="refresh()"
-      aria-label="Refresh dashboard"
-    >
+    <button type="button" class="navbar-control" (click)="refresh()" aria-label="Refresh dashboard">
       <i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>
       <span>Refresh</span>
     </button>
 
-    <button
-      type="button"
-      class="navbar-control"
-      (click)="exportData()"
-      aria-label="Export"
-    >
+    <button type="button" class="navbar-control" (click)="exportData()" aria-label="Export">
       <i class="fa-solid fa-download" aria-hidden="true"></i>
       <span>Export</span>
     </button>
@@ -107,10 +94,7 @@
       aria-label="Open profile menu"
     >
       <span class="profile-image">
-        <img
-          src="/assets/images/profile.png"
-          alt="Profile"
-        />
+        <img src="/assets/images/profile.png" alt="Profile" />
       </span>
       <span class="profile-name">Neelima</span>
       <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>

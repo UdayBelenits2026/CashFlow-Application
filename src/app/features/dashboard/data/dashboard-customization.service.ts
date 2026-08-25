@@ -12,13 +12,13 @@ import {
   providedIn: 'root',
 })
 export class DashboardCustomizationService {
+  // Returns clone of default widget configurations
   getDefaultConfig(): DashboardWidgetConfig[] {
     return cloneWidgetConfig(DASHBOARD_WIDGET_DEFAULT_CONFIG);
   }
-
+  // Normalizes saved widget configurations against default definitions
   normalizeConfig(config: DashboardWidgetConfig[]): DashboardWidgetConfig[] {
     const byId = new Map<DashboardWidgetId, DashboardWidgetConfig>();
-
     for (const item of config) {
       if (DASHBOARD_WIDGET_DEFINITIONS.some((definition) => definition.id === item.id)) {
         byId.set(item.id, {
@@ -29,12 +29,10 @@ export class DashboardCustomizationService {
         });
       }
     }
-
     const merged = DASHBOARD_WIDGET_DEFAULT_CONFIG.map((defaultItem) => {
       const existing = byId.get(defaultItem.id);
       return existing ? existing : { ...defaultItem };
     });
-
     const sorted = sortWidgetConfig(merged);
     return sorted.map((item, index) => ({ ...item, order: index }));
   }

@@ -20,7 +20,9 @@ import { QuickAction } from '../../models/dashboard.models';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QuickActionItem {
+  // Input action item object
   readonly action = input<QuickAction>({ id: '', title: '', icon: 'fa-arrow-trend-up' });
+  // FontAwesome icon map for quick action items
   readonly icons: Record<string, any> = {
     'fa-arrow-trend-up': faArrowTrendUp,
     'fa-arrow-trend-down': faArrowTrendDown,

@@ -1,0 +1,441 @@
+@use '../../../../../styles/variables' as *;
+
+:host {
+  display: block;
+}
+
+.filter-backdrop {
+  position: fixed;
+  top: 4.5rem;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+  background: transparent;
+  backdrop-filter: none;
+  pointer-events: none;
+}
+
+.dashboard-filter-drawer {
+  width: 100%;
+  max-width: 32rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: $color-card;
+  border-top-left-radius: $radius-xl - 0.5rem;
+  border-bottom-left-radius: $radius-xl - 0.5rem;
+  border-left: $border-width-sm solid $color-border-light;
+  box-shadow: $shadow-lg;
+  color: $color-text-primary;
+  animation: slideInRight 0.25s ease-out;
+  pointer-events: auto;
+}
+
+.filter-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.125rem 1.25rem 0.875rem;
+  border-bottom: $border-width-sm solid $color-border-light;
+
+  .header-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .header-filter-icon {
+    color: $color-info;
+    font-size: 1.1rem;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.78rem;
+    color: $color-text-muted;
+  }
+}
+
+.close-btn {
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: $radius-md;
+  background: transparent;
+  color: $color-text-muted;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: $color-background;
+    color: $color-text-primary;
+  }
+}
+
+.filter-scroll-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  label {
+    font-size: 0.75rem;
+    font-weight: $font-weight-semibold;
+    color: $color-text-secondary;
+  }
+
+  select,
+  input {
+    width: 100%;
+    height: 2.25rem;
+    padding: 0 0.625rem;
+    border: $border-width-sm solid $color-border;
+    border-radius: $radius-md;
+    background: $color-card;
+    color: $color-text-primary;
+    font-size: 0.8125rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:focus {
+      border-color: $color-info;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+  }
+
+  select {
+    cursor: pointer;
+  }
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .field-icon {
+    position: absolute;
+    left: 0.625rem;
+    color: $color-text-light;
+    font-size: 0.8125rem;
+    pointer-events: none;
+  }
+
+  input {
+    padding-left: 2rem;
+  }
+}
+
+.amount-range-field {
+  width: 100%;
+}
+
+.amount-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .to-label {
+    color: $color-text-muted;
+    font-size: 0.78rem;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.input-with-prefix {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  height: 2.25rem;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-md;
+  background: $color-card;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus-within {
+    border-color: $color-info;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  .currency-prefix {
+    padding: 0 0.5rem 0 0.625rem;
+    color: $color-text-muted;
+    font-size: 0.8125rem;
+    font-weight: $font-weight-medium;
+  }
+
+  input {
+    border: 0;
+    height: 100%;
+    padding: 0 0.625rem 0 0;
+    outline: none;
+    box-shadow: none !important;
+  }
+}
+
+.input-error {
+  border-color: #f87171 !important;
+  background-color: #fef2f2 !important;
+}
+
+.validation-error {
+  color: $color-danger;
+  font-size: 0.72rem;
+  font-weight: $font-weight-medium;
+  margin-top: 0.2rem;
+}
+
+.apply-all-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.875rem;
+  padding: 0.75rem 0.875rem;
+  border: $border-width-sm solid #dbeafe;
+  border-radius: $radius-lg;
+  background: $color-info-bg;
+  cursor: pointer;
+  margin-top: 0.25rem;
+
+  .apply-all-content {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  .info-icon-badge {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: $color-info;
+    color: $color-white;
+    display: grid;
+    place-items: center;
+    font-size: 0.8125rem;
+    flex-shrink: 0;
+  }
+
+  .apply-all-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+
+    strong {
+      font-size: 0.8125rem;
+      font-weight: $font-weight-bold;
+      color: #1e3a8a;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.72rem;
+      color: #3b82f6;
+    }
+  }
+}
+
+.toggle {
+  position: relative;
+  width: 2.5rem;
+  height: 1.375rem;
+  border-radius: 2rem;
+  background: $color-border-hover;
+  transition: background $transition-fast;
+  flex-shrink: 0;
+
+  &.active {
+    background: $color-info;
+
+    .toggle-thumb {
+      transform: translateX(1.125rem);
+    }
+  }
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  background: $color-white;
+  transition: transform $transition-fast;
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.625rem;
+  margin-top: 0.25rem;
+}
+
+.reset-button,
+.apply-button {
+  padding: 0.45rem 1.125rem;
+  border-radius: $radius-md;
+  font-size: 0.8125rem;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.reset-button {
+  border: $border-width-sm solid $color-border;
+  background: $color-card;
+  color: $color-text-secondary;
+
+  &:hover {
+    background: $color-background;
+    color: $color-text-primary;
+  }
+}
+
+.apply-button {
+  border: 0;
+  background: $color-info;
+  color: $color-white;
+
+  &:hover {
+    background: #1d4ed8;
+  }
+}
+
+.saved-filters-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.875rem;
+  margin-top: 0.5rem;
+  border-top: $border-width-sm solid $color-border-light;
+}
+
+.saved-filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .saved-title {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8125rem;
+    color: $color-text-primary;
+
+    .bookmark-icon {
+      color: $color-text-muted;
+      font-size: 0.8125rem;
+    }
+  }
+
+  .manage-button {
+    border: 0;
+    background: transparent;
+    color: $color-info;
+    font-size: 0.75rem;
+    font-weight: $font-weight-semibold;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.saved-filter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.saved-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.625rem;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-md;
+  background: $color-card;
+  color: $color-text-secondary;
+  font-size: 0.75rem;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  .chip-more-icon {
+    color: $color-text-light;
+    font-size: 0.75rem;
+  }
+
+  &:hover {
+    background: $color-info-bg;
+    color: $color-info;
+    border-color: #c7d2fe;
+
+    .chip-more-icon {
+      color: $color-info;
+    }
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@include max-xs {
+  .dashboard-filter-drawer {
+    max-width: 100%;
+  }
+
+  .grid-3,
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}

@@ -21,6 +21,7 @@ import {
   faCreditCard,
   faShieldHalved,
   faCircleXmark,
+  faCircleQuestion,
 } from '@fortawesome/free-solid-svg-icons';
 import { TransactionItem } from '../transaction-item/transaction-item';
 import { DashboardItem } from '../../models/dashboard.models';
@@ -34,12 +35,17 @@ import { DashboardItem } from '../../models/dashboard.models';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardList {
+  // Inputs for title, item array, and UI action flags
   readonly title = input<string>('');
   readonly items = input<DashboardItem[]>([]);
   readonly showAddReminder = input<boolean>(false);
+  readonly showViewAll = input<boolean>(false);
   readonly isLoading = input<boolean>(false);
   readonly hasError = input<boolean>(false);
   readonly retry = output<void>();
+  readonly addReminder = output<void>();
+  readonly viewAll = output<void>();
+  // Icon lookup map for dashboard transaction/bill items
   readonly icons: Record<string, any> = {
     'fa-mug-hot': faMugHot,
     'fa-a': faA,
@@ -59,9 +65,10 @@ export class DashboardList {
     'fa-wifi': faWifi,
     'fa-credit-card': faCreditCard,
     'fa-shield-halved': faShieldHalved,
+    'fa-circle-question': faCircleQuestion,
   };
   readonly errorIcon = faCircleXmark;
-
+  // Emits retry event on load failure
   onRetry(): void {
     this.retry.emit();
   }

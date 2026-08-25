@@ -1,7 +1,9 @@
 import { createReducer, on } from '@ngrx/store';
 import { initialDashboardState } from '../data/dashboard.data';
+import { mapSummaryCardResponse, DashboardState, SummaryCard } from '../models/dashboard.models';
 import * as DashboardActions from './dashboard.actions';
-export const dashboardReducer = createReducer(
+// Feature reducer handling all dashboard state transitions
+export const dashboardReducer = createReducer<DashboardState>(
   initialDashboardState,
   on(DashboardActions.loadDashboard, (state) => ({
     ...state,
@@ -10,13 +12,13 @@ export const dashboardReducer = createReducer(
   })),
   on(DashboardActions.loadDashboardSuccess, (state, { data }) => ({
     ...state,
-    summaryCards: data.summaryCards,
+    summaryCards: mapSummaryCardResponse(data.summaryCards),
     upcomingBills: data.upcomingBills,
     recentTransactions: data.recentTransactions,
     recentIncome: data.recentIncome,
     recentExpenses: data.recentExpenses,
     widgetConfig: data.widgetConfig,
-    quickActions: data.quickActions,
+    quickActions: data.quickActions ?? state.quickActions,
     onboardingSteps: data.onboardingSteps,
     onboardingActions: data.onboardingActions,
     isNewUser: data.isNewUser,
@@ -44,6 +46,47 @@ export const dashboardReducer = createReducer(
     widgetConfig,
   })),
   on(DashboardActions.saveDashboardWidgetConfigFailure, (state) => ({
+    ...state,
+    loadError: true,
+  })),
+  on(DashboardActions.addUpcomingBill, (state, { item }) => ({
+    ...state,
+    upcomingBills: [item, ...state.upcomingBills],
+  })),
+  on(DashboardActions.addUpcomingBillSuccess, (state, { item }) => ({
+    ...state,
+    upcomingBills: [
+      item,
+      ...state.upcomingBills.filter(
+        (b) => b.id !== item.id && (b.title !== item.title || b.date !== item.date),
+      ),
+    ],
+  })),
+  on(DashboardActions.addUpcomingBillFailure, (state) => ({
+    ...state,
+    loadError: true,
+  })),
+  on(DashboardActions.updateUpcomingBill, (state, { item }) => ({
+    ...state,
+    upcomingBills: state.upcomingBills.map((b) => (String(b.id) === String(item.id) ? item : b)),
+  })),
+  on(DashboardActions.updateUpcomingBillSuccess, (state, { item }) => ({
+    ...state,
+    upcomingBills: state.upcomingBills.map((b) => (String(b.id) === String(item.id) ? item : b)),
+  })),
+  on(DashboardActions.updateUpcomingBillFailure, (state) => ({
+    ...state,
+    loadError: true,
+  })),
+  on(DashboardActions.deleteUpcomingBill, (state, { id }) => ({
+    ...state,
+    upcomingBills: state.upcomingBills.filter((b) => String(b.id) !== String(id)),
+  })),
+  on(DashboardActions.deleteUpcomingBillSuccess, (state, { id }) => ({
+    ...state,
+    upcomingBills: state.upcomingBills.filter((b) => String(b.id) !== String(id)),
+  })),
+  on(DashboardActions.deleteUpcomingBillFailure, (state) => ({
     ...state,
     loadError: true,
   })),
