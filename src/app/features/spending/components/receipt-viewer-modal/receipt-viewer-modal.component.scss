@@ -8,7 +8,7 @@
   width: 100vw;
   height: 100vh;
   background: rgba(11, 31, 58, 0.5);
-  backdrop-filter: blur(0.25rem);
+  backdrop-filter: blur(4px);
   z-index: $z-index-modal;
   display: flex;
   align-items: center;
@@ -22,13 +22,9 @@
   background: $color-card;
   border-radius: $radius-xl;
   width: 100%;
-  max-width: 32.5rem;
+  max-width: 520px;
   box-shadow: $shadow-lg;
-<<<<<<< HEAD
-  border: 0.0625rem solid $color-border;
-=======
   border: $border-width-sm solid $color-border;
->>>>>>> origin/spendingIncome
   display: flex;
   flex-direction: column;
   max-height: 90vh;
@@ -37,11 +33,7 @@
 
 .modal-header {
   padding: $spacing-5 $spacing-6;
-<<<<<<< HEAD
-  border-bottom: 0.0625rem solid $color-border-light;
-=======
   border-bottom: $border-width-sm solid $color-border-light;
->>>>>>> origin/spendingIncome
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -83,7 +75,7 @@
 
 .receipt-image-wrapper {
   width: 100%;
-  max-height: 17.5rem;
+  max-height: 280px;
   border-radius: $radius-md;
   overflow: hidden;
   background: $color-primary;
@@ -94,7 +86,7 @@
 
 .receipt-img {
   max-width: 100%;
-  max-height: 17.5rem;
+  max-height: 280px;
   object-fit: contain;
 }
 
@@ -117,11 +109,7 @@
 
 .meta-card {
   background: $color-background;
-<<<<<<< HEAD
-  border: 0.0625rem solid $color-border;
-=======
   border: $border-width-sm solid $color-border;
->>>>>>> origin/spendingIncome
   border-radius: $radius-md;
   padding: $spacing-3;
   display: grid;
@@ -149,15 +137,9 @@
 }
 
 .upload-dropzone {
-<<<<<<< HEAD
-  border: 0.125rem dashed $color-border;
-  border-radius: $radius-lg;
-  padding: 2.25rem $spacing-5;
-=======
   border: $border-width-md dashed $color-border;
   border-radius: $radius-lg;
   padding: $spacing-8 $spacing-5;
->>>>>>> origin/spendingIncome
   text-align: center;
   background: $color-background;
 
@@ -186,11 +168,7 @@
 
 .modal-footer {
   padding: $spacing-4 $spacing-6;
-<<<<<<< HEAD
-  border-top: 0.0625rem solid $color-border-light;
-=======
   border-top: $border-width-sm solid $color-border-light;
->>>>>>> origin/spendingIncome
   display: flex;
   justify-content: flex-end;
   gap: $spacing-3;
@@ -200,11 +178,7 @@
 .btn-secondary {
   padding: $spacing-2 $spacing-4;
   background: $color-card;
-<<<<<<< HEAD
-  border: 0.0625rem solid $color-border;
-=======
   border: $border-width-sm solid $color-border;
->>>>>>> origin/spendingIncome
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
@@ -227,11 +201,7 @@
 .btn-destructive {
   padding: $spacing-2 $spacing-4;
   background: $color-danger-bg;
-<<<<<<< HEAD
-  border: 0.0625rem solid rgba(220, 38, 38, 0.2);
-=======
   border: $border-width-sm solid rgba(220, 38, 38, 0.2);
->>>>>>> origin/spendingIncome
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
@@ -239,11 +209,7 @@
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-<<<<<<< HEAD
-  gap: 0.375rem;
-=======
   gap: $spacing-2;
->>>>>>> origin/spendingIncome
   transition: all $transition-fast;
 
   &:hover {

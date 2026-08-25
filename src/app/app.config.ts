@@ -22,6 +22,7 @@ import { routes } from './app.routes';
 import { authReducer } from './core/auth/store/reducer/auth.reducer';
 import { AuthEffects } from './core/auth/store/effects/auth.effects';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { dashboardReducer } from './features/dashboard/store/dashboard.reducer';
 
 export const appConfig: ApplicationConfig = {
   providers: [

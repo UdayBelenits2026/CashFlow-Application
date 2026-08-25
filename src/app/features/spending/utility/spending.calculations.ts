@@ -122,7 +122,7 @@ export function computeTopMerchants(expenses: Expense[]): SpendingMerchant[] {
         color: data.color
       };
     })
-    .sort((a, b) => b.amount - a.amount);
+    .sort((a, b) => b.amount - a.amount || a.name.localeCompare(b.name));
 }
 
 /** Derives budget-vs-actual rows from categories that have a budget. */

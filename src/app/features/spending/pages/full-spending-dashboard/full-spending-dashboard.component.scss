@@ -9,13 +9,8 @@
   box-sizing: border-box;
 }
 
-<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
-.dashboard-page {
-  max-width: 85rem;
-=======
 .full-dashboard-page {
   max-width: 1360px;
->>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
   margin: 0 auto;
   padding: $spacing-6 $spacing-6 $spacing-16 $spacing-6;
   box-sizing: border-box;
@@ -34,21 +29,13 @@
 
   &.success {
     background: $color-success-bg;
-<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
-    border: 0.0625rem solid rgba(25, 169, 116, 0.2);
-=======
     border: $border-width-sm solid rgba(25, 169, 116, 0.2);
->>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
     color: $color-success;
   }
 
   &.error {
     background: $color-danger-bg;
-<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
-    border: 0.0625rem solid rgba(220, 38, 38, 0.2);
-=======
     border: $border-width-sm solid rgba(220, 38, 38, 0.2);
->>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
     color: $color-danger;
   }
 }
@@ -124,17 +111,10 @@
   align-items: center;
   gap: $spacing-2;
   background: $color-card;
-<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
-  border: 0.0625rem solid $color-border;
-  border-radius: $radius-md;
-  padding: 0 $spacing-3;
-  height: 2.375rem;
-=======
   border: $border-width-sm solid $color-border;
   border-radius: $radius-md;
   padding: 0 $spacing-3;
   height: $spacing-10;
->>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
   box-shadow: $shadow-sm;
 
   i { font-size: $font-size-base; color: $color-text-muted; }
@@ -155,17 +135,11 @@
   display: inline-flex;
   align-items: center;
   gap: $spacing-2;
-<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
-  background: $color-card;
-  color: $color-text-primary;
-  border: 0.0625rem solid $color-border;
-=======
   height: $spacing-10;
   padding: 0 $spacing-4;
   background: $color-primary-button;
   color: $color-white;
   border: none;
->>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
@@ -173,44 +147,7 @@
   cursor: pointer;
   box-shadow: $shadow-sm;
 
-<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
-  i {
-    font-size: $font-size-base;
-    color: $color-text-muted;
-    transition: color $transition-fast;
-  }
-
-  &:hover {
-    background: $color-background;
-    border-color: $color-border-hover;
-    color: $color-primary;
-
-    i {
-      color: $color-primary-button;
-    }
-  }
-
-  &:active {
-    transform: translateY(0.0625rem);
-  }
-}
-
-.badge-alert {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.125rem;
-  height: 1.125rem;
-  padding: 0 $spacing-1;
-  border-radius: 624.9375rem;
-  background: $color-danger;
-  color: $color-white;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-bold;
-  line-height: 1;
-=======
   &:hover { background: $color-primary-button-hover; }
->>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
 }
 
 // SECTIONS
@@ -227,9 +164,7 @@
   .analytics-right {
     display: flex;
     flex-direction: column;
-    height: 18.125rem;
-    box-sizing: border-box;
-    overflow: hidden;
+    height: 290px;
 
     app-cf-line-chart,
     app-cf-doughnut-chart {
@@ -241,11 +176,7 @@
         height: 100%;
         display: flex;
         flex-direction: column;
-<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
-        border: 0.0625rem solid $color-border-light;
-=======
         border: $border-width-sm solid $color-border-light;
->>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
         border-radius: $radius-lg;
         background: $color-card;
         box-shadow: $shadow-sm;
@@ -256,25 +187,15 @@
         flex: 1;
         width: 100%;
         height: 100%;
-        min-height: 12.5rem;
-        max-height: 13.75rem;
+        min-height: 200px;
+        max-height: 220px;
       }
     }
   }
 
-<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
-  @media (max-width: 64rem) {
-    grid-template-columns: 1fr;
-
-    .analytics-left,
-    .analytics-right {
-      height: 16.875rem;
-    }
-=======
   @include respond-max($bp-960) {
     grid-template-columns: 1fr;
     .analytics-left, .analytics-right { height: 270px; }
->>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
   }
 }
 
@@ -402,29 +323,19 @@ app-budget-vs-actual {
 }
 
 .skeleton-kpis {
-  height: 7.5rem;
+  height: 120px;
   background: $color-border-light;
   border-radius: $radius-lg;
   animation: pulse 1.5s infinite;
 }
 
 .skeleton-charts {
-  height: 16.25rem;
+  height: 260px;
   background: $color-border-light;
   border-radius: $radius-lg;
   animation: pulse 1.5s infinite;
 }
 
-<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
-.skeleton-table {
-  height: 18.75rem;
-  background: $color-border-light;
-  border-radius: $radius-lg;
-  animation: pulse 1.5s infinite;
-}
-
-=======
->>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
@@ -436,22 +347,8 @@ app-budget-vs-actual {
   }
 }
 
-<<<<<<< HEAD:src/app/features/spending/pages/spending-dashboard/spending-dashboard.component.scss
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@media (max-width: 48rem) {
-  .dashboard-page {
-=======
 @include respond-max($bp-840) {
   .full-dashboard-page {
->>>>>>> origin/spendingIncome:src/app/features/spending/pages/full-spending-dashboard/full-spending-dashboard.component.scss
     padding: $spacing-4 $spacing-4 $spacing-10 $spacing-4;
   }
 

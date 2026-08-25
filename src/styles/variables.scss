@@ -201,3 +201,17 @@ $breakpoint-xl: 80rem;
     @content;
   }
 }
+
+// PIXEL-NAMED BREAKPOINT ALIASES (map legacy px labels to the rem tokens)
+$bp-480: $breakpoint-xs;
+$bp-600: $breakpoint-sm;
+$bp-840: $breakpoint-md;
+$bp-960: $breakpoint-lg;
+$bp-1280: $breakpoint-xl;
+
+// GENERIC MAX-WIDTH RESPONSIVE MIXIN
+@mixin respond-max($breakpoint) {
+  @media (max-width: $breakpoint) {
+    @content;
+  }
+}

@@ -96,7 +96,7 @@ export class AuthEffects {
               refreshToken: data.refreshToken,
             });
             this.sessionService.setSession(data);
-            void this.router.navigate(['/dashboard']);
+            void this.router.navigate(['/dashboard/home']);
             return AuthActions.loginSuccess({ data });
           }),
           catchError((error: unknown) => {

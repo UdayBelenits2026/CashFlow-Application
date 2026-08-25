@@ -12,7 +12,7 @@
 }
 
 .all-expenses-page {
-  max-width: 85rem;
+  max-width: 1360px;
   margin: 0 auto;
   padding: $spacing-6 $spacing-6 $spacing-16 $spacing-6;
   box-sizing: border-box;
@@ -55,11 +55,7 @@
   padding: $spacing-2 $spacing-4;
   background: $color-card;
   color: $color-text-primary;
-<<<<<<< HEAD
-  border: 0.0625rem solid $color-border;
-=======
   border: $border-width-sm solid $color-border;
->>>>>>> origin/spendingIncome
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
@@ -86,11 +82,7 @@
   padding: $spacing-2 $spacing-5;
   background: $color-primary-button;
   color: $color-white;
-<<<<<<< HEAD
-  border: 0.0625rem solid $color-primary-button;
-=======
   border: $border-width-sm solid $color-primary-button;
->>>>>>> origin/spendingIncome
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
@@ -106,11 +98,7 @@
 
 .filters-card {
   background: $color-card;
-<<<<<<< HEAD
-  border: 0.0625rem solid $color-border;
-=======
   border: $border-width-sm solid $color-border;
->>>>>>> origin/spendingIncome
   border-radius: $radius-lg;
   padding: $spacing-5;
   margin-bottom: $spacing-6;
@@ -135,11 +123,7 @@
 .search-input {
   width: 100%;
   padding: $spacing-2 $spacing-10 $spacing-2 $spacing-8;
-<<<<<<< HEAD
-  border: 0.0625rem solid $color-border;
-=======
   border: $border-width-sm solid $color-border;
->>>>>>> origin/spendingIncome
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-family: inherit;
@@ -154,7 +138,7 @@
 
   &:focus {
     border-color: $color-primary-button;
-    box-shadow: 0 0 0 0.1875rem rgba(21, 84, 232, 0.12);
+    box-shadow: 0 0 0 3px rgba(21, 84, 232, 0.12);
   }
 }
 
@@ -183,7 +167,7 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-1;
-  min-width: 10rem;
+  min-width: 160px;
   flex: 1;
 }
 
@@ -196,28 +180,20 @@
 .filter-select,
 .filter-input {
   padding: $spacing-2 $spacing-3;
-<<<<<<< HEAD
-  border: 0.0625rem solid $color-border;
-=======
   border: $border-width-sm solid $color-border;
->>>>>>> origin/spendingIncome
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-family: inherit;
   color: $color-text-primary;
   outline: none;
   background: $color-card;
-<<<<<<< HEAD
-  height: 2.375rem;
-=======
   height: $spacing-10;
->>>>>>> origin/spendingIncome
   cursor: pointer;
   box-sizing: border-box;
 
   &:focus {
     border-color: $color-primary-button;
-    box-shadow: 0 0 0 0.1875rem rgba(21, 84, 232, 0.1);
+    box-shadow: 0 0 0 3px rgba(21, 84, 232, 0.1);
   }
 }
 
@@ -234,21 +210,13 @@
 .btn-reset {
   padding: $spacing-2 $spacing-4;
   background: $color-background;
-<<<<<<< HEAD
-  border: 0.0625rem solid $color-border;
-=======
   border: $border-width-sm solid $color-border;
->>>>>>> origin/spendingIncome
   border-radius: $radius-md;
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
   color: $color-text-secondary;
   cursor: pointer;
-<<<<<<< HEAD
-  height: 2.375rem;
-=======
   height: $spacing-10;
->>>>>>> origin/spendingIncome
   transition: all $transition-fast;
 
   &:hover {
@@ -259,11 +227,7 @@
 
 .table-card {
   background: $color-card;
-<<<<<<< HEAD
-  border: 0.0625rem solid $color-border;
-=======
   border: $border-width-sm solid $color-border;
->>>>>>> origin/spendingIncome
   border-radius: $radius-lg;
   box-shadow: $shadow-sm;
   overflow: hidden;
@@ -272,11 +236,7 @@
 .table-summary-bar {
   padding: $spacing-3 $spacing-5;
   background: $color-background;
-<<<<<<< HEAD
-  border-bottom: 0.0625rem solid $color-border-light;
-=======
   border-bottom: $border-width-sm solid $color-border-light;
->>>>>>> origin/spendingIncome
   display: flex;
   justify-content: space-between;
   font-size: $font-size-base;
@@ -305,26 +265,15 @@
     font-weight: 700;
     color: #64748B;
     text-transform: uppercase;
-<<<<<<< HEAD
-    letter-spacing: 0.05em;
-    border-bottom: 0.0625rem solid $color-border-light;
-=======
     letter-spacing: 0.06em;
->>>>>>> origin/spendingIncome
     text-align: left;
     white-space: nowrap;
   }
 
   td {
-<<<<<<< HEAD
-    padding: $spacing-4 $spacing-4;
-    border-bottom: 0.0625rem solid $color-border-light;
-    color: $color-text-secondary;
-=======
     padding: 14px 16px;
     border-bottom: 1px solid #F1F5F9;
     color: #334155;
->>>>>>> origin/spendingIncome
     vertical-align: middle;
   }
 }
@@ -344,16 +293,6 @@
   gap: 12px;
 }
 
-<<<<<<< HEAD
-.avatar {
-  width: 2.125rem;
-  height: 2.125rem;
-  border-radius: $radius-md;
-  background: $color-background;
-  color: $color-secondary;
-  border: 0.0625rem solid $color-border;
-  font-weight: $font-weight-bold;
-=======
 .merchant-avatar {
   width: 36px;
   height: 36px;
@@ -362,7 +301,6 @@
   color: #1E293B;
   font-weight: 700;
   font-size: 13px;
->>>>>>> origin/spendingIncome
   display: flex;
   align-items: center;
   justify-content: center;
@@ -370,26 +308,11 @@
   border: 1px solid #E2E8F0;
 }
 
-<<<<<<< HEAD
-.m-info { display: flex; flex-direction: column; gap: 0.125rem; }
-.m-name { font-weight: $font-weight-semibold; color: $color-text-primary; }
-.m-sub { font-size: $font-size-xs; color: $color-text-muted; max-width: 12.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-.category-chip {
-  display: inline-block;
-  padding: 0.1875rem $spacing-3;
-  border: 0.0625rem solid $color-border;
-  border-radius: 62.4375rem;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-medium;
-  background: $color-background;
-=======
 .merchant-details {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
->>>>>>> origin/spendingIncome
 }
 
 .m-name {
@@ -465,18 +388,11 @@
 
 .status-badge {
   display: inline-block;
-<<<<<<< HEAD
-  padding: 0.125rem $spacing-2;
-  border-radius: $radius-sm;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-bold;
-=======
   padding: 4px 8px;
   border-radius: 6px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
->>>>>>> origin/spendingIncome
   text-transform: uppercase;
   white-space: nowrap;
 
@@ -502,11 +418,7 @@
   align-items: center;
   padding: $spacing-4 $spacing-5;
   background: $color-card;
-<<<<<<< HEAD
-  border-top: 0.0625rem solid $color-border-light;
-=======
   border-top: $border-width-sm solid $color-border-light;
->>>>>>> origin/spendingIncome
   flex-wrap: wrap;
   gap: $spacing-4;
 
@@ -527,13 +439,8 @@
       gap: $spacing-2;
 
       select {
-<<<<<<< HEAD
-        padding: 0.25rem $spacing-2;
-        border: 0.0625rem solid $color-border;
-=======
         padding: $spacing-1 $spacing-2;
         border: $border-width-sm solid $color-border;
->>>>>>> origin/spendingIncome
         border-radius: $radius-sm;
         background: $color-card;
         font-size: $font-size-sm;
@@ -558,11 +465,7 @@
     .btn-page {
       padding: $spacing-2 $spacing-3;
       background: $color-card;
-<<<<<<< HEAD
-      border: 0.0625rem solid $color-border;
-=======
       border: $border-width-sm solid $color-border;
->>>>>>> origin/spendingIncome
       border-radius: $radius-md;
       font-size: $font-size-sm;
       font-weight: $font-weight-semibold;
