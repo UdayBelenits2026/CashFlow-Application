@@ -1,10 +1,16 @@
-@if ((error$ | async) && !(hasData$ | async)) {
+@if (error() && !hasData()) {
   <app-income-error-state (retry)="onRetry()"></app-income-error-state>
 } @else {
-  @if (error$ | async; as err) {
+  @if (error(); as err) {
     <div class="income-error-toast" role="alert">
       <span>⚠️ {{ err }}</span>
       <button type="button" class="toast-close" (click)="dismissError()" aria-label="Dismiss">✕</button>
+    </div>
+  }
+  @if (successMessage(); as msg) {
+    <div class="income-success-toast" role="status">
+      <span>✓ {{ msg }}</span>
+      <button type="button" class="toast-close" (click)="dismissSuccess()" aria-label="Dismiss">✕</button>
     </div>
   }
   <router-outlet></router-outlet>

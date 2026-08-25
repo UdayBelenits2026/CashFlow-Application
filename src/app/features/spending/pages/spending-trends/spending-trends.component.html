@@ -34,21 +34,21 @@
   <div class="stats-grid">
     <div class="stat-card">
       <span class="stat-label">Total Spending</span>
-      <span class="stat-value">₹{{ totalSpending | number:'1.2-2' }}</span>
+      <span class="stat-value">₹{{ stats().totalSpending | number:'1.2-2' }}</span>
     </div>
     <div class="stat-card">
       <span class="stat-label">Average Daily</span>
-      <span class="stat-value">₹{{ averageDaily | number:'1.2-2' }}</span>
+      <span class="stat-value">₹{{ stats().averageDaily | number:'1.2-2' }}</span>
     </div>
     <div class="stat-card">
       <span class="stat-label">Highest Day</span>
-      <span class="stat-value">₹{{ highestDay.amount | number:'1.2-2' }}</span>
-      <span class="stat-meta">{{ highestDay.label }}</span>
+      <span class="stat-value">₹{{ stats().highestDay.amount | number:'1.2-2' }}</span>
+      <span class="stat-meta">{{ stats().highestDay.label }}</span>
     </div>
     <div class="stat-card">
       <span class="stat-label">Lowest Day</span>
-      <span class="stat-value">₹{{ lowestDay.amount | number:'1.2-2' }}</span>
-      <span class="stat-meta">{{ lowestDay.label }}</span>
+      <span class="stat-value">₹{{ stats().lowestDay.amount | number:'1.2-2' }}</span>
+      <span class="stat-meta">{{ stats().lowestDay.label }}</span>
     </div>
   </div>
 
@@ -58,17 +58,17 @@
       <app-cf-line-chart
         [title]="chartTitle()"
         [subtitle]="'Spending distribution over the selected period'"
-        [labels]="chartLabels"
-        [datasets]="chartDatasets"
+        [labels]="chartLabels()"
+        [datasets]="chartDatasets()"
       ></app-cf-line-chart>
     </div>
     <div class="chart-side">
       <app-cf-doughnut-chart
         [title]="'Spending by Category'"
         [subtitle]="'Category split for the period'"
-        [total]="categoryTotal"
-        [labels]="categoryLabels"
-        [datasets]="categoryDatasets"
+        [total]="categoryChart().total"
+        [labels]="categoryChart().labels"
+        [datasets]="categoryChart().datasets"
       ></app-cf-doughnut-chart>
     </div>
   </div>
@@ -79,7 +79,7 @@
       <h3 class="card-title">Period Breakdown</h3>
       <p class="card-subtitle">{{ chartTitle() }} detail</p>
     </div>
-    @if (buckets.length > 0) {
+    @if (buckets().length > 0) {
       <div class="table-responsive">
         <table class="breakdown-table">
           <thead>
@@ -90,13 +90,13 @@
             </tr>
           </thead>
           <tbody>
-            @for (b of buckets; track b.label) {
+            @for (b of buckets(); track b.label) {
               <tr>
                 <td>{{ b.label }}</td>
                 <td class="text-right">₹{{ b.amount | number:'1.2-2' }}</td>
                 <td class="progress-col">
                   <div class="progress-track">
-                    <span class="progress-fill" [style.width.%]="totalSpending > 0 ? (b.amount / totalSpending) * 100 : 0"></span>
+                    <span class="progress-fill" [style.width.%]="stats().totalSpending > 0 ? (b.amount / stats().totalSpending) * 100 : 0"></span>
                   </div>
                 </td>
               </tr>

@@ -1,17 +1,18 @@
-import { Component, OnInit, inject, input, output, InputSignal, OutputEmitterRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input, output, InputSignal, OutputEmitterRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RecurringIncome } from '../../models/recurring-income.model';
 import { IncomeSource } from '../../models/income-source.model';
 import { AccountRef } from '../../models/account-ref.model';
-import { getSourceTypeColor } from '../../utility/income.helpers';
+import { getSourceTypeColor, formatAccountLabel } from '../../utility/income.helpers';
 
 @Component({
   selector: 'app-recurring-income-modal',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './recurring-income-modal.component.html',
-  styleUrl: './recurring-income-modal.component.scss'
+  styleUrl: './recurring-income-modal.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecurringIncomeModalComponent implements OnInit {
   readonly item: InputSignal<RecurringIncome | null> = input<RecurringIncome | null>(null);
@@ -72,7 +73,7 @@ export class RecurringIncomeModalComponent implements OnInit {
       sourceType: matchedSource ? matchedSource.type : 'Salary',
       sourceColor: matchedSource?.color || getSourceTypeColor(matchedSource?.type),
       accountId: val.accountId,
-      accountName: matchedAccount ? `${matchedAccount.name} ••••${matchedAccount.accountNumberLast4}` : 'Main Account',
+      accountName: formatAccountLabel(matchedAccount),
       expectedAmount: Number(val.expectedAmount),
       frequency: val.frequency,
       startDate: val.startDate,

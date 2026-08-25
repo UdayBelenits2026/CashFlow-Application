@@ -7,6 +7,9 @@ import {
   BudgetStatus,
   SpendingInsight
 } from '../models/spending-summary.model';
+import { TrendTab, TrendBucket, DayStat, TrendStats } from '../models/spending-trends.model';
+import { DayDetailsStats } from '../models/day-details.model';
+import { CalendarDay } from '../models/calendar-day.model';
 
 // Days used to derive the average-daily figure for the current period.
 const DAYS_IN_MONTH = 31;
@@ -130,11 +133,16 @@ export function computeBudgetVsActual(categories: SpendingCategoryItem[]): Budge
       const budget = c.budget ?? 0;
       const spent = c.amount ?? 0;
       const percentUsed = budget > 0 ? Number(((spent / budget) * 100).toFixed(1)) : 0;
-      let status: BudgetStatus = 'ON_TRACK';
-      if (percentUsed > 100) {
-        status = 'OVER_BUDGET';
-      } else if (percentUsed >= 80) {
-        status = 'WARNING';
+      let status: BudgetStatus;
+      switch (true) {
+        case percentUsed > 100:
+          status = 'OVER_BUDGET';
+          break;
+        case percentUsed >= 80:
+          status = 'WARNING';
+          break;
+        default:
+          status = 'ON_TRACK';
       }
       return { id: c.id, name: c.name, color: c.color, budget, spent, percentUsed, status };
     })
@@ -203,4 +211,187 @@ export function computeInsights(
   });
 
   return insights;
+}
+
+// --- Trends view calculations ---
+
+/** Buckets expenses into trend periods (daily/weekly/monthly/quarterly/yearly). */
+export function buildTrendBuckets(expenses: Expense[], tab: TrendTab): TrendBucket[] {
+  const map: Map<string, { amount: number; sort: number }> = new Map<string, { amount: number; sort: number }>();
+
+  for (const e of expenses) {
+    const d: Date = new Date(e.date);
+    if (isNaN(d.getTime())) continue;
+    const { key, sort } = trendBucketKey(tab, d);
+    const entry: { amount: number; sort: number } = map.get(key) || { amount: 0, sort };
+    entry.amount += Number(e.amount) || 0;
+    map.set(key, entry);
+  }
+
+  return Array.from(map.entries())
+    .map(([label, data]) => ({ label, amount: Number(data.amount.toFixed(2)), sort: data.sort }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ label, amount }) => ({ label, amount }));
+}
+
+/** Computes total, average, highest and lowest spending days from expenses. */
+export function computeTrendStats(expenses: Expense[]): TrendStats {
+  const totalSpending: number = expenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+
+  const dailyMap: Map<string, number> = new Map<string, number>();
+  for (const e of expenses) {
+    dailyMap.set(e.date, (dailyMap.get(e.date) || 0) + (Number(e.amount) || 0));
+  }
+
+  const distinctDays: number = dailyMap.size || 1;
+  const averageDaily: number = Number((totalSpending / distinctDays).toFixed(2));
+
+  let highestDay: DayStat = { label: '—', amount: -Infinity };
+  let lowestDay: DayStat = { label: '—', amount: Infinity };
+  for (const [date, amt] of dailyMap.entries()) {
+    const label: string = formatTrendDayLabel(date);
+    if (amt > highestDay.amount) highestDay = { label, amount: amt };
+    if (amt < lowestDay.amount) lowestDay = { label, amount: amt };
+  }
+
+  return {
+    totalSpending,
+    averageDaily,
+    highestDay: highestDay.amount === -Infinity ? { label: '—', amount: 0 } : highestDay,
+    lowestDay: lowestDay.amount === Infinity ? { label: '—', amount: 0 } : lowestDay
+  };
+}
+
+function trendBucketKey(tab: TrendTab, d: Date): { key: string; sort: number } {
+  const year: number = d.getFullYear();
+  const month: number = d.getMonth();
+  switch (tab) {
+    case 'DAILY': {
+      const key: string = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      return { key, sort: d.getTime() };
+    }
+    case 'WEEKLY': {
+      const weekStart: Date = new Date(d);
+      weekStart.setDate(d.getDate() - d.getDay());
+      const key: string = `Wk ${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+      return { key, sort: weekStart.getTime() };
+    }
+    case 'MONTHLY': {
+      const key: string = d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      return { key, sort: year * 12 + month };
+    }
+    case 'QUARTERLY': {
+      const q: number = Math.floor(month / 3) + 1;
+      const key: string = `Q${q} ${year}`;
+      return { key, sort: year * 4 + q };
+    }
+    case 'YEARLY': {
+      return { key: String(year), sort: year };
+    }
+  }
+}
+
+function formatTrendDayLabel(date: string): string {
+  const d: Date = new Date(date);
+  if (isNaN(d.getTime())) return date;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// --- Day details calculations ---
+
+/** Aggregates a single day's expenses into KPI stats and a category breakdown. */
+export function computeDayDetailsStats(dayExpenses: Expense[]): DayDetailsStats {
+  const totalSpent: number = dayExpenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+
+  const merchantMap: Map<string, number> = new Map<string, number>();
+  const categoryMap: Map<string, { amount: number; color: string }> = new Map<string, { amount: number; color: string }>();
+  for (const e of dayExpenses) {
+    merchantMap.set(e.merchantName, (merchantMap.get(e.merchantName) || 0) + (Number(e.amount) || 0));
+    const cat: { amount: number; color: string } = categoryMap.get(e.categoryName) || { amount: 0, color: e.categoryColor || '#3B82F6' };
+    cat.amount += Number(e.amount) || 0;
+    categoryMap.set(e.categoryName, cat);
+  }
+
+  const topCatEntry: [string, { amount: number; color: string }] | undefined =
+    Array.from(categoryMap.entries()).sort((a, b) => b[1].amount - a[1].amount)[0];
+
+  return {
+    totalSpent,
+    transactionCount: dayExpenses.length,
+    topMerchant: topMapKey(merchantMap) || '—',
+    topCategory: topCatEntry ? topCatEntry[0] : '—',
+    categoryLabels: Array.from(categoryMap.keys()),
+    categoryAmounts: Array.from(categoryMap.values()).map((c) => Number(c.amount.toFixed(2))),
+    categoryColors: Array.from(categoryMap.values()).map((c) => c.color)
+  };
+}
+
+function topMapKey(map: Map<string, number>): string {
+  let key: string = '';
+  let max: number = -Infinity;
+  for (const [k, v] of map.entries()) {
+    if (v > max) {
+      max = v;
+      key = k;
+    }
+  }
+  return key;
+}
+
+// --- Expense calendar calculations ---
+
+/** Builds the calendar grid (with previous/next-month padding) for a given month. */
+export function buildCalendarDays(currentDate: Date, expenses: Expense[], today: Date): CalendarDay[] {
+  const year: number = currentDate.getFullYear();
+  const month: number = currentDate.getMonth();
+
+  const firstDayIndex: number = new Date(year, month, 1).getDay();
+  const totalDays: number = new Date(year, month + 1, 0).getDate();
+  const prevMonthDays: number = new Date(year, month, 0).getDate();
+
+  const days: CalendarDay[] = [];
+
+  // Previous month padding
+  for (let i: number = firstDayIndex - 1; i >= 0; i--) {
+    const d: Date = new Date(year, month - 1, prevMonthDays - i);
+    days.push(createCalendarDay(d, false, expenses, today));
+  }
+
+  // Current month days
+  for (let i: number = 1; i <= totalDays; i++) {
+    const d: Date = new Date(year, month, i);
+    days.push(createCalendarDay(d, true, expenses, today));
+  }
+
+  // Next month padding to complete the final week row
+  const remaining: number = (7 - (days.length % 7)) % 7;
+  for (let i: number = 1; i <= remaining; i++) {
+    const d: Date = new Date(year, month + 1, i);
+    days.push(createCalendarDay(d, false, expenses, today));
+  }
+
+  return days;
+}
+
+function createCalendarDay(date: Date, isCurrentMonth: boolean, expenses: Expense[], today: Date): CalendarDay {
+  const y: number = date.getFullYear();
+  const m: string = String(date.getMonth() + 1).padStart(2, '0');
+  const d: string = String(date.getDate()).padStart(2, '0');
+  const dateString: string = `${y}-${m}-${d}`;
+
+  const matchingExpenses: Expense[] = expenses.filter((e) => e.date === dateString);
+  const total: number = matchingExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+
+  return {
+    date,
+    dateString,
+    dayNumber: date.getDate(),
+    isCurrentMonth,
+    isToday:
+      date.getFullYear() === today.getFullYear() &&
+      date.getMonth() === today.getMonth() &&
+      date.getDate() === today.getDate(),
+    totalSpending: total,
+    expenses: matchingExpenses
+  };
 }

@@ -11,3 +11,11 @@ export interface DayStat {
   label: string;
   amount: number;
 }
+
+/** Aggregated statistics for the trends view. */
+export interface TrendStats {
+  totalSpending: number;
+  averageDaily: number;
+  highestDay: DayStat;
+  lowestDay: DayStat;
+}

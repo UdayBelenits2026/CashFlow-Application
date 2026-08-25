@@ -47,7 +47,7 @@
   margin-top: $spacing-2;
   height: $spacing-10;
   padding: 0 $spacing-5;
-  background: #10B981;
+  background: #2563EB;
   color: $color-white;
   border: none;
   border-radius: $radius-md;
@@ -57,6 +57,6 @@
   transition: background $transition-fast;
 
   &:hover {
-    background: #059669;
+    background: #1D4ED8;
   }
 }

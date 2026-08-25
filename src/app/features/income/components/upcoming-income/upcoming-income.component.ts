@@ -1,4 +1,4 @@
-import { Component, input, output, InputSignal, OutputEmitterRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, InputSignal, OutputEmitterRef } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { UpcomingIncomeItem } from '../../models/income-summary.model';
 
@@ -7,7 +7,8 @@ import { UpcomingIncomeItem } from '../../models/income-summary.model';
   standalone: true,
   imports: [CommonModule, DatePipe, DecimalPipe],
   templateUrl: './upcoming-income.component.html',
-  styleUrl: './upcoming-income.component.scss'
+  styleUrl: './upcoming-income.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpcomingIncomeComponent {
   readonly upcomingItems: InputSignal<UpcomingIncomeItem[]> = input<UpcomingIncomeItem[]>([]);

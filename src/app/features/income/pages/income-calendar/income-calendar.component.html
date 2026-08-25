@@ -1,149 +1,148 @@
-<div class="income-calendar-page">
-  @let days = (calendarDays$ | async) || [];
-  @let totalRecorded = getTotalRecordedForMonth(days);
-  @let totalUpcoming = getTotalUpcomingForMonth(days);
-
-  <!-- Top Navigation Bar -->
-  <div class="top-bar">
-    <div class="title-wrap">
+<div class="calendar-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div>
       <h1 class="page-title">Income Calendar</h1>
-      <p class="page-subtitle">Visual timeline of recorded receipts and scheduled upcoming inflows</p>
+      <p class="page-subtitle">Track chronological income patterns and daily inflow totals</p>
     </div>
 
-    <div class="month-nav-controls">
+    <!-- Month Switcher Controls -->
+    <div class="month-controls">
       <button type="button" class="btn-today" (click)="goToToday()">Today</button>
-      <div class="nav-arrows">
-        <button type="button" class="btn-nav" (click)="prevMonth()" title="Previous Month">‹</button>
-        <span class="current-month-label">{{ getMonthName() }}</span>
-        <button type="button" class="btn-nav" (click)="nextMonth()" title="Next Month">›</button>
+      <button class="btn-nav" (click)="prevMonth()" title="Previous month" aria-label="Previous month">&larr;</button>
+      <span class="current-month-label">{{ monthName() }}</span>
+      <button class="btn-nav" (click)="nextMonth()" title="Next month" aria-label="Next month">&rarr;</button>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="calendar-legend">
+    <span class="legend-item"><span class="legend-swatch tone-recorded"></span> Recorded receipt</span>
+    <span class="legend-item"><span class="legend-swatch tone-upcoming"></span> Upcoming scheduled</span>
+  </div>
+
+  <!-- Main Calendar Grid and Day Details Layout -->
+  <div class="calendar-layout">
+    <!-- Calendar Grid (Left / Center) -->
+    <div class="calendar-card">
+      <!-- Weekday Headers -->
+      <div class="weekdays-grid">
+        @for (w of weekDays; track w) {
+          <span class="weekday">{{ w }}</span>
+        }
       </div>
-    </div>
-  </div>
 
-  <!-- Month Summary Highlights -->
-  <div class="month-highlights-grid">
-    <div class="highlight-card">
-      <span class="hl-label">Recorded This Month</span>
-      <span class="hl-val green">+₹{{ totalRecorded | number:'1.2-2' }}</span>
-      <span class="hl-sub">Actual received inflow</span>
-    </div>
+      <!-- Days Grid -->
+      <div class="days-grid">
+        @for (day of calendarDays(); track day.date) {
+          <div
+            class="day-cell"
+            [ngClass]="{
+              'not-current-month': !day.isCurrentMonth,
+              'today': day.isToday,
+              'selected': selectedDay()?.date === day.date,
+              'has-items': day.items.length > 0
+            }"
+            [class.tone-recorded]="day.recordedAmount > 0"
+            [class.tone-upcoming]="day.recordedAmount === 0 && day.upcomingAmount > 0"
+            (click)="selectDay(day)"
+          >
+            <div class="day-header">
+              <span class="day-num">{{ day.dayNumber }}</span>
+              @if (day.items.length > 0) {
+                <span class="item-count-dot" [title]="day.items.length + ' income items'">
+                  {{ day.items.length }}
+                </span>
+              }
+            </div>
 
-    <div class="highlight-card">
-      <span class="hl-label">Upcoming Scheduled</span>
-      <span class="hl-val blue">₹{{ totalUpcoming | number:'1.2-2' }}</span>
-      <span class="hl-sub">Expected before month-end</span>
-    </div>
-
-    <div class="highlight-card">
-      <span class="hl-label">Total Projected Month</span>
-      <span class="hl-val">₹{{ (totalRecorded + totalUpcoming) | number:'1.2-2' }}</span>
-      <span class="hl-sub">Combined revenue potential</span>
-    </div>
-  </div>
-
-  <!-- Calendar Grid Card -->
-  <div class="calendar-card">
-    <!-- Day Headers (Sun-Sat) -->
-    <div class="calendar-header-grid">
-      @for (w of weekDays; track w) {
-        <div class="weekday-cell">{{ w }}</div>
-      }
-    </div>
-
-    <!-- Calendar Day Cells -->
-    <div class="calendar-days-grid">
-      @for (day of days; track day.date) {
-        <div
-          class="calendar-day-cell"
-          [ngClass]="{
-            'other-month': !day.isCurrentMonth,
-            'today': day.isToday,
-            'has-items': day.items.length > 0
-          }"
-          (click)="onSelectDay(day)"
-        >
-          <div class="day-top">
-            <span class="day-number">{{ day.dayNumber }}</span>
             @if (day.totalAmount > 0) {
-              <span class="day-total-badge">₹{{ day.totalAmount | number:'1.0-0' }}</span>
-            }
-          </div>
-
-          <div class="day-items-list">
-            @for (item of day.items; track item.id) {
-              <div
-                class="day-item-pill"
-                [ngClass]="item.type === 'RECORDED' ? 'recorded-pill' : 'upcoming-pill'"
-                [title]="item.description + ' - ₹' + item.amount"
-              >
-                <span
-                  class="item-dot"
-                  [style.backgroundColor]="item.sourceColor || '#10B981'"
-                ></span>
-                <span class="item-name">{{ item.sourceName }}</span>
-                <span class="item-amount">₹{{ item.amount | number:'1.0-0' }}</span>
+              <div class="day-income-badge">
+                +₹{{ day.totalAmount | number:'1.0-0' }}
               </div>
             }
           </div>
-        </div>
-      }
-    </div>
-  </div>
-
-  <!-- Day Details Modal / Drawer -->
-  @if (selectedDayDetails) {
-    <div class="modal-backdrop" (click)="selectedDayDetails = null">
-      <div class="modal-card" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <div>
-            <h3 class="modal-title">Income on {{ selectedDayDetails.date | date:'fullDate' }}</h3>
-            <span class="modal-subtitle">
-              Total Day Inflow: <strong>₹{{ selectedDayDetails.totalAmount | number:'1.2-2' }}</strong>
-            </span>
-          </div>
-          <button type="button" class="btn-close" (click)="selectedDayDetails = null">✕</button>
-        </div>
-
-        <div class="modal-body">
-          <div class="day-details-list">
-            @for (item of selectedDayDetails.items; track item.id) {
-              <div class="detail-item-card" [ngClass]="item.type === 'RECORDED' ? 'type-recorded' : 'type-upcoming'">
-                <div class="item-main">
-                  <div class="status-chip-row">
-                    <span class="chip-status" [ngClass]="item.type === 'RECORDED' ? 'rec' : 'upc'">
-                      {{ item.type === 'RECORDED' ? '● Recorded Receipt' : '◷ Upcoming Scheduled' }}
-                    </span>
-                    <span class="source-tag" [style.backgroundColor]="item.sourceColor + '1A'" [style.color]="item.sourceColor">
-                      {{ item.sourceName }}
-                    </span>
-                  </div>
-                  <h4 class="item-desc">{{ item.description }}</h4>
-                  <span class="item-acc">{{ item.accountName }}</span>
-                </div>
-
-                <div class="item-right-actions">
-                  <span class="amount-text" [ngClass]="item.type === 'RECORDED' ? 'green' : 'blue'">
-                    +₹{{ item.amount | number:'1.2-2' }}
-                  </span>
-                  @if (item.type === 'UPCOMING') {
-                    <button
-                      type="button"
-                      class="btn-record-now"
-                      (click)="onRecordUpcomingItem(item)"
-                    >
-                      Record Now
-                    </button>
-                  }
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn-secondary" (click)="selectedDayDetails = null">Close</button>
-        </div>
+        }
       </div>
     </div>
-  }
+
+    <!-- Day Income Detail Panel (Right Side) -->
+    <div class="day-details-card">
+      <div class="details-header">
+        <div class="d-header-top">
+          <h3 class="d-title">{{ selectedDay()?.date | date:'fullDate' }}</h3>
+          <button
+            type="button"
+            class="btn-export-day"
+            [disabled]="!selectedDay()?.recordedCount"
+            (click)="exportDayReport()"
+            title="Download day's recorded income as CSV"
+          >
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Export Day Report
+          </button>
+        </div>
+
+        <div class="daily-total-banner">
+          <span class="dt-label">Daily Inflow</span>
+          <span class="dt-amount">+₹{{ (selectedDay()?.totalAmount || 0) | number:'1.2-2' }}</span>
+        </div>
+
+        @if (selectedDay(); as sel) {
+          <button type="button" class="btn-day-details" (click)="viewFullDay(sel.date)">
+            View Full Day Details &rarr;
+          </button>
+        }
+      </div>
+
+      <div class="day-expenses-list">
+        @if (selectedDay(); as sel) {
+          @if (sel.items.length > 0) {
+            <div class="list-container">
+              @for (item of sel.items; track item.id) {
+                <div class="day-income-item" [ngClass]="item.type === 'RECORDED' ? 'is-recorded' : 'is-upcoming'">
+                  <div class="de-left">
+                    <div
+                      class="de-avatar"
+                      [style.backgroundColor]="(item.sourceColor || '#2563EB') + '1A'"
+                      [style.color]="item.sourceColor || '#2563EB'"
+                    >
+                      {{ (item.sourceName || 'S').charAt(0).toUpperCase() }}
+                    </div>
+                    <div class="de-info">
+                      <span class="de-merchant">{{ item.sourceName }}</span>
+                      <span class="de-cat">{{ item.sourceType }} &bull; {{ item.accountName }}</span>
+                    </div>
+                  </div>
+                  <div class="de-right">
+                    <span class="de-amt" [ngClass]="item.type === 'RECORDED' ? 'green' : 'blue'">
+                      +₹{{ item.amount | number:'1.2-2' }}
+                    </span>
+                    <span class="de-status" [ngClass]="item.type === 'RECORDED' ? 'rec' : 'upc'">
+                      {{ item.type === 'RECORDED' ? 'Recorded' : 'Upcoming' }}
+                    </span>
+                    @if (item.type === 'UPCOMING') {
+                      <button type="button" class="btn-record-mini" (click)="onRecordUpcomingItem(item)">
+                        Record
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="empty-day">
+              <div class="empty-day-icon">💤</div>
+              <h4>No income recorded</h4>
+              <p>No scheduled income for this day.</p>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </div>
 </div>

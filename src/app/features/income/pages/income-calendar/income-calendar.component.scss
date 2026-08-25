@@ -1,442 +1,475 @@
 @use '../../../../../styles/variables' as *;
 
-.income-calendar-page {
-  padding: $spacing-6;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-6;
+.calendar-page {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: $spacing-6 $spacing-6 $spacing-16 $spacing-6;
+  box-sizing: border-box;
 }
 
-.top-bar {
+.page-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: $spacing-6;
   flex-wrap: wrap;
   gap: $spacing-4;
 }
 
 .page-title {
-  font-size: $font-size-2xl;
+  font-size: $font-size-3xl;
   font-weight: $font-weight-bold;
   color: $color-text-primary;
-  margin: 0;
+  margin: 0 0 $spacing-1 0;
+  letter-spacing: -0.02em;
 }
 
 .page-subtitle {
-  font-size: $font-size-sm;
+  font-size: $font-size-base;
   color: $color-text-muted;
-  margin: $spacing-1 0 0 0;
+  margin: 0;
 }
 
-.month-nav-controls {
+.month-controls {
   display: flex;
   align-items: center;
   gap: $spacing-3;
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-md;
+  padding: $spacing-2 $spacing-3;
+  box-shadow: $shadow-sm;
 }
 
 .btn-today {
-  padding: $spacing-2 $spacing-4;
-  background: $color-card;
-  border: 1px solid $color-border;
-  border-radius: $radius-md;
+  padding: $spacing-1 $spacing-3;
+  background: $color-background;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-sm;
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
-  color: $color-text-primary;
+  color: $color-text-secondary;
   cursor: pointer;
+  transition: all $transition-fast;
 
   &:hover {
-    background: $color-background;
+    background: $color-info-bg;
+    color: $color-info;
+    border-color: $color-border-hover;
   }
-}
-
-.nav-arrows {
-  display: flex;
-  align-items: center;
-  gap: $spacing-2;
-  background: $color-card;
-  border: 1px solid $color-border;
-  border-radius: $radius-md;
-  padding: 2px $spacing-2;
 }
 
 .btn-nav {
-  background: transparent;
+  background: none;
   border: none;
-  font-size: $font-size-lg;
   color: $color-text-muted;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
   cursor: pointer;
-  padding: 0 $spacing-2;
+  padding: $spacing-1 $spacing-2;
+  border-radius: $radius-sm;
+  transition: all $transition-fast;
 
-  &:hover {
-    color: $color-text-primary;
-  }
+  &:hover { background: $color-background; color: $color-primary; }
 }
 
 .current-month-label {
-  font-size: $font-size-sm;
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
   color: $color-text-primary;
   min-width: 130px;
   text-align: center;
 }
 
-.month-highlights-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: $spacing-4;
-}
-
-.highlight-card {
+/* Legend bar */
+.calendar-legend {
+  display: flex;
+  gap: $spacing-5;
+  flex-wrap: wrap;
+  margin-bottom: $spacing-4;
+  padding: $spacing-3 $spacing-4;
   background: $color-card;
   border: $border-width-sm solid $color-border;
-  border-radius: $radius-lg;
-  padding: $spacing-4;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-1;
+  border-radius: $radius-md;
   box-shadow: $shadow-sm;
 }
 
-.hl-label {
-  font-size: 11px;
-  font-weight: $font-weight-semibold;
-  color: $color-text-muted;
-  text-transform: uppercase;
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
 }
 
-.hl-val {
-  font-size: $font-size-xl;
-  font-weight: $font-weight-bold;
-  color: $color-text-primary;
+.legend-swatch {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: $radius-sm;
+  display: inline-block;
 
-  &.green { color: #059669; }
-  &.blue { color: #2563EB; }
+  &.tone-recorded { background: $color-success; }
+  &.tone-upcoming { background: $color-info; }
 }
 
-.hl-sub {
-  font-size: 11px;
-  color: $color-text-muted;
+/* Two-column layout: calendar + day details */
+.calendar-layout {
+  display: grid;
+  grid-template-columns: 65% 35%;
+  gap: $spacing-6;
+
+  @include respond-max($bp-960) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .calendar-card {
   background: $color-card;
   border: $border-width-sm solid $color-border;
   border-radius: $radius-lg;
+  padding: $spacing-5;
   box-shadow: $shadow-sm;
-  overflow: hidden;
 }
 
-.calendar-header-grid {
+.weekdays-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  background: $color-background;
-  border-bottom: 1px solid $color-border;
-}
-
-.weekday-cell {
-  padding: $spacing-2;
   text-align: center;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
   color: $color-text-muted;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: $spacing-3;
 }
 
-.calendar-days-grid {
+.days-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  gap: $spacing-2;
 }
 
-.calendar-day-cell {
-  min-height: 105px;
+.day-cell {
+  border: $border-width-sm solid $color-border-light;
+  border-radius: $radius-md;
+  min-height: $spacing-20;
   padding: $spacing-2;
-  border-right: 1px solid $color-border;
-  border-bottom: 1px solid $color-border;
-  background: $color-card;
   display: flex;
   flex-direction: column;
-  gap: $spacing-1;
+  justify-content: space-between;
   cursor: pointer;
-  transition: background $transition-fast;
-
-  &:nth-child(7n) {
-    border-right: none;
-  }
+  transition: all $transition-fast;
+  background: $color-card;
 
   &:hover {
+    border-color: $color-border-hover;
     background: $color-background;
   }
 
-  &.other-month {
-    background: #F8FAFC;
-    opacity: 0.55;
+  &.not-current-month {
+    opacity: 0.35;
+    background: $color-background;
   }
 
-  &.today {
-    background: #F0FDF4;
-    .day-number {
-      background: #10B981;
-      color: #ffffff;
-      border-radius: 50%;
-      width: 22px;
-      height: 22px;
+  &.today .day-num {
+    background: $color-primary;
+    color: $color-white;
+    border-radius: 50%;
+    width: $spacing-5;
+    height: $spacing-5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &.tone-recorded {
+    border-left: 3px solid $color-success;
+    background: $color-success-bg;
+  }
+
+  &.tone-upcoming {
+    border-left: 3px solid $color-info;
+    background: $color-info-bg;
+  }
+
+  &.selected {
+    border-color: $color-primary-button;
+    background: $color-info-bg;
+    box-shadow: inset 0 0 0 1px $color-primary-button;
+  }
+}
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.day-num {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.item-count-dot {
+  background: $color-primary-button;
+  color: $color-white;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  width: $spacing-4;
+  height: $spacing-4;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-income-badge {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-success;
+  background: $color-success-bg;
+  padding: $spacing-1 $spacing-1;
+  border-radius: $radius-sm;
+  text-align: center;
+  margin-top: $spacing-1;
+}
+
+/* Day details card */
+.day-details-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-5;
+  box-shadow: $shadow-sm;
+  display: flex;
+  flex-direction: column;
+}
+
+.details-header {
+  margin-bottom: $spacing-5;
+  padding-bottom: $spacing-4;
+  border-bottom: $border-width-sm solid $color-border-light;
+
+  .d-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-3;
+    gap: $spacing-2;
+    flex-wrap: wrap;
+
+    .d-title {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
+      color: $color-text-primary;
+      margin: 0;
+    }
+
+    .btn-export-day {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
+      gap: $spacing-1;
+      padding: $spacing-2 $spacing-2;
+      background: $color-background;
+      border: $border-width-sm solid $color-border;
+      border-radius: $radius-sm;
+      font-size: $font-size-xs;
+      font-weight: $font-weight-bold;
+      color: $color-text-secondary;
+      cursor: pointer;
+      transition: all $transition-fast;
+
+      &:hover:not(:disabled) {
+        background: $color-border-light;
+        color: $color-text-primary;
+      }
+
+      &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
     }
   }
 }
 
-.day-top {
+.daily-total-banner {
+  background: $color-success-bg;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-md;
+  padding: $spacing-3 $spacing-4;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-}
-
-.day-number {
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  color: $color-text-primary;
-}
-
-.day-total-badge {
-  font-size: 10px;
-  font-weight: $font-weight-bold;
-  color: #047857;
-  background: #ECFDF5;
-  padding: 1px 4px;
-  border-radius: $radius-sm;
-}
-
-.day-items-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  overflow: hidden;
-}
-
-.day-item-pill {
-  display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 1px 4px;
-  border-radius: 3px;
-  font-size: 10px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  &.recorded-pill {
-    background: #ECFDF5;
-    color: #065F46;
-    border-left: 2px solid #10B981;
-  }
-
-  &.upcoming-pill {
-    background: #EFF6FF;
-    color: #1E40AF;
-    border-left: 2px dashed #3B82F6;
-  }
 }
 
-.item-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.item-name {
-  font-weight: $font-weight-semibold;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex: 1;
-}
-
-.item-amount {
-  font-weight: $font-weight-bold;
-}
-
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(4px);
-  z-index: 1050;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: $spacing-4;
-}
-
-.modal-card {
-  background: $color-card;
-  border: 1px solid $color-border;
-  border-radius: $radius-xl;
-  width: 100%;
-  max-width: 520px;
-  box-shadow: $shadow-lg;
-  display: flex;
-  flex-direction: column;
-  animation: modalIn 0.2s ease-out;
-}
-
-@keyframes modalIn {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.modal-header {
-  padding: $spacing-4 $spacing-6;
-  border-bottom: 1px solid $color-border;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.modal-title {
-  margin: 0;
-  font-size: $font-size-base;
-  font-weight: $font-weight-bold;
-  color: $color-text-primary;
-}
-
-.modal-subtitle {
+.dt-label {
   font-size: $font-size-xs;
   color: $color-text-muted;
+  font-weight: $font-weight-semibold;
 }
 
-.btn-close {
-  background: transparent;
+.dt-amount {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-success;
+}
+
+.btn-day-details {
+  display: inline-block;
+  margin-top: $spacing-3;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-info;
+  text-decoration: none;
+  background: none;
   border: none;
-  font-size: $font-size-base;
-  color: $color-text-muted;
+  padding: 0;
   cursor: pointer;
+
+  &:hover { text-decoration: underline; }
 }
 
-.modal-body {
-  padding: $spacing-6;
-  max-height: 60vh;
+.day-expenses-list {
+  flex: 1;
   overflow-y: auto;
 }
 
-.day-details-list {
+.list-container {
   display: flex;
   flex-direction: column;
-  gap: $spacing-3;
-}
-
-.detail-item-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: $spacing-3 $spacing-4;
-  border-radius: $radius-md;
-  border: 1px solid $color-border;
-
-  &.type-recorded {
-    background: #F0FDF4;
-    border-color: #BBF7D0;
-  }
-
-  &.type-upcoming {
-    background: #EFF6FF;
-    border-color: #BFDBFE;
-  }
-}
-
-.item-main {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.status-chip-row {
-  display: flex;
-  align-items: center;
   gap: $spacing-2;
 }
 
-.chip-status {
-  font-size: 10px;
-  font-weight: $font-weight-bold;
-  padding: 1px 6px;
-  border-radius: $radius-sm;
+.day-income-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-3;
+  padding: $spacing-2 $spacing-3;
+  border: $border-width-sm solid $color-border-light;
+  border-left-width: 3px;
+  border-radius: $radius-md;
 
-  &.rec {
-    background: #DCFCE7;
-    color: #15803D;
-  }
-
-  &.upc {
-    background: #DBEAFE;
-    color: #1D4ED8;
-  }
+  &.is-recorded { border-left-color: $color-success; }
+  &.is-upcoming { border-left-color: $color-info; }
 }
 
-.source-tag {
-  font-size: 11px;
+.de-left {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  min-width: 0;
+}
+
+.de-avatar {
+  flex-shrink: 0;
+  width: $spacing-8;
+  height: $spacing-8;
+  border-radius: $radius-sm;
+  font-weight: $font-weight-bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+}
+
+.de-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.de-merchant {
+  font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
-  padding: 1px 6px;
-  border-radius: $radius-sm;
-}
-
-.item-desc {
-  margin: 0;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-bold;
   color: $color-text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.item-acc {
-  font-size: 11px;
+.de-cat {
+  font-size: $font-size-xs;
   color: $color-text-muted;
 }
 
-.item-right-actions {
+.de-right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: $spacing-1;
+  gap: 2px;
+  flex-shrink: 0;
 }
 
-.amount-text {
-  font-size: $font-size-sm;
+.de-amt {
+  font-size: $font-size-base;
   font-weight: $font-weight-bold;
 
-  &.green { color: #059669; }
-  &.blue { color: #2563EB; }
+  &.green { color: $color-success; }
+  &.blue { color: $color-info; }
 }
 
-.btn-record-now {
+.de-status {
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  text-transform: uppercase;
+  padding: 1px 7px;
+  border-radius: 9999px;
+
+  &.rec { background: #DCFCE7; color: #15803D; }
+  &.upc { background: #DBEAFE; color: $color-info; }
+}
+
+.btn-record-mini {
   padding: 2px 8px;
-  background: #10B981;
-  color: #ffffff;
+  background: $color-info;
+  color: $color-white;
   border: none;
   border-radius: $radius-sm;
   font-size: 10px;
   font-weight: $font-weight-bold;
   cursor: pointer;
+  transition: background $transition-fast;
 
-  &:hover {
-    background: #059669;
+  &:hover { background: $color-primary-button-hover; }
+}
+
+.empty-day {
+  text-align: center;
+  padding: $spacing-16 $spacing-5;
+
+  .empty-day-icon { font-size: $font-size-4xl; margin-bottom: $spacing-2; }
+  h4 { margin: 0 0 $spacing-1 0; color: $color-text-primary; }
+  p { margin: 0; font-size: $font-size-xs; color: $color-text-muted; }
+}
+
+/* Responsive */
+@include respond-max($bp-1280) {
+  .calendar-page { max-width: 100%; }
+}
+
+@include respond-max($bp-840) {
+  .calendar-page { padding: $spacing-4 $spacing-4 $spacing-10 $spacing-4; }
+  .page-header { flex-direction: column; align-items: flex-start; }
+  .month-controls { width: 100%; justify-content: space-between; }
+  .day-cell { min-height: $spacing-16; }
+}
+
+@include respond-max($bp-600) {
+  .calendar-card { padding: $spacing-3; }
+  .day-cell { min-height: $spacing-12; padding: $spacing-1; }
+  .day-income-badge { font-size: $font-size-xs; }
+}
+
+@include respond-max($bp-480) {
+  .calendar-page { padding: $spacing-3 $spacing-2 $spacing-8 $spacing-2; }
+  .page-title { font-size: $font-size-2xl; }
+  .days-grid { gap: $spacing-1; }
+  .day-cell {
+    min-height: $spacing-10;
+    .day-income-badge { display: none; }
   }
-}
-
-.modal-footer {
-  padding: $spacing-3 $spacing-6;
-  border-top: 1px solid $color-border;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.btn-secondary {
-  padding: $spacing-2 $spacing-4;
-  border: 1px solid $color-border;
-  background: $color-card;
-  color: $color-text-primary;
-  border-radius: $radius-md;
-  font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
-  cursor: pointer;
+  .calendar-legend { gap: $spacing-3; }
 }

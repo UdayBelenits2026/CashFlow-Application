@@ -11,8 +11,7 @@ import {
   IncomeOverviewData,
   IncomeSourceReportItem,
   IncomeTrendPoint,
-  UpcomingIncomeItem,
-  IncomeInsight
+  UpcomingIncomeItem
 } from '../models/income-summary.model';
 import { IncomeCalendarDay } from '../models/income-calendar.model';
 import { IncomeFilters } from '../store/income.state';
@@ -70,8 +69,7 @@ export class IncomeFacade {
   );
   readonly calendarDays$: Observable<IncomeCalendarDay[]> = this.store.select(IncomeSelectors.selectIncomeCalendarDays);
 
-  // Insights & Accounts
-  readonly insights$: Observable<IncomeInsight[]> = this.store.select(IncomeSelectors.selectCalculatedIncomeInsights);
+  // Accounts
   readonly accounts$: Observable<AccountRef[]> = this.store.select(IncomeSelectors.selectAccounts);
 
   // --- Dispatch Methods ---

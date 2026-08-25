@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -42,7 +42,8 @@ import { SplitExpenseModalComponent } from '../../components/split-expense-modal
     SplitExpenseModalComponent
   ],
   templateUrl: './full-spending-dashboard.component.html',
-  styleUrl: './full-spending-dashboard.component.scss'
+  styleUrl: './full-spending-dashboard.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FullSpendingDashboardComponent implements OnInit {
   private readonly spendingFacade: SpendingFacade = inject(SpendingFacade);

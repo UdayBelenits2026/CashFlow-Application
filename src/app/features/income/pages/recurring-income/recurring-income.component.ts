@@ -1,12 +1,13 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, Signal, WritableSignal, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
 import { IncomeFacade } from '../../facades/income.facade';
 import { RecurringIncome } from '../../models/recurring-income.model';
-import { IncomeSource } from '../../models/income-source.model';
+import { IncomeSource, IncomeFrequency } from '../../models/income-source.model';
 import { AccountRef } from '../../models/account-ref.model';
-import { formatFrequency } from '../../utility/income.helpers';
+import { formatFrequency, getRecurringNextLabel } from '../../utility/income.helpers';
+import { getDaysUntilNextIncome, getNext30DaysRecurringTotal, getRecurringNextTone } from '../../utility/income.calculations';
 
 import { RecurringIncomeModalComponent } from '../../components/recurring-income-modal/recurring-income-modal.component';
 import { DeleteConfirmDialogComponent } from '../../components/delete-confirm-dialog/delete-confirm-dialog.component';
@@ -23,36 +24,39 @@ import { DeleteConfirmDialogComponent } from '../../components/delete-confirm-di
     DeleteConfirmDialogComponent
   ],
   templateUrl: './recurring-income.component.html',
-  styleUrl: './recurring-income.component.scss'
+  styleUrl: './recurring-income.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecurringIncomeComponent implements OnInit {
   private readonly incomeFacade: IncomeFacade = inject(IncomeFacade);
 
-  readonly recurringIncomes$: Observable<RecurringIncome[]> = this.incomeFacade.recurringIncomes$;
-  readonly sources$: Observable<IncomeSource[]> = this.incomeFacade.sources$;
-  readonly accounts$: Observable<AccountRef[]> = this.incomeFacade.accounts$;
-  readonly isLoading$: Observable<boolean> = this.incomeFacade.isLoading$;
+  readonly recurringIncomes: Signal<RecurringIncome[]> = toSignal(this.incomeFacade.recurringIncomes$, { initialValue: [] });
+  readonly sources: Signal<IncomeSource[]> = toSignal(this.incomeFacade.sources$, { initialValue: [] });
+  readonly accounts: Signal<AccountRef[]> = toSignal(this.incomeFacade.accounts$, { initialValue: [] });
+  readonly isLoading: Signal<boolean> = toSignal(this.incomeFacade.isLoading$, { initialValue: false });
 
-  searchTerm: string = '';
-  statusFilter: 'ALL' | 'ACTIVE' | 'PAUSED' = 'ALL';
+  readonly searchTerm: WritableSignal<string> = signal('');
+  readonly statusFilter: WritableSignal<'ALL' | 'ACTIVE' | 'PAUSED'> = signal('ALL');
 
-  showModal: boolean = false;
-  showDeleteDialog: boolean = false;
-  activeItem: RecurringIncome | null = null;
+  readonly showModal: WritableSignal<boolean> = signal(false);
+  readonly showDeleteDialog: WritableSignal<boolean> = signal(false);
+  readonly activeItem: WritableSignal<RecurringIncome | null> = signal(null);
+
+  readonly filteredList: Signal<RecurringIncome[]> = computed(() => {
+    const term = this.searchTerm().toLowerCase();
+    const status = this.statusFilter();
+    return this.recurringIncomes().filter((r) => {
+      const matchSearch =
+        !term ||
+        r.sourceName.toLowerCase().includes(term) ||
+        r.accountName.toLowerCase().includes(term);
+      const matchStatus = status === 'ALL' || r.status === status;
+      return matchSearch && matchStatus;
+    });
+  });
 
   ngOnInit(): void {
     this.incomeFacade.loadDashboard();
-  }
-
-  getFilteredList(items: RecurringIncome[]): RecurringIncome[] {
-    return items.filter((r) => {
-      const matchSearch =
-        !this.searchTerm ||
-        r.sourceName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        r.accountName.toLowerCase().includes(this.searchTerm.toLowerCase());
-      const matchStatus = this.statusFilter === 'ALL' || r.status === this.statusFilter;
-      return matchSearch && matchStatus;
-    });
   }
 
   getTotalRecurring(items: RecurringIncome[]): number {
@@ -63,33 +67,39 @@ export class RecurringIncomeComponent implements OnInit {
     return items.filter((r) => r.status === 'ACTIVE').length;
   }
 
-  getNext30DaysTotal(items: RecurringIncome[]): number {
-    const today = new Date();
-    const in30Days = new Date();
-    in30Days.setDate(today.getDate() + 30);
+  getPausedCount(items: RecurringIncome[]): number {
+    return items.filter((r) => r.status === 'PAUSED').length;
+  }
 
-    return items
-      .filter((r) => {
-        if (r.status !== 'ACTIVE' || !r.nextIncomeDate) return false;
-        const d = new Date(r.nextIncomeDate);
-        return d >= today && d <= in30Days;
-      })
-      .reduce((sum, r) => sum + r.expectedAmount, 0);
+  getNext30DaysTotal(items: RecurringIncome[]): number {
+    return getNext30DaysRecurringTotal(items);
+  }
+
+  getDaysUntilNext(item: RecurringIncome): number | null {
+    return getDaysUntilNextIncome(item.nextIncomeDate);
+  }
+
+  getNextLabel(item: RecurringIncome): string {
+    return getRecurringNextLabel(this.getDaysUntilNext(item));
+  }
+
+  getNextTone(item: RecurringIncome): 'overdue' | 'soon' | 'normal' | 'none' {
+    return getRecurringNextTone(item);
   }
 
   openCreate(): void {
-    this.activeItem = null;
-    this.showModal = true;
+    this.activeItem.set(null);
+    this.showModal.set(true);
   }
 
   openEdit(item: RecurringIncome): void {
-    this.activeItem = item;
-    this.showModal = true;
+    this.activeItem.set(item);
+    this.showModal.set(true);
   }
 
   openDelete(item: RecurringIncome): void {
-    this.activeItem = item;
-    this.showDeleteDialog = true;
+    this.activeItem.set(item);
+    this.showDeleteDialog.set(true);
   }
 
   onToggleStatus(item: RecurringIncome): void {
@@ -103,23 +113,24 @@ export class RecurringIncomeComponent implements OnInit {
 
   onSaveItem(payload: Partial<RecurringIncome>): void {
     this.incomeFacade.addRecurring(payload);
-    this.showModal = false;
+    this.showModal.set(false);
   }
 
   onUpdateItem(event: { id: string; item: Partial<RecurringIncome> }): void {
     this.incomeFacade.updateRecurring(event.id, event.item);
-    this.showModal = false;
+    this.showModal.set(false);
   }
 
   onConfirmDelete(): void {
-    if (this.activeItem) {
-      this.incomeFacade.deleteRecurring(this.activeItem.id);
-      this.showDeleteDialog = false;
-      this.activeItem = null;
+    const current = this.activeItem();
+    if (current) {
+      this.incomeFacade.deleteRecurring(current.id);
+      this.showDeleteDialog.set(false);
+      this.activeItem.set(null);
     }
   }
 
-  formatFrequencyLabel(freq: string): string {
-    return formatFrequency(freq as any);
+  formatFrequencyLabel(freq: IncomeFrequency): string {
+    return formatFrequency(freq);
   }
 }

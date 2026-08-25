@@ -1,14 +1,21 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, forkJoin, map, of, catchError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, forkJoin, map, of, catchError, throwError, timeout } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { SpendingOverviewData, SpendingCategoryItem, SpendingTrendPoint, SpendingAlert } from '../models/spending-summary.model';
 import { Expense, ExpenseStatus, PaymentMethod } from '../models/expense.model';
 import { Tag } from '../models/tag.model';
 import { RecurringExpense } from '../models/recurring-expense.model';
-
-/** Dev-only user id; the backend's dev auth shim resolves the user from the X-User-Id header. */
-const DEV_USER_ID = '42';
+import {
+  OverviewDto,
+  CategoryListDto,
+  ExpenseListItemDto,
+  ExpensePageDto,
+  ExpenseCreateDto,
+  TagDto,
+  RecurringExpenseDto,
+  SpendingAlertDto
+} from '../models/spending-api.dto';
 
 /** Fallback monthly budget per category if not supplied by backend or json-server. */
 const CATEGORY_BUDGETS: Record<string, number> = {
@@ -22,108 +29,6 @@ const CATEGORY_BUDGETS: Record<string, number> = {
   'Education': 200
 };
 
-// --- Backend DTO shapes (cashflow-spending-service) ---
-interface OverviewDto {
-  period?: string;
-  totalSpending?: number;
-  spendingGrowthPercentage?: number;
-  transactionCount?: number;
-  transactionsCount?: number;
-  transactionsGrowthCount?: number;
-  averageDaily?: number;
-  averageDailyGrowthPercentage?: number;
-  topCategory?: { categoryId: number; categoryName: string; amount: number };
-  topCategoryName?: string;
-  topCategoryAmount?: number;
-  trend?: { date: string; amount: number }[];
-  categorySummary?: { categoryId: number; categoryName: string; amount: number; percentage: number }[];
-}
-
-interface CategoryListDto {
-  id?: string;
-  categoryId?: number;
-  categoryName?: string;
-  name?: string;
-  icon?: string;
-  color?: string;
-  budget?: number;
-  amount?: number;
-  percentage?: number;
-  barWidth?: string;
-}
-
-interface ExpenseListItemDto {
-  id?: string;
-  transactionId?: number;
-  date?: string;
-  description?: string;
-  type?: string;
-  amount?: number;
-  currency?: string;
-  category?: string;
-  categoryId?: string;
-  categoryName?: string;
-  merchant?: string;
-  merchantName?: string;
-  accountName?: string;
-  accountId?: string;
-  paymentMethod?: PaymentMethod;
-  notes?: string;
-  tags?: string[];
-  status?: string;
-  createdAt?: string;
-}
-
-interface ExpensePageDto {
-  content?: ExpenseListItemDto[];
-  page?: number;
-  size?: number;
-  totalElements?: number;
-  totalPages?: number;
-}
-
-interface ExpenseCreateDto {
-  transactionId?: number;
-  id?: string;
-  message?: string;
-}
-
-interface TagDto {
-  id?: string;
-  tagId?: number;
-  name: string;
-  color?: string;
-  count?: number;
-  icon?: string;
-}
-
-interface RecurringExpenseDto {
-  id?: string;
-  recurringId?: number;
-  name: string;
-  merchantName?: string;
-  amount: number;
-  categoryId?: number;
-  categoryName?: string;
-  frequency?: string;
-  billingCycle?: string;
-  nextBillingDate?: string;
-  accountId?: number;
-  accountName?: string;
-  isActive?: boolean;
-  icon?: string;
-}
-
-interface SpendingAlertDto {
-  id?: string;
-  alertId?: number;
-  title: string;
-  message: string;
-  severity: 'warning' | 'info' | 'success' | 'danger';
-  date?: string;
-  isRead: boolean;
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -131,7 +36,8 @@ export class SpendingApiService {
   private readonly http: HttpClient = inject(HttpClient);
   private readonly apiBaseUrl: string = environment.spendingApiBaseUrl;
   private readonly mockBaseUrl: string = environment.spendingMockBaseUrl;
-  private readonly devHeaders: HttpHeaders = new HttpHeaders({ 'X-User-Id': DEV_USER_ID });
+  // Fail fast when the mock fallback is available (dev); allow longer for a live prod backend.
+  private readonly backendTimeoutMs: number = environment.useMockFallback ? 2000 : 15000;
 
   private api(path: string): string {
     return `${this.apiBaseUrl}/${path}`;
@@ -139,6 +45,23 @@ export class SpendingApiService {
 
   private mock(path: string): string {
     return `${this.mockBaseUrl}/${path}`;
+  }
+
+  /** GET against the live backend with a fail-fast timeout so a dead backend falls back quickly. */
+  private backendGet<T>(path: string): Observable<T> {
+    return this.http.get<T>(this.api(path)).pipe(timeout(this.backendTimeoutMs));
+  }
+
+  /** Runs the mock fallback when enabled, otherwise rethrows so callers surface the backend error. */
+  private mockOrRethrow<T>(factory: () => Observable<T>): Observable<T> {
+    return environment.useMockFallback
+      ? factory()
+      : throwError(() => new Error('Spending backend request failed and mock fallback is disabled.'));
+  }
+
+  /** Hides zero-amount/placeholder rows that the backend occasionally returns. */
+  private isDisplayableExpense(e: Expense): boolean {
+    return e.amount > 0 || (!!e.merchantName && e.merchantName !== '—' && e.merchantName !== '-');
   }
 
   /**
@@ -157,34 +80,34 @@ export class SpendingApiService {
   }> {
     return forkJoin({
       // Overview: try backend -> fallback to mock
-      overview: this.http.get<OverviewDto>(this.api('spending/overview'), { headers: this.devHeaders }).pipe(
-        catchError(() => this.http.get<OverviewDto>(this.mock('spending-overview')).pipe(catchError(() => of({} as OverviewDto))))
+      overview: this.backendGet<OverviewDto>('spending/overview').pipe(
+        catchError(() => this.mockOrRethrow(() => this.http.get<OverviewDto>(this.mock('spending-overview')).pipe(catchError(() => of({} as OverviewDto)))))
       ),
       // Categories: try backend -> fallback to mock
-      categoryList: this.http.get<CategoryListDto[]>(this.api('spending/categories'), { headers: this.devHeaders }).pipe(
-        catchError(() => this.http.get<CategoryListDto[]>(this.mock('spending-categories')).pipe(catchError(() => of([] as CategoryListDto[]))))
+      categoryList: this.backendGet<CategoryListDto[]>('spending/categories').pipe(
+        catchError(() => this.mockOrRethrow(() => this.http.get<CategoryListDto[]>(this.mock('spending-categories')).pipe(catchError(() => of([] as CategoryListDto[])))))
       ),
       // Expenses: try backend -> fallback to mock
-      expensesRaw: this.http.get<ExpensePageDto>(this.api('expenses?size=500'), { headers: this.devHeaders }).pipe(
+      expensesRaw: this.backendGet<ExpensePageDto>('expenses?size=500').pipe(
         map((res) => res?.content || []),
-        catchError(() => this.http.get<ExpenseListItemDto[]>(this.mock('expenses')).pipe(catchError(() => of([] as ExpenseListItemDto[]))))
+        catchError(() => this.mockOrRethrow(() => this.http.get<ExpenseListItemDto[]>(this.mock('expenses')).pipe(catchError(() => of([] as ExpenseListItemDto[])))))
       ),
       // Tags: try backend -> fallback to mock
-      tags: this.http.get<TagDto[]>(this.api('tags'), { headers: this.devHeaders }).pipe(
-        catchError(() => this.http.get<TagDto[]>(this.mock('tags')).pipe(catchError(() => of([] as TagDto[]))))
+      tags: this.backendGet<TagDto[]>('tags').pipe(
+        catchError(() => this.mockOrRethrow(() => this.http.get<TagDto[]>(this.mock('tags')).pipe(catchError(() => of([] as TagDto[])))))
       ),
       // Recurring: try backend -> fallback to mock
-      recurringExpenses: this.http.get<RecurringExpenseDto[]>(this.api('recurring-expenses'), { headers: this.devHeaders }).pipe(
-        catchError(() => this.http.get<RecurringExpenseDto[]>(this.mock('recurring-expenses')).pipe(catchError(() => of([] as RecurringExpenseDto[]))))
+      recurringExpenses: this.backendGet<RecurringExpenseDto[]>('recurring-expenses').pipe(
+        catchError(() => this.mockOrRethrow(() => this.http.get<RecurringExpenseDto[]>(this.mock('recurring-expenses')).pipe(catchError(() => of([] as RecurringExpenseDto[])))))
       ),
       // Alerts: try backend -> fallback to mock
-      alerts: this.http.get<SpendingAlertDto[]>(this.api('spending-alerts'), { headers: this.devHeaders }).pipe(
-        catchError(() => this.http.get<SpendingAlertDto[]>(this.mock('spending-alerts')).pipe(catchError(() => of([] as SpendingAlertDto[]))))
+      alerts: this.backendGet<SpendingAlertDto[]>('spending-alerts').pipe(
+        catchError(() => this.mockOrRethrow(() => this.http.get<SpendingAlertDto[]>(this.mock('spending-alerts')).pipe(catchError(() => of([] as SpendingAlertDto[])))))
       ),
-      // Trend Points fallback
-      mockTrendPoints: this.http.get<SpendingTrendPoint[]>(this.mock('spending-trend-points')).pipe(
-        catchError(() => of([] as SpendingTrendPoint[]))
-      )
+      // Trend Points fallback (mock-only; skipped when mock fallback is disabled)
+      mockTrendPoints: environment.useMockFallback
+        ? this.http.get<SpendingTrendPoint[]>(this.mock('spending-trend-points')).pipe(catchError(() => of([] as SpendingTrendPoint[])))
+        : of([] as SpendingTrendPoint[])
     }).pipe(
       map(({ overview, categoryList, expensesRaw, tags, recurringExpenses, alerts, mockTrendPoints }) => {
         const trendPoints = (overview?.trend && overview.trend.length > 0)
@@ -199,7 +122,7 @@ export class SpendingApiService {
           trendPoints,
           expenses: (expensesRaw || [])
             .map((e) => this.mapExpense(e))
-            .filter((e) => e.amount > 0 || (e.merchantName && e.merchantName !== '—' && e.merchantName !== '-')),
+            .filter((e) => this.isDisplayableExpense(e)),
           tags: (tags || []).map((t) => this.mapTag(t)),
           recurringExpenses: (recurringExpenses || []).map((r) => this.mapRecurring(r)),
           alerts: (alerts || []).map((a) => this.mapAlert(a))
@@ -211,20 +134,21 @@ export class SpendingApiService {
   // --- Expenses CRUD ---
 
   getExpenses(): Observable<Expense[]> {
-    return this.http
-      .get<ExpensePageDto>(this.api('expenses?size=500'), { headers: this.devHeaders })
+    return this.backendGet<ExpensePageDto>('expenses?size=500')
       .pipe(
         map((page) =>
           (page?.content || [])
             .map((e) => this.mapExpense(e))
-            .filter((e) => e.amount > 0 || (e.merchantName && e.merchantName !== '—' && e.merchantName !== '-'))
+            .filter((e) => this.isDisplayableExpense(e))
         ),
         catchError(() =>
-          this.http.get<ExpenseListItemDto[]>(this.mock('expenses')).pipe(
-            map((list) =>
-              (list || [])
-                .map((e) => this.mapExpense(e))
-                .filter((e) => e.amount > 0 || (e.merchantName && e.merchantName !== '—' && e.merchantName !== '-'))
+          this.mockOrRethrow(() =>
+            this.http.get<ExpenseListItemDto[]>(this.mock('expenses')).pipe(
+              map((list) =>
+                (list || [])
+                  .map((e) => this.mapExpense(e))
+                  .filter((e) => this.isDisplayableExpense(e))
+              )
             )
           )
         )
@@ -233,13 +157,15 @@ export class SpendingApiService {
 
   createExpense(payload: Partial<Expense>): Observable<Expense> {
     return this.http
-      .post<ExpenseCreateDto>(this.api('expenses'), this.toUpsertRequest(payload), { headers: this.devHeaders })
+      .post<ExpenseCreateDto>(this.api('expenses'), this.toUpsertRequest(payload))
       .pipe(
         map((res) => ({ ...(payload as Expense), id: String(res.transactionId || res.id || Date.now()) })),
         catchError(() =>
-          this.http
-            .post<Expense>(this.mock('expenses'), payload)
-            .pipe(map((res) => ({ ...payload, ...res } as Expense)))
+          this.mockOrRethrow(() =>
+            this.http
+              .post<Expense>(this.mock('expenses'), payload)
+              .pipe(map((res) => ({ ...payload, ...res } as Expense)))
+          )
         )
       );
   }
@@ -247,13 +173,15 @@ export class SpendingApiService {
   updateExpense(id: string, payload: Partial<Expense>): Observable<Expense> {
     const numericId = this.toId(id) || id;
     return this.http
-      .put(this.api(`expenses/${numericId}`), this.toUpsertRequest(payload), { headers: this.devHeaders })
+      .put(this.api(`expenses/${numericId}`), this.toUpsertRequest(payload))
       .pipe(
         map(() => ({ ...(payload as Expense), id })),
         catchError(() =>
-          this.http
-            .put<Expense>(this.mock(`expenses/${id}`), payload)
-            .pipe(map(() => ({ ...(payload as Expense), id })))
+          this.mockOrRethrow(() =>
+            this.http
+              .put<Expense>(this.mock(`expenses/${id}`), payload)
+              .pipe(map(() => ({ ...(payload as Expense), id })))
+          )
         )
       );
   }
@@ -261,36 +189,39 @@ export class SpendingApiService {
   deleteExpense(id: string): Observable<void> {
     const numericId = this.toId(id) || id;
     return this.http
-      .delete<void>(this.api(`expenses/${numericId}`), { headers: this.devHeaders })
+      .delete<void>(this.api(`expenses/${numericId}`))
       .pipe(
-        catchError(() => this.http.delete<void>(this.mock(`expenses/${id}`)))
+        catchError(() => this.mockOrRethrow(() => this.http.delete<void>(this.mock(`expenses/${id}`))))
       );
   }
 
   // --- Tags CRUD ---
 
   getTags(): Observable<Tag[]> {
-    return this.http
-      .get<TagDto[]>(this.api('tags'), { headers: this.devHeaders })
+    return this.backendGet<TagDto[]>('tags')
       .pipe(
         map((tags) => (tags || []).map((t) => this.mapTag(t))),
         catchError(() =>
-          this.http
-            .get<TagDto[]>(this.mock('tags'))
-            .pipe(map((tags) => (tags || []).map((t) => this.mapTag(t))))
+          this.mockOrRethrow(() =>
+            this.http
+              .get<TagDto[]>(this.mock('tags'))
+              .pipe(map((tags) => (tags || []).map((t) => this.mapTag(t))))
+          )
         )
       );
   }
 
   createTag(tag: Partial<Tag>): Observable<Tag> {
     return this.http
-      .post<TagDto>(this.api('tags'), tag, { headers: this.devHeaders })
+      .post<TagDto>(this.api('tags'), tag)
       .pipe(
         map((t) => this.mapTag(t)),
         catchError(() =>
-          this.http
-            .post<Tag>(this.mock('tags'), tag)
-            .pipe(map((t) => this.mapTag(t)))
+          this.mockOrRethrow(() =>
+            this.http
+              .post<Tag>(this.mock('tags'), tag)
+              .pipe(map((t) => this.mapTag(t)))
+          )
         )
       );
   }
@@ -298,36 +229,39 @@ export class SpendingApiService {
   deleteTag(id: string): Observable<void> {
     const numericId = this.toId(id) || id;
     return this.http
-      .delete<void>(this.api(`tags/${numericId}`), { headers: this.devHeaders })
+      .delete<void>(this.api(`tags/${numericId}`))
       .pipe(
-        catchError(() => this.http.delete<void>(this.mock(`tags/${id}`)))
+        catchError(() => this.mockOrRethrow(() => this.http.delete<void>(this.mock(`tags/${id}`))))
       );
   }
 
   // --- Recurring Expenses CRUD ---
 
   getRecurringExpenses(): Observable<RecurringExpense[]> {
-    return this.http
-      .get<RecurringExpenseDto[]>(this.api('recurring-expenses'), { headers: this.devHeaders })
+    return this.backendGet<RecurringExpenseDto[]>('recurring-expenses')
       .pipe(
         map((items) => (items || []).map((r) => this.mapRecurring(r))),
         catchError(() =>
-          this.http
-            .get<RecurringExpenseDto[]>(this.mock('recurring-expenses'))
-            .pipe(map((items) => (items || []).map((r) => this.mapRecurring(r))))
+          this.mockOrRethrow(() =>
+            this.http
+              .get<RecurringExpenseDto[]>(this.mock('recurring-expenses'))
+              .pipe(map((items) => (items || []).map((r) => this.mapRecurring(r))))
+          )
         )
       );
   }
 
   createRecurringExpense(item: Partial<RecurringExpense>): Observable<RecurringExpense> {
     return this.http
-      .post<RecurringExpenseDto>(this.api('recurring-expenses'), item, { headers: this.devHeaders })
+      .post<RecurringExpenseDto>(this.api('recurring-expenses'), item)
       .pipe(
         map((r) => this.mapRecurring(r)),
         catchError(() =>
-          this.http
-            .post<RecurringExpense>(this.mock('recurring-expenses'), item)
-            .pipe(map((r) => this.mapRecurring(r)))
+          this.mockOrRethrow(() =>
+            this.http
+              .post<RecurringExpense>(this.mock('recurring-expenses'), item)
+              .pipe(map((r) => this.mapRecurring(r)))
+          )
         )
       );
   }
@@ -335,13 +269,15 @@ export class SpendingApiService {
   updateRecurringExpense(id: string, item: Partial<RecurringExpense>): Observable<RecurringExpense> {
     const numericId = this.toId(id) || id;
     return this.http
-      .patch<RecurringExpenseDto>(this.api(`recurring-expenses/${numericId}`), item, { headers: this.devHeaders })
+      .patch<RecurringExpenseDto>(this.api(`recurring-expenses/${numericId}`), item)
       .pipe(
         map((r) => this.mapRecurring(r)),
         catchError(() =>
-          this.http
-            .patch<RecurringExpense>(this.mock(`recurring-expenses/${id}`), item)
-            .pipe(map((r) => this.mapRecurring(r)))
+          this.mockOrRethrow(() =>
+            this.http
+              .patch<RecurringExpense>(this.mock(`recurring-expenses/${id}`), item)
+              .pipe(map((r) => this.mapRecurring(r)))
+          )
         )
       );
   }
@@ -349,23 +285,24 @@ export class SpendingApiService {
   deleteRecurringExpense(id: string): Observable<void> {
     const numericId = this.toId(id) || id;
     return this.http
-      .delete<void>(this.api(`recurring-expenses/${numericId}`), { headers: this.devHeaders })
+      .delete<void>(this.api(`recurring-expenses/${numericId}`))
       .pipe(
-        catchError(() => this.http.delete<void>(this.mock(`recurring-expenses/${id}`)))
+        catchError(() => this.mockOrRethrow(() => this.http.delete<void>(this.mock(`recurring-expenses/${id}`))))
       );
   }
 
   // --- Alerts CRUD ---
 
   getAlerts(): Observable<SpendingAlert[]> {
-    return this.http
-      .get<SpendingAlertDto[]>(this.api('spending-alerts'), { headers: this.devHeaders })
+    return this.backendGet<SpendingAlertDto[]>('spending-alerts')
       .pipe(
         map((alerts) => (alerts || []).map((a) => this.mapAlert(a))),
         catchError(() =>
-          this.http
-            .get<SpendingAlertDto[]>(this.mock('spending-alerts'))
-            .pipe(map((alerts) => (alerts || []).map((a) => this.mapAlert(a))))
+          this.mockOrRethrow(() =>
+            this.http
+              .get<SpendingAlertDto[]>(this.mock('spending-alerts'))
+              .pipe(map((alerts) => (alerts || []).map((a) => this.mapAlert(a))))
+          )
         )
       );
   }
@@ -373,13 +310,15 @@ export class SpendingApiService {
   updateAlert(id: string, alert: Partial<SpendingAlert>): Observable<SpendingAlert> {
     const numericId = this.toId(id) || id;
     return this.http
-      .patch<SpendingAlertDto>(this.api(`spending-alerts/${numericId}`), alert, { headers: this.devHeaders })
+      .patch<SpendingAlertDto>(this.api(`spending-alerts/${numericId}`), alert)
       .pipe(
         map((a) => this.mapAlert(a)),
         catchError(() =>
-          this.http
-            .patch<SpendingAlert>(this.mock(`spending-alerts/${id}`), alert)
-            .pipe(map((a) => this.mapAlert(a)))
+          this.mockOrRethrow(() =>
+            this.http
+              .patch<SpendingAlert>(this.mock(`spending-alerts/${id}`), alert)
+              .pipe(map((a) => this.mapAlert(a)))
+          )
         )
       );
   }
@@ -387,9 +326,9 @@ export class SpendingApiService {
   deleteAlert(id: string): Observable<void> {
     const numericId = this.toId(id) || id;
     return this.http
-      .delete<void>(this.api(`spending-alerts/${numericId}`), { headers: this.devHeaders })
+      .delete<void>(this.api(`spending-alerts/${numericId}`))
       .pipe(
-        catchError(() => this.http.delete<void>(this.mock(`spending-alerts/${id}`)))
+        catchError(() => this.mockOrRethrow(() => this.http.delete<void>(this.mock(`spending-alerts/${id}`))))
       );
   }
 
@@ -432,15 +371,23 @@ export class SpendingApiService {
   }
 
   private mapOverview(dto: OverviewDto): SpendingOverviewData {
+    const totalSpending: number = Number(dto.totalSpending) || 0;
+    const budgetTotal: number = Number(dto.budgetTotal) || 0;
+    const budgetUsedPercentage: number = dto.budgetUsedPercentage != null
+      ? Number(dto.budgetUsedPercentage)
+      : (budgetTotal > 0 ? Math.min(100, Math.round((totalSpending / budgetTotal) * 100)) : 0);
+
     return {
-      totalSpending: Number(dto.totalSpending) || 0,
+      totalSpending,
       spendingGrowthPercentage: Number(dto.spendingGrowthPercentage) || 0,
       transactionsCount: dto.transactionsCount || dto.transactionCount || 0,
       transactionsGrowthCount: dto.transactionsGrowthCount || 0,
       averageDaily: Number(dto.averageDaily) || 0,
       averageDailyGrowthPercentage: Number(dto.averageDailyGrowthPercentage) || 0,
       topCategoryName: dto.topCategory?.categoryName || dto.topCategoryName || '—',
-      topCategoryAmount: Number(dto.topCategory?.amount) || Number(dto.topCategoryAmount) || 0
+      topCategoryAmount: Number(dto.topCategory?.amount) || Number(dto.topCategoryAmount) || 0,
+      budgetTotal,
+      budgetUsedPercentage
     };
   }
 

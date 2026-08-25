@@ -8,7 +8,9 @@ import { combineLatest, Observable } from 'rxjs';
 import { SpendingFacade } from '../../facades/spending.facade';
 import { Expense } from '../../models/expense.model';
 import { SpendingCategoryItem } from '../../models/spending-summary.model';
+import { DayDetailsStats } from '../../models/day-details.model';
 import { exportExpensesToCsv, formatPaymentMethod } from '../../utility/spending.helpers';
+import { computeDayDetailsStats } from '../../utility/spending.calculations';
 import { DoughnutChart } from '../../../../shared/charts/doughnut-chart/doughnut-chart';
 import { ExpenseDetailsDrawerComponent } from '../../components/expense-details-drawer/expense-details-drawer.component';
 import { AddExpenseModalComponent } from '../../components/add-expense-modal/add-expense-modal.component';
@@ -53,59 +55,35 @@ export class DayDetailsComponent implements OnInit {
   showDetailsDrawer: boolean = false;
   showAddModal: boolean = false;
   activeExpense: Expense | null = null;
-  private categories: SpendingCategoryItem[] = [];
 
   ngOnInit(): void {
     this.spendingFacade.loadDashboard();
-    combineLatest([this.route.paramMap, this.spendingFacade.allExpenses$, this.categories$])
+    combineLatest([this.route.paramMap, this.spendingFacade.allExpenses$])
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(([params, expenses, categories]) => {
+      .subscribe(([params, expenses]) => {
         this.selectedDate = params.get('date') || new Date().toISOString().split('T')[0];
-        this.categories = categories || [];
         this.dayExpenses = (expenses || []).filter((e) => e.date === this.selectedDate);
         this.recompute();
       });
   }
 
   private recompute(): void {
-    this.totalSpent = this.dayExpenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
-    this.transactionCount = this.dayExpenses.length;
+    const stats: DayDetailsStats = computeDayDetailsStats(this.dayExpenses);
+    this.totalSpent = stats.totalSpent;
+    this.transactionCount = stats.transactionCount;
+    this.topMerchant = stats.topMerchant;
+    this.topCategory = stats.topCategory;
 
-    const merchantMap = new Map<string, number>();
-    const categoryMap = new Map<string, { amount: number; color: string }>();
-    for (const e of this.dayExpenses) {
-      merchantMap.set(e.merchantName, (merchantMap.get(e.merchantName) || 0) + (Number(e.amount) || 0));
-      const cat = categoryMap.get(e.categoryName) || { amount: 0, color: e.categoryColor || '#3B82F6' };
-      cat.amount += Number(e.amount) || 0;
-      categoryMap.set(e.categoryName, cat);
-    }
-
-    this.topMerchant = this.topKey(merchantMap) || '—';
-    const topCatEntry = Array.from(categoryMap.entries()).sort((a, b) => b[1].amount - a[1].amount)[0];
-    this.topCategory = topCatEntry ? topCatEntry[0] : '—';
-
-    this.categoryLabels = Array.from(categoryMap.keys());
+    this.categoryLabels = stats.categoryLabels;
     this.categoryDatasets = [
       {
-        data: Array.from(categoryMap.values()).map((c) => Number(c.amount.toFixed(2))),
-        backgroundColor: Array.from(categoryMap.values()).map((c) => c.color),
+        data: stats.categoryAmounts,
+        backgroundColor: stats.categoryColors,
         borderWidth: 2,
         borderColor: '#ffffff'
       }
     ];
-    this.categoryTotal = this.totalSpent;
-  }
-
-  private topKey(map: Map<string, number>): string {
-    let key = '';
-    let max = -Infinity;
-    for (const [k, v] of map.entries()) {
-      if (v > max) {
-        max = v;
-        key = k;
-      }
-    }
-    return key;
+    this.categoryTotal = stats.totalSpent;
   }
 
   formatPayment(method?: string): string {

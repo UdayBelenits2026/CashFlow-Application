@@ -29,11 +29,6 @@ export const navigationList: SideNavItem[] = [
     route: '/income',
     children: [
       {
-        label: 'Overview',
-        route: '/income/overview',
-        exact: true,
-      },
-      {
         label: 'Dashboard',
         route: '/income/dashboard',
         exact: true,
@@ -66,11 +61,6 @@ export const navigationList: SideNavItem[] = [
       {
         label: 'Trends',
         route: '/income/trends',
-        exact: true,
-      },
-      {
-        label: 'Insights',
-        route: '/income/insights',
         exact: true,
       },
     ],

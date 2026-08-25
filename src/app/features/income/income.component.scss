@@ -22,6 +22,27 @@
   font-weight: $font-weight-semibold;
 }
 
+.income-success-toast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-4;
+  margin: $spacing-4 $spacing-6 0;
+  padding: $spacing-3 $spacing-4;
+  border-radius: $radius-md;
+  background: $color-success-bg;
+  border: $border-width-sm solid rgba(25, 169, 116, 0.25);
+  color: $color-success;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  animation: toastSlideIn 0.2s ease-out;
+}
+
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .toast-close {
   background: none;
   border: none;
@@ -32,13 +53,15 @@
 }
 
 @include respond-max($bp-840) {
-  .income-error-toast {
+  .income-error-toast,
+  .income-success-toast {
     margin: $spacing-4 $spacing-4 0;
   }
 }
 
 @include respond-max($bp-480) {
-  .income-error-toast {
+  .income-error-toast,
+  .income-success-toast {
     margin: $spacing-3 $spacing-3 0;
     flex-direction: column;
     align-items: flex-start;

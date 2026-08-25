@@ -38,13 +38,13 @@
 
       <!-- Days Grid -->
       <div class="days-grid">
-        @for (day of calendarDays; track day.dateString) {
+        @for (day of calendarDays(); track day.dateString) {
           <div
             class="day-cell"
             [ngClass]="{
               'not-current-month': !day.isCurrentMonth,
               'today': day.isToday,
-              'selected': selectedDay?.dateString === day.dateString,
+              'selected': selectedDay()?.dateString === day.dateString,
               'has-expenses': day.expenses.length > 0
             }"
             [class.sev-low]="severityClass(day.totalSpending) === 'sev-low'"
@@ -75,11 +75,11 @@
     <div class="day-details-card">
       <div class="details-header">
         <div class="d-header-top">
-          <h3 class="d-title">{{ selectedDay?.date | date:'fullDate' }}</h3>
+          <h3 class="d-title">{{ selectedDay()?.date | date:'fullDate' }}</h3>
           <button
             type="button"
             class="btn-export-day"
-            [disabled]="!selectedDay?.expenses?.length"
+            [disabled]="!selectedDay()?.expenses?.length"
             (click)="exportDayReport()"
             title="Download day transactions as CSV"
           >
@@ -94,41 +94,43 @@
 
         <div class="daily-total-banner">
           <span class="dt-label">Daily Outflow</span>
-          <span class="dt-amount">₹{{ (selectedDay?.totalSpending || 0) | number:'1.2-2' }}</span>
+          <span class="dt-amount">₹{{ (selectedDay()?.totalSpending || 0) | number:'1.2-2' }}</span>
         </div>
 
-        @if (selectedDay) {
-          <a class="btn-day-details" [routerLink]="['/spending/day-details', selectedDay.dateString]">
+        @if (selectedDay(); as sel) {
+          <a class="btn-day-details" [routerLink]="['/spending/day-details', sel.dateString]">
             View Full Day Details →
           </a>
         }
       </div>
 
       <div class="day-expenses-list">
-        @if (selectedDay && selectedDay.expenses.length > 0) {
-          <div class="list-container">
-            @for (exp of selectedDay.expenses; track exp.id) {
-              <div class="day-expense-item" (click)="openExpenseDetails(exp)">
-                <div class="de-left">
-                  <div class="de-avatar">{{ (exp.merchantName || 'E').charAt(0).toUpperCase() }}</div>
-                  <div class="de-info">
-                    <span class="de-merchant">{{ exp.merchantName || 'Unnamed Expense' }}</span>
-                    <span class="de-cat">{{ exp.categoryName }} • {{ exp.accountName }}</span>
+        @if (selectedDay(); as sel) {
+          @if (sel.expenses.length > 0) {
+            <div class="list-container">
+              @for (exp of sel.expenses; track exp.id) {
+                <div class="day-expense-item" (click)="openExpenseDetails(exp)">
+                  <div class="de-left">
+                    <div class="de-avatar">{{ (exp.merchantName || 'E').charAt(0).toUpperCase() }}</div>
+                    <div class="de-info">
+                      <span class="de-merchant">{{ exp.merchantName || 'Unnamed Expense' }}</span>
+                      <span class="de-cat">{{ exp.categoryName }} • {{ exp.accountName }}</span>
+                    </div>
+                  </div>
+                  <div class="de-right">
+                    <span class="de-amt">-₹{{ exp.amount | number:'1.2-2' }}</span>
+                    <span class="arrow-icon">&rarr;</span>
                   </div>
                 </div>
-                <div class="de-right">
-                  <span class="de-amt">-₹{{ exp.amount | number:'1.2-2' }}</span>
-                  <span class="arrow-icon">&rarr;</span>
-                </div>
-              </div>
-            }
-          </div>
-        } @else {
-          <div class="empty-day">
-            <div class="empty-day-icon">🌿</div>
-            <h4>Zero expenses recorded</h4>
-            <p>No transactions were made on this day.</p>
-          </div>
+              }
+            </div>
+          } @else {
+            <div class="empty-day">
+              <div class="empty-day-icon">🌿</div>
+              <h4>Zero expenses recorded</h4>
+              <p>No transactions were made on this day.</p>
+            </div>
+          }
         }
       </div>
     </div>

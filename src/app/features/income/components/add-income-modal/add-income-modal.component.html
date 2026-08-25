@@ -16,13 +16,13 @@
 
     <!-- Wizard Progress Bar -->
     <div class="wizard-progress">
-      <div class="progress-step" [ngClass]="{ active: currentStep() >= 1, current: currentStep() === 1 }">
-        <span class="step-num">1</span>
+      <div class="progress-step" [ngClass]="{ active: currentStep() >= 1, current: currentStep() === 1, completed: currentStep() > 1 }">
+        <span class="step-num">@if (currentStep() > 1) { ✓ } @else { 1 }</span>
         <span class="step-label">Details</span>
       </div>
       <div class="progress-bar" [ngClass]="{ filled: currentStep() >= 2 }"></div>
-      <div class="progress-step" [ngClass]="{ active: currentStep() >= 2, current: currentStep() === 2 }">
-        <span class="step-num">2</span>
+      <div class="progress-step" [ngClass]="{ active: currentStep() >= 2, current: currentStep() === 2, completed: currentStep() > 2 }">
+        <span class="step-num">@if (currentStep() > 2) { ✓ } @else { 2 }</span>
         <span class="step-label">Income Source</span>
       </div>
       <div class="progress-bar" [ngClass]="{ filled: currentStep() >= 3 }"></div>
@@ -37,6 +37,12 @@
       <!-- ================= STEP 1: DETAILS ================= -->
       @if (currentStep() === 1) {
         <div class="step-content">
+          @if (noAccounts()) {
+            <div class="guard-banner" role="alert">
+              <span>Add an account before recording income.</span>
+              <span class="guard-sub">You need at least one active account to receive income into.</span>
+            </div>
+          }
           <div class="form-group">
             <label class="form-label">Destination Account *</label>
             <select class="form-input" formControlName="accountId">
@@ -44,7 +50,11 @@
                 <option [value]="acc.id">{{ acc.name }} (••••{{ acc.accountNumberLast4 }}) - Balance: ₹{{ acc.balance | number:'1.2-2' }}</option>
               }
             </select>
-            <span class="help-text">Select the active user bank account where funds were received.</span>
+            @if (incomeForm.get('accountId')?.touched && incomeForm.get('accountId')?.errors?.['required']) {
+              <span class="error-text">Select an account.</span>
+            } @else {
+              <span class="help-text">Select the active user bank account where funds were received.</span>
+            }
           </div>
 
           <div class="form-row">
@@ -60,11 +70,13 @@
                   formControlName="amount"
                 />
               </div>
-              @if (incomeForm.get('amount')?.touched && incomeForm.get('amount')?.errors?.['required']) {
-                <span class="error-text">Amount is required.</span>
-              }
-              @if (incomeForm.get('amount')?.touched && incomeForm.get('amount')?.errors?.['min']) {
-                <span class="error-text">Enter an amount greater than 0.</span>
+              @if (incomeForm.get('amount')?.touched && incomeForm.get('amount')?.errors; as e) {
+                @if (e['required']) { <span class="error-text">Enter an income amount.</span> }
+                @else if (e['invalidNumber']) { <span class="error-text">Enter a valid numeric amount.</span> }
+                @else if (e['negative']) { <span class="error-text">Income amount cannot be negative.</span> }
+                @else if (e['zero']) { <span class="error-text">Income amount must be greater than ₹0.00.</span> }
+                @else if (e['decimals']) { <span class="error-text">Enter no more than two decimal places.</span> }
+                @else if (e['max']) { <span class="error-text">Income amount exceeds the allowed limit.</span> }
               }
             </div>
 
@@ -72,7 +84,7 @@
               <label class="form-label">Transaction Date *</label>
               <input type="date" class="form-input" formControlName="date" />
               @if (incomeForm.get('date')?.touched && incomeForm.get('date')?.errors?.['required']) {
-                <span class="error-text">Date is required.</span>
+                <span class="error-text">Select an income date.</span>
               }
             </div>
           </div>
@@ -82,11 +94,13 @@
             <input
               type="text"
               class="form-input"
+              maxlength="100"
               placeholder="e.g. Monthly Salary Payout, Freelance Project Payment"
               formControlName="description"
             />
-            @if (incomeForm.get('description')?.touched && incomeForm.get('description')?.errors?.['required']) {
-              <span class="error-text">Description is required.</span>
+            @if (incomeForm.get('description')?.touched && incomeForm.get('description')?.errors; as e) {
+              @if (e['required']) { <span class="error-text">Enter a description.</span> }
+              @else if (e['maxlength']) { <span class="error-text">Description cannot exceed 100 characters.</span> }
             }
           </div>
 
@@ -95,9 +109,13 @@
             <textarea
               class="form-textarea"
               rows="2"
+              maxlength="500"
               placeholder="Additional client/employer or reference notes"
               formControlName="notes"
             ></textarea>
+            @if (incomeForm.get('notes')?.touched && incomeForm.get('notes')?.errors?.['maxlength']) {
+              <span class="error-text">Notes cannot exceed 500 characters.</span>
+            }
           </div>
 
           <div class="form-row checkbox-row">
@@ -131,7 +149,7 @@
                   [ngClass]="{ selected: selectedSourceId() === src.id }"
                   (click)="onSelectSource(src)"
                 >
-                  <div class="source-color-dot" [style.backgroundColor]="src.color || '#10B981'"></div>
+                  <div class="source-color-dot" [style.backgroundColor]="src.color || '#2563EB'"></div>
                   <div class="source-option-details">
                     <span class="source-option-name">{{ src.name }}</span>
                     <span class="source-option-type">{{ src.type }}</span>
@@ -149,9 +167,16 @@
                 <input
                   type="text"
                   class="form-input"
+                  maxlength="50"
                   placeholder="e.g. YouTube AdSense, Consulting Retainer"
                   formControlName="newSourceName"
                 />
+                @if (isDuplicateSourceName()) {
+                  <span class="error-text">An income source with this name already exists.</span>
+                } @else if (newSourceForm.get('newSourceName')?.touched && newSourceForm.get('newSourceName')?.errors; as e) {
+                  @if (e['required']) { <span class="error-text">Enter a source name.</span> }
+                  @else if (e['minlength']) { <span class="error-text">Source name must be at least 2 characters.</span> }
+                }
               </div>
 
               <div class="form-group">
@@ -172,6 +197,51 @@
                   formControlName="newSourceDescription"
                 />
               </div>
+
+              <div class="form-row checkbox-row">
+                <label class="checkbox-label">
+                  <input type="checkbox" formControlName="newSourceTaxable" />
+                  <span>Taxable</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" formControlName="newSourceRecurring" />
+                  <span>Recurring Schedule</span>
+                </label>
+              </div>
+
+              @if (newSourceForm.get('newSourceRecurring')?.value) {
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label class="form-label">Frequency *</label>
+                    <select class="form-input" formControlName="newSourceFrequency">
+                      <option value="WEEKLY">Weekly</option>
+                      <option value="BI_WEEKLY">Biweekly</option>
+                      <option value="MONTHLY">Monthly</option>
+                      <option value="QUARTERLY">Quarterly</option>
+                      <option value="ANNUALLY">Yearly</option>
+                    </select>
+                    @if (newSourceForm.get('newSourceFrequency')?.touched && newSourceForm.get('newSourceFrequency')?.errors?.['required']) {
+                      <span class="error-text">Select a frequency.</span>
+                    }
+                  </div>
+                  <div class="form-group flex-1">
+                    <label class="form-label">Expected Amount (₹) *</label>
+                    <input type="number" step="0.01" class="form-input" placeholder="0.00" formControlName="newSourceExpectedAmount" />
+                    @if (newSourceForm.get('newSourceExpectedAmount')?.touched && newSourceForm.get('newSourceExpectedAmount')?.errors; as e) {
+                      @if (e['required']) { <span class="error-text">Enter an expected amount.</span> }
+                      @else if (e['zero'] || e['negative']) { <span class="error-text">Amount must be greater than ₹0.00.</span> }
+                      @else if (e['decimals']) { <span class="error-text">Enter no more than two decimal places.</span> }
+                    }
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Next Income Date *</label>
+                  <input type="date" class="form-input" formControlName="newSourceNextDate" />
+                  @if (newSourceForm.get('newSourceNextDate')?.touched && newSourceForm.get('newSourceNextDate')?.errors?.['required']) {
+                    <span class="error-text">Select the next expected date.</span>
+                  }
+                </div>
+              }
             </form>
           }
         </div>
@@ -235,12 +305,12 @@
         }
 
         @if (currentStep() < 3) {
-          <button type="button" class="btn-primary" (click)="goToNextStep()">
+          <button type="button" class="btn-primary" (click)="goToNextStep()" [disabled]="currentStep() === 1 && noAccounts()">
             Next →
           </button>
         } @else {
-          <button type="button" class="btn-primary" (click)="onSubmit()">
-            {{ isEditMode() ? 'Save Changes' : 'Confirm & Save Income' }}
+          <button type="button" class="btn-primary" (click)="onSubmit()" [disabled]="isSaving()">
+            {{ isSaving() ? 'Saving…' : (isEditMode() ? 'Save Changes' : 'Confirm & Save Income') }}
           </button>
         }
       </div>

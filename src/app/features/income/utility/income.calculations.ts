@@ -1,17 +1,26 @@
 import { Income } from '../models/income.model';
-import { IncomeSource } from '../models/income-source.model';
+import { IncomeSource, IncomeSourceType } from '../models/income-source.model';
 import { RecurringIncome } from '../models/recurring-income.model';
 import {
   IncomeOverviewData,
   IncomeSourceReportItem,
   UpcomingIncomeItem,
-  IncomeInsight,
-  IncomeTrendPoint
+  IncomeTrendPoint,
+  ReportPeriod
 } from '../models/income-summary.model';
 import { IncomeCalendarDay, IncomeCalendarItem } from '../models/income-calendar.model';
 import { getSourceTypeColor } from './income.helpers';
+import { MS_PER_DAY } from './income.constants';
 
 const DAYS_IN_MONTH = 31;
+
+/** Formats a Date to a local YYYY-MM-DD string (avoids UTC day-shift from toISOString). */
+function toLocalDateStr(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
 
 /**
  * Recalculates the high-level overview metrics and source breakdown.
@@ -160,7 +169,7 @@ export function computeSourceReportItems(incomes: Income[], sources: IncomeSourc
   const recordedIncomes = incomes.filter((i) => i.status === 'RECORDED');
   const total = recordedIncomes.reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
 
-  const breakdownMap: { [sourceName: string]: { amount: number; count: number; type: any; color: string; id: string } } = {};
+  const breakdownMap: { [sourceName: string]: { amount: number; count: number; type: IncomeSourceType; color: string; id: string } } = {};
 
   for (const src of sources) {
     breakdownMap[src.name] = {
@@ -227,7 +236,7 @@ export function computeCalendarDays(
   for (let i = startDayOfWeek - 1; i >= 0; i--) {
     const dayNum = prevMonthLastDay - i;
     const prevMonthDate = new Date(year, month - 2, dayNum);
-    const dateStr = prevMonthDate.toISOString().split('T')[0];
+    const dateStr = toLocalDateStr(prevMonthDate);
     days.push({
       date: dateStr,
       dayNumber: dayNum,
@@ -242,12 +251,12 @@ export function computeCalendarDays(
     });
   }
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = toLocalDateStr(new Date());
 
   // Current month days
   for (let dayNum = 1; dayNum <= numDaysInMonth; dayNum++) {
     const currentDate = new Date(year, month - 1, dayNum);
-    const dateStr = currentDate.toISOString().split('T')[0];
+    const dateStr = toLocalDateStr(currentDate);
 
     const dayRecorded = recordedIncomes
       .filter((inc) => inc.status === 'RECORDED' && inc.date === dateStr)
@@ -303,7 +312,7 @@ export function computeCalendarDays(
   const remainingCells = (7 - (days.length % 7)) % 7;
   for (let i = 1; i <= remainingCells; i++) {
     const nextMonthDate = new Date(year, month, i);
-    const dateStr = nextMonthDate.toISOString().split('T')[0];
+    const dateStr = toLocalDateStr(nextMonthDate);
     days.push({
       date: dateStr,
       dayNumber: i,
@@ -322,65 +331,56 @@ export function computeCalendarDays(
 }
 
 /**
- * Generates dynamic smart insights based on income state.
+ * Whole-day difference between a recurring item's next date and today (null when unset; negative = overdue).
  */
-export function deriveIncomeInsights(
-  incomes: Income[],
-  overview: IncomeOverviewData | null,
-  sources: IncomeSource[],
-  recurring: RecurringIncome[]
-): IncomeInsight[] {
-  const insights: IncomeInsight[] = [];
-  const recorded = incomes.filter((i) => i.status === 'RECORDED');
-  const total = recorded.reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
-
-  if (overview && overview.incomeGrowthPercentage > 0) {
-    insights.push({
-      id: 'ins-1',
-      title: 'Income Growth on Track',
-      description: `Your income is up ${overview.incomeGrowthPercentage}% compared to the previous period.`,
-      type: 'positive',
-      icon: 'fa-solid fa-arrow-trend-up',
-      metric: `+${overview.incomeGrowthPercentage}%`
-    });
-  }
-
-  if (overview && overview.topSourceName) {
-    insights.push({
-      id: 'ins-2',
-      title: 'Primary Revenue Stream',
-      description: `${overview.topSourceName} makes up ${overview.topSourcePercentage}% of your total earnings this month.`,
-      type: 'info',
-      icon: 'fa-solid fa-chart-pie',
-      metric: `${overview.topSourcePercentage}%`
-    });
-  }
-
-  const activeRecurring = recurring.filter((r) => r.status === 'ACTIVE');
-  if (activeRecurring.length > 0) {
-    const totalExpected = activeRecurring.reduce((sum, r) => sum + r.expectedAmount, 0);
-    insights.push({
-      id: 'ins-3',
-      title: 'Predictable Monthly Cash Flow',
-      description: `You have ${activeRecurring.length} active recurring schedules providing ₹${totalExpected.toLocaleString()} in expected baseline income.`,
-      type: 'positive',
-      icon: 'fa-solid fa-repeat',
-      metric: `₹${totalExpected.toLocaleString()}`
-    });
-  }
-
-  const taxableTotal = recorded.filter((i) => i.taxable).reduce((sum, i) => sum + i.amount, 0);
-  if (taxableTotal > 0 && total > 0) {
-    const taxablePct = Math.round((taxableTotal / total) * 100);
-    insights.push({
-      id: 'ins-4',
-      title: 'Taxable Income Ratio',
-      description: `${taxablePct}% of your received income is designated as taxable. Consider allocating for quarterly tax estimated payments.`,
-      type: 'neutral',
-      icon: 'fa-solid fa-file-invoice-dollar',
-      metric: `${taxablePct}%`
-    });
-  }
-
-  return insights;
+export function getDaysUntilNextIncome(nextIncomeDate?: string | null): number | null {
+  if (!nextIncomeDate) return null;
+  const startOfDay = (d: Date): number => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const diffMs = startOfDay(new Date(nextIncomeDate)) - startOfDay(new Date());
+  return Math.round(diffMs / MS_PER_DAY);
 }
+
+/** Sum of expected amounts for active recurring items due within the next 30 days. */
+export function getNext30DaysRecurringTotal(items: RecurringIncome[]): number {
+  const today = new Date();
+  const in30Days = new Date();
+  in30Days.setDate(today.getDate() + 30);
+
+  return items
+    .filter((r) => {
+      if (r.status !== 'ACTIVE' || !r.nextIncomeDate) return false;
+      const d = new Date(r.nextIncomeDate);
+      return d >= today && d <= in30Days;
+    })
+    .reduce((sum, r) => sum + r.expectedAmount, 0);
+}
+
+/** Urgency tone for a recurring item's next occurrence. */
+export function getRecurringNextTone(item: RecurringIncome): 'overdue' | 'soon' | 'normal' | 'none' {
+  if (item.status !== 'ACTIVE') return 'none';
+  const days = getDaysUntilNextIncome(item.nextIncomeDate);
+  if (days === null) return 'none';
+  if (days < 0) return 'overdue';
+  if (days <= 7) return 'soon';
+  return 'normal';
+}
+
+/** Resolves the calendar date range for a report period, relative to a reference date. */
+export function getReportPeriodRange(period: ReportPeriod, ref: Date = new Date()): { start: Date; end: Date } {
+  const y = ref.getFullYear();
+  const m = ref.getMonth();
+  switch (period) {
+    case 'LAST_MONTH':
+      return { start: new Date(y, m - 1, 1), end: new Date(y, m, 0) };
+    case 'THIS_QUARTER': {
+      const qStart = Math.floor(m / 3) * 3;
+      return { start: new Date(y, qStart, 1), end: new Date(y, qStart + 3, 0) };
+    }
+    case 'THIS_YEAR':
+      return { start: new Date(y, 0, 1), end: new Date(y, 11, 31) };
+    case 'THIS_MONTH':
+    default:
+      return { start: new Date(y, m, 1), end: new Date(y, m + 1, 0) };
+  }
+}
+

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom, Observable } from 'rxjs';
@@ -27,7 +27,8 @@ import { SplitExpenseModalComponent } from '../../components/split-expense-modal
     SplitExpenseModalComponent
   ],
   templateUrl: './all-expenses.component.html',
-  styleUrl: './all-expenses.component.scss'
+  styleUrl: './all-expenses.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AllExpensesComponent implements OnInit {
   private readonly spendingFacade: SpendingFacade = inject(SpendingFacade);

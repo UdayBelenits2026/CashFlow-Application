@@ -1,4 +1,4 @@
-import { Component, input, output, InputSignal, OutputEmitterRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, InputSignal, OutputEmitterRef } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { IncomeSource } from '../../models/income-source.model';
 import { Income } from '../../models/income.model';
@@ -8,7 +8,8 @@ import { Income } from '../../models/income.model';
   standalone: true,
   imports: [CommonModule, DatePipe, DecimalPipe],
   templateUrl: './income-source-details-drawer.component.html',
-  styleUrl: './income-source-details-drawer.component.scss'
+  styleUrl: './income-source-details-drawer.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IncomeSourceDetailsDrawerComponent {
   readonly source: InputSignal<IncomeSource | null> = input<IncomeSource | null>(null);

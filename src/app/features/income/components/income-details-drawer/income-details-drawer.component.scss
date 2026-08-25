@@ -32,18 +32,40 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+  gap: $spacing-3;
 }
 
 .header-left {
   display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  min-width: 0;
+}
+
+.source-avatar {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  line-height: 1;
+}
+
+.header-text {
+  display: flex;
   flex-direction: column;
-  gap: $spacing-1;
+  gap: 2px;
+  min-width: 0;
 }
 
 .tx-badge {
   font-size: 11px;
   font-weight: $font-weight-bold;
-  color: #10B981;
+  color: #2563EB;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -53,17 +75,25 @@
   font-weight: $font-weight-bold;
   color: $color-text-primary;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .btn-close {
+  flex-shrink: 0;
   background: transparent;
   border: none;
   color: $color-text-muted;
   cursor: pointer;
   padding: $spacing-1;
+  border-radius: $radius-sm;
+  display: flex;
+  transition: all $transition-fast;
 
   &:hover {
     color: $color-text-primary;
+    background: $color-background;
   }
 }
 
@@ -77,20 +107,20 @@
 }
 
 .hero-amount-box {
-  background: #ECFDF5;
-  border: 1px solid #A7F3D0;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1px solid #BFDBFE;
   border-radius: $radius-lg;
-  padding: $spacing-5;
+  padding: $spacing-6 $spacing-5;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $spacing-1;
+  gap: $spacing-2;
 }
 
 .hero-label {
   font-size: $font-size-xs;
-  color: #047857;
+  color: #1E40AF;
   text-transform: uppercase;
   font-weight: $font-weight-semibold;
   letter-spacing: 0.05em;
@@ -99,69 +129,130 @@
 .hero-amount {
   font-size: $font-size-3xl;
   font-weight: $font-weight-bold;
-  color: #059669;
+  color: #1D4ED8;
   letter-spacing: -0.02em;
 }
 
-.hero-status {
-  font-size: 11px;
-  font-weight: $font-weight-semibold;
-  color: #065F46;
-  display: flex;
+.status-pill {
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-}
+  gap: 5px;
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  margin-top: $spacing-1;
 
-.status-dot {
-  font-size: 8px;
+  .status-dot {
+    font-size: 8px;
+  }
+
+  &.status-recorded {
+    background: rgba(37, 99, 235, 0.12);
+    color: #1D4ED8;
+  }
+
+  &.status-cleared {
+    background: rgba(22, 163, 74, 0.12);
+    color: #15803D;
+  }
+
+  &.status-pending {
+    background: rgba(217, 119, 6, 0.12);
+    color: #B45309;
+  }
+
+  &.status-cancelled {
+    background: rgba(220, 38, 38, 0.12);
+    color: #DC2626;
+  }
 }
 
 .section-title {
   font-size: $font-size-sm;
   font-weight: $font-weight-bold;
   color: $color-text-primary;
-  margin: 0 0 $spacing-3 0;
+  margin: 0 0 $spacing-2 0;
 }
 
-.details-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-3;
+.detail-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-.detail-item {
+.detail-row {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-4;
+  padding: $spacing-3 0;
+  border-bottom: 1px solid $color-border;
 
-  &.full-width {
-    grid-column: span 2;
+  &:last-child {
+    border-bottom: none;
   }
 }
 
 .detail-label {
-  font-size: 11px;
+  font-size: $font-size-xs;
   color: $color-text-muted;
+  flex-shrink: 0;
 }
 
 .detail-val {
-  font-size: $font-size-xs;
+  font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   color: $color-text-primary;
+  text-align: right;
 }
 
 .source-pill {
   display: inline-block;
-  align-self: flex-start;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 9999px;
 }
 
+.tax-pill {
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 3px 10px;
+  border-radius: 9999px;
+
+  &.taxable {
+    background: rgba(217, 119, 6, 0.12);
+    color: #B45309;
+  }
+
+  &.non-taxable {
+    background: rgba(22, 163, 74, 0.12);
+    color: #15803D;
+  }
+}
+
+.notes-block {
+  margin-top: $spacing-4;
+  padding: $spacing-3 $spacing-4;
+  background: $color-background;
+  border-radius: $radius-md;
+  border: 1px solid $color-border;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+}
+
 .notes-text {
+  margin: 0;
+  font-size: $font-size-sm;
   font-style: italic;
   color: $color-text-secondary;
+  line-height: 1.5;
 }
 
 .drawer-footer {
@@ -177,7 +268,7 @@
   align-items: center;
   justify-content: center;
   gap: $spacing-2;
-  padding: $spacing-2 $spacing-3;
+  padding: $spacing-3 $spacing-3;
   border-radius: $radius-md;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
@@ -186,16 +277,18 @@
 }
 
 .btn-edit {
-  background: $color-card;
-  border: 1px solid $color-border;
-  color: $color-text-primary;
+  background: #2563EB;
+  border: 1px solid #2563EB;
+  color: #FFFFFF;
 
   &:hover {
-    background: $color-background;
+    background: #1D4ED8;
+    border-color: #1D4ED8;
   }
 }
 
 .btn-delete {
+  flex: 0 0 auto;
   background: #FFF1F2;
   border: 1px solid #FECDD3;
   color: #DC2626;

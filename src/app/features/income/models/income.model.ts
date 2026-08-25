@@ -2,6 +2,8 @@ import { IncomeSourceType } from './income-source.model';
 
 export type IncomeTransactionStatus = 'RECORDED' | 'PENDING' | 'CLEARED' | 'CANCELLED';
 
+export type SortField = 'date' | 'amount' | 'source' | 'description';
+
 export interface Income {
   id: string;
   userId?: string;

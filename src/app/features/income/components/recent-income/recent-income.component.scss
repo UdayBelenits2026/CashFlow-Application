@@ -6,6 +6,8 @@
   border-radius: $radius-lg;
   padding: $spacing-5;
   box-shadow: $shadow-sm;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .card-header {
@@ -23,23 +25,31 @@
 }
 
 .card-subtitle {
-  font-size: $font-size-xs;
+  font-size: $font-size-sm;
   color: $color-text-muted;
 }
 
 .table-responsive {
-  overflow-x: auto;
+  width: 100%;
 }
 
 .income-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: $font-size-sm;
+  table-layout: fixed;
+  font-size: $font-size-base;
+
+  th:nth-child(1) { width: 11%; }  /* Date */
+  th:nth-child(2) { width: 34%; }  /* Description */
+  th:nth-child(3) { width: 17%; }  /* Source */
+  th:nth-child(4) { width: 20%; }  /* Account */
+  th:nth-child(5) { width: 12%; }  /* Amount */
+  th:nth-child(6) { width: 6%; }   /* Actions */
 
   th {
     text-align: left;
     padding: $spacing-2 $spacing-3;
-    font-size: $font-size-xs;
+    font-size: $font-size-sm;
     font-weight: $font-weight-semibold;
     color: $color-text-muted;
     text-transform: uppercase;
@@ -48,7 +58,7 @@
   }
 
   td {
-    padding: $spacing-3;
+    padding: $spacing-2 $spacing-3;
     border-bottom: $border-width-sm solid $color-border;
     color: $color-text-primary;
     vertical-align: middle;
@@ -71,7 +81,7 @@
 .date-cell {
   white-space: nowrap;
   color: $color-text-muted;
-  font-size: $font-size-xs;
+  font-size: $font-size-sm;
 }
 
 .desc-content {
@@ -80,19 +90,30 @@
   gap: 2px;
 }
 
+.desc-cell,
+.desc-title,
+.desc-notes {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .desc-title {
   font-weight: $font-weight-semibold;
   color: $color-text-primary;
 }
 
 .desc-notes {
-  font-size: $font-size-xs;
+  font-size: $font-size-sm;
   color: $color-text-muted;
 }
 
 .source-badge {
   display: inline-block;
-  font-size: $font-size-xs;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   padding: 2px 8px;
   border-radius: 9999px;
@@ -100,13 +121,17 @@
 }
 
 .account-text {
-  font-size: $font-size-xs;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: $font-size-sm;
   color: $color-text-secondary;
 }
 
 .amount-positive {
   font-weight: $font-weight-bold;
-  color: #059669;
+  color: #1D4ED8;
 }
 
 .text-right {

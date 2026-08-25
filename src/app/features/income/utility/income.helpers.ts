@@ -1,8 +1,16 @@
 import { Income } from '../models/income.model';
 import { IncomeFrequency, IncomeSourceType } from '../models/income-source.model';
+import { AccountRef } from '../models/account-ref.model';
+import { INCOME_TYPE_OPTIONS, MAIN_ACCOUNT_LABEL } from './income.constants';
 import { downloadCsv } from '../../../shared/utility/csv.util';
 
 export { downloadCsv } from '../../../shared/utility/csv.util';
+
+/** Source type → brand color, derived from the single INCOME_TYPE_OPTIONS catalog. */
+const SOURCE_TYPE_COLOR_MAP: Record<string, string> = INCOME_TYPE_OPTIONS.reduce(
+  (map, opt) => ({ ...map, [opt.type]: opt.color }),
+  {} as Record<string, string>
+);
 
 /** Human-readable frequency label */
 export function formatFrequency(frequency?: IncomeFrequency): string {
@@ -17,36 +25,24 @@ export function formatFrequency(frequency?: IncomeFrequency): string {
   }
 }
 
-/** Get background color for source type */
-export function getSourceTypeColor(type?: IncomeSourceType): string {
-  switch (type) {
-    case 'Salary': return '#10B981';
-    case 'Freelance': return '#3B82F6';
-    case 'Business': return '#8B5CF6';
-    case 'Rental': return '#6366F1';
-    case 'Investment': return '#EC4899';
-    case 'Dividend': return '#F59E0B';
-    case 'Interest': return '#06B6D4';
-    case 'Gift': return '#14B8A6';
-    case 'Refund': return '#84CC16';
-    default: return '#64748B';
-  }
+/** Human-readable "next occurrence" label from a whole-day countdown (negative = overdue). */
+export function getRecurringNextLabel(days: number | null): string {
+  if (days === null) return '—';
+  if (days === 0) return 'Due today';
+  if (days === 1) return 'Tomorrow';
+  if (days === -1) return '1 day overdue';
+  if (days > 1) return `In ${days} days`;
+  return `${Math.abs(days)} days overdue`;
 }
 
-/** Get icon name for source type */
-export function getSourceTypeIcon(type?: IncomeSourceType): string {
-  switch (type) {
-    case 'Salary': return 'fa-solid fa-briefcase';
-    case 'Freelance': return 'fa-solid fa-laptop-code';
-    case 'Business': return 'fa-solid fa-building';
-    case 'Rental': return 'fa-solid fa-house-chimney';
-    case 'Investment': return 'fa-solid fa-arrow-trend-up';
-    case 'Dividend': return 'fa-solid fa-chart-pie';
-    case 'Interest': return 'fa-solid fa-piggy-bank';
-    case 'Gift': return 'fa-solid fa-gift';
-    case 'Refund': return 'fa-solid fa-rotate-left';
-    default: return 'fa-solid fa-wallet';
-  }
+/** Get background color for source type */
+export function getSourceTypeColor(type?: IncomeSourceType): string {
+  return (type && SOURCE_TYPE_COLOR_MAP[type]) || '#64748B';
+}
+
+/** Masked account label, e.g. "Chase Checking ••••1234". */
+export function formatAccountLabel(acc?: AccountRef | null): string {
+  return acc ? `${acc.name} ••••${acc.accountNumberLast4}` : MAIN_ACCOUNT_LABEL;
 }
 
 /** Maps income items to CSV structure for download */

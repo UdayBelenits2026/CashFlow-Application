@@ -33,8 +33,8 @@
   align-items: center;
   gap: $spacing-2;
   padding: $spacing-2 $spacing-4;
-  background: #10B981;
-  color: #ffffff;
+  background: $color-info;
+  color: $color-white;
   border: none;
   border-radius: $radius-md;
   font-size: $font-size-sm;
@@ -43,47 +43,67 @@
   transition: background $transition-fast;
 
   &:hover {
-    background: #059669;
+    background: $color-primary-button-hover;
   }
 }
 
-.summary-cards-grid {
+.summary-strip {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: $spacing-4;
 }
 
 .summary-card {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  padding: $spacing-4;
   background: $color-card;
   border: $border-width-sm solid $color-border;
   border-radius: $radius-lg;
-  padding: $spacing-4;
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-1;
   box-shadow: $shadow-sm;
 }
 
-.card-label {
-  font-size: 11px;
+.summary-icon {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.icon-total { background: $color-info-bg; color: $color-info; }
+  &.icon-active { background: $color-success-bg; color: $color-success; }
+  &.icon-next { background: $color-info-bg; color: $color-info; }
+  &.icon-paused { background: $color-warning-bg; color: $color-warning; }
+}
+
+.summary-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.summary-lbl {
+  font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
   color: $color-text-muted;
   text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
-.card-val {
+.summary-val {
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
   color: $color-text-primary;
-
-  &.green {
-    color: #059669;
-  }
+  line-height: 1.1;
 }
 
-.card-sub {
-  font-size: 11px;
-  color: $color-text-muted;
+.summary-sub {
+  font-size: $font-size-xs;
+  color: $color-text-light;
 }
 
 .filter-bar {
@@ -118,7 +138,7 @@
     outline: none;
 
     &:focus {
-      border-color: #10B981;
+      border-color: $color-info;
     }
   }
 }
@@ -167,6 +187,9 @@
   font-size: $font-size-sm;
 
   th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     text-align: left;
     padding: $spacing-3 $spacing-4;
     font-size: $font-size-xs;
@@ -184,6 +207,18 @@
     color: $color-text-primary;
     vertical-align: middle;
   }
+
+  .table-row {
+    transition: background $transition-fast;
+
+    &:hover {
+      background: $color-info-bg;
+    }
+
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
 }
 
 .source-cell-wrap {
@@ -192,11 +227,17 @@
   gap: $spacing-3;
 }
 
-.color-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+.source-avatar {
   flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  line-height: 1;
 }
 
 .source-info {
@@ -223,16 +264,52 @@
 .freq-badge {
   font-size: 11px;
   font-weight: $font-weight-semibold;
-  background: #EFF6FF;
-  color: #2563EB;
+  background: $color-info-bg;
+  color: $color-info;
   padding: 2px 8px;
   border-radius: 9999px;
 }
 
+.next-date-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
 .next-date-val {
   font-weight: $font-weight-semibold;
-  color: #047857;
+  color: $color-text-primary;
   font-size: $font-size-xs;
+}
+
+.next-chip {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+
+  &.tone-overdue {
+    background: $color-danger-bg;
+    color: $color-danger;
+  }
+
+  &.tone-soon {
+    background: $color-warning-bg;
+    color: $color-warning;
+  }
+
+  &.tone-normal {
+    background: $color-info-bg;
+    color: $color-info;
+  }
+
+  &.tone-none {
+    background: $color-background;
+    color: $color-text-light;
+  }
 }
 
 .last-date-cell {
@@ -249,24 +326,36 @@
 .text-center { text-align: center; }
 
 .status-toggle-btn {
-  padding: 3px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
   border-radius: 9999px;
   font-size: 11px;
   font-weight: $font-weight-bold;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   border: 1px solid transparent;
   cursor: pointer;
   transition: all $transition-fast;
 
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
   &.active {
-    background: #ECFDF5;
-    color: #059669;
-    border-color: #A7F3D0;
+    background: $color-success-bg;
+    color: $color-success;
+    border-color: rgba(25, 169, 116, 0.25);
   }
 
   &.paused {
-    background: #FEF3C7;
-    color: #D97706;
-    border-color: #FDE68A;
+    background: $color-warning-bg;
+    color: $color-warning;
+    border-color: rgba(245, 158, 11, 0.25);
   }
 }
 
@@ -277,9 +366,12 @@
 }
 
 .btn-record-now {
-  padding: 3px 8px;
-  background: #10B981;
-  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: $color-info;
+  color: $color-white;
   border: none;
   border-radius: $radius-sm;
   font-size: 11px;
@@ -288,7 +380,7 @@
   transition: background $transition-fast;
 
   &:hover {
-    background: #059669;
+    background: $color-primary-button-hover;
   }
 }
 
@@ -303,21 +395,52 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: all $transition-fast;
 
   &:hover {
-    background: $color-background;
-    color: $color-text-primary;
+    background: $color-info-bg;
+    color: $color-info;
+    border-color: $color-border-hover;
   }
 
   &.delete:hover {
-    background: #FEE2E2;
-    color: #DC2626;
+    background: $color-danger-bg;
+    color: $color-danger;
     border-color: #FCA5A5;
   }
 }
 
 .empty-state {
-  padding: $spacing-10;
+  padding: $spacing-12 $spacing-6;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.empty-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: $color-info-bg;
+  color: $color-info;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: $spacing-2;
+}
+
+.empty-title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.empty-sub {
+  font-size: $font-size-sm;
   color: $color-text-muted;
+  margin: 0 0 $spacing-3 0;
+  max-width: 380px;
 }

@@ -1,17 +1,18 @@
-import { Component, OnInit, inject, input, output, InputSignal, OutputEmitterRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input, output, InputSignal, OutputEmitterRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IncomeSource } from '../../models/income-source.model';
 import { AccountRef } from '../../models/account-ref.model';
 import { INCOME_TYPE_OPTIONS } from '../../utility/income.constants';
-import { getSourceTypeColor } from '../../utility/income.helpers';
+import { getSourceTypeColor, formatAccountLabel } from '../../utility/income.helpers';
 
 @Component({
   selector: 'app-income-source-modal',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './income-source-modal.component.html',
-  styleUrl: './income-source-modal.component.scss'
+  styleUrl: './income-source-modal.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IncomeSourceModalComponent implements OnInit {
   readonly source: InputSignal<IncomeSource | null> = input<IncomeSource | null>(null);
@@ -62,7 +63,7 @@ export class IncomeSourceModalComponent implements OnInit {
 
     const formVal = this.sourceForm.value;
     const selectedAcc = this.accounts().find((a) => a.id === formVal.accountId);
-    const accountName = selectedAcc ? `${selectedAcc.name} ••••${selectedAcc.accountNumberLast4}` : 'Main Account';
+    const accountName = formatAccountLabel(selectedAcc);
 
     const payload: Partial<IncomeSource> = {
       name: formVal.name,

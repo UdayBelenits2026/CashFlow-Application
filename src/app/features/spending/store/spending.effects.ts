@@ -1,19 +1,24 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { map, catchError, switchMap, mergeMap } from 'rxjs/operators';
+import { map, catchError, switchMap, mergeMap, withLatestFrom, filter } from 'rxjs/operators';
 import { SpendingApiService } from '../services/spending-api.service';
 import * as SpendingActions from './spending.actions';
+import * as SpendingSelectors from './spending.selectors';
 import { buildExpenseEntity } from '../utility/spending.calculations';
 
 @Injectable()
 export class SpendingEffects {
   private readonly actions$: Actions = inject(Actions);
   private readonly apiService: SpendingApiService = inject(SpendingApiService);
+  private readonly store: Store = inject(Store);
 
   loadSpendingDashboard$ = createEffect(() =>
     this.actions$.pipe(
       ofType(SpendingActions.loadSpendingDashboard),
+      withLatestFrom(this.store.select(SpendingSelectors.selectHasLoadedData)),
+      filter(([, hasLoaded]) => !hasLoaded),
       switchMap(() =>
         this.apiService.getDashboardData().pipe(
           map((data) =>
@@ -126,7 +131,7 @@ export class SpendingEffects {
           id: `rec-${Date.now()}`
         };
         return this.apiService.createRecurringExpense(newItem).pipe(
-          map((saved) => SpendingActions.addRecurringExpenseSuccess({ item: saved || (newItem as any) })),
+          map((saved) => SpendingActions.addRecurringExpenseSuccess({ item: saved })),
           catchError((err) => of(SpendingActions.spendingOperationFailure({
             error: err?.message || 'Unable to add the recurring expense. Please try again.'
           })))

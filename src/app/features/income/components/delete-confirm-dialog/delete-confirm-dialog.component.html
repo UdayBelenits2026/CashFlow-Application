@@ -20,6 +20,18 @@
             <span class="summary-label">Description:</span>
             <span class="summary-val">{{ itemDescription() }}</span>
           </div>
+          @if (itemSource()) {
+            <div class="summary-row">
+              <span class="summary-label">Source:</span>
+              <span class="summary-val">{{ itemSource() }}</span>
+            </div>
+          }
+          @if (itemAccount()) {
+            <div class="summary-row">
+              <span class="summary-label">Account:</span>
+              <span class="summary-val">{{ itemAccount() }}</span>
+            </div>
+          }
           @if (itemDate()) {
             <div class="summary-row">
               <span class="summary-label">Date:</span>
@@ -37,8 +49,10 @@
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn-secondary" (click)="onCancel()">Cancel</button>
-      <button type="button" class="btn-danger" (click)="onConfirm()">Delete Permanently</button>
+      <button type="button" class="btn-secondary" (click)="onCancel()" [disabled]="isDeleting()">Cancel</button>
+      <button type="button" class="btn-danger" (click)="onConfirm()" [disabled]="isDeleting()">
+        {{ isDeleting() ? 'Deleting…' : 'Delete Permanently' }}
+      </button>
     </div>
   </div>
 </div>

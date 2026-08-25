@@ -7,6 +7,12 @@ export const CURRENCY_SYMBOL = '₹';
 export const MONTHS_PER_YEAR = 12;
 export const WEEKS_PER_MONTH = 4.33;
 
+/** Default chart colors used across the spending charts. */
+export const CHART_DEFAULT_SLICE_COLOR = '#3B82F6';
+export const CHART_BORDER_COLOR = '#ffffff';
+export const CHART_LINE_COLOR = '#2563EB';
+export const CHART_LINE_FILL = 'rgba(37, 99, 235, 0.12)';
+
 /** Fallback category palette used by the add/split expense pickers when the store has none loaded. */
 export const DEFAULT_CATEGORIES: SpendingCategoryItem[] = [
   { id: 'cat-1', name: 'Food & Dining', color: '#0F172A', amount: 0, percentage: 0, barWidth: '0%' },

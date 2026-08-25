@@ -35,13 +35,15 @@
 
     <div class="side-column">
       <div class="chart-card">
-        <app-cf-doughnut-chart
-          [title]="'Spending by Category'"
-          [subtitle]="'What is driving your insights'"
-          [total]="categoryTotal"
-          [labels]="categoryLabels"
-          [datasets]="categoryDatasets"
-        ></app-cf-doughnut-chart>
+        @if (categoryChart$ | async; as chart) {
+          <app-cf-doughnut-chart
+            [title]="'Spending by Category'"
+            [subtitle]="'What is driving your insights'"
+            [total]="chart.total"
+            [labels]="chart.labels"
+            [datasets]="chart.datasets"
+          ></app-cf-doughnut-chart>
+        }
       </div>
     </div>
   </div>

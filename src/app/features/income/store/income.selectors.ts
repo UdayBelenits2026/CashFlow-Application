@@ -3,8 +3,7 @@ import { IncomeState, incomeFeatureKey, IncomeFilters } from './income.state';
 import {
   calculateUpcomingIncomeItems,
   computeSourceReportItems,
-  computeCalendarDays,
-  deriveIncomeInsights
+  computeCalendarDays
 } from '../utility/income.calculations';
 
 export const selectIncomeState = createFeatureSelector<IncomeState>(incomeFeatureKey);
@@ -130,14 +129,19 @@ export const selectFilteredIncomes = createSelector(
     // Sort
     result.sort((a, b) => {
       let comparison = 0;
-      if (filters.sortBy === 'date') {
-        comparison = new Date(b.date).getTime() - new Date(a.date).getTime();
-      } else if (filters.sortBy === 'amount') {
-        comparison = b.amount - a.amount;
-      } else if (filters.sortBy === 'source') {
-        comparison = (a.sourceName || '').localeCompare(b.sourceName || '');
-      } else if (filters.sortBy === 'description') {
-        comparison = (a.description || '').localeCompare(b.description || '');
+      switch (filters.sortBy) {
+        case 'date':
+          comparison = new Date(b.date).getTime() - new Date(a.date).getTime();
+          break;
+        case 'amount':
+          comparison = b.amount - a.amount;
+          break;
+        case 'source':
+          comparison = (a.sourceName || '').localeCompare(b.sourceName || '');
+          break;
+        case 'description':
+          comparison = (a.description || '').localeCompare(b.description || '');
+          break;
       }
       return filters.sortOrder === 'asc' ? -comparison : comparison;
     });
@@ -176,15 +180,6 @@ export const selectIncomeCalendarDays = createSelector(
   selectRecurringIncomes,
   selectSelectedCalendarMonth,
   (incomes, recurring, { year, month }) => computeCalendarDays(year, month, incomes, recurring)
-);
-
-// Insights
-export const selectCalculatedIncomeInsights = createSelector(
-  selectAllIncomes,
-  selectIncomeOverview,
-  selectIncomeSources,
-  selectRecurringIncomes,
-  (incomes, overview, sources, recurring) => deriveIncomeInsights(incomes, overview, sources, recurring)
 );
 
 // Accounts Reference

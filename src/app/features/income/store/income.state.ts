@@ -1,6 +1,6 @@
 import { IncomeOverviewData, IncomeTrendPoint } from '../models/income-summary.model';
 import { IncomeSource } from '../models/income-source.model';
-import { Income } from '../models/income.model';
+import { Income, SortField } from '../models/income.model';
 import { RecurringIncome } from '../models/recurring-income.model';
 import { AccountRef } from '../models/account-ref.model';
 
@@ -15,7 +15,7 @@ export interface IncomeFilters {
   endDate: string | null;
   minAmount: number | null;
   maxAmount: number | null;
-  sortBy: 'date' | 'amount' | 'source' | 'description';
+  sortBy: SortField;
   sortOrder: 'asc' | 'desc';
 }
 

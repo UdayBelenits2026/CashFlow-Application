@@ -57,7 +57,7 @@ export const incomeReducer = createReducer(
       overview,
       sources,
       isLoading: false,
-      successMessage: 'Income recorded successfully.'
+      successMessage: 'Income saved successfully.'
     };
   }),
 
@@ -139,7 +139,7 @@ export const incomeReducer = createReducer(
         ? { ...state.overview, activeSourcesCount: updatedSources.filter((s) => s.status === 'ACTIVE').length }
         : null,
       isLoading: false,
-      successMessage: 'Income source created successfully.'
+      successMessage: 'Income source added successfully.'
     };
   }),
 
@@ -204,7 +204,7 @@ export const incomeReducer = createReducer(
       recurringIncomes: updatedRecurring,
       overview: state.overview ? { ...state.overview, totalRecurringExpected: totalRecurring } : null,
       isLoading: false,
-      successMessage: 'Recurring schedule updated.'
+      successMessage: 'Recurring income updated successfully.'
     };
   }),
 

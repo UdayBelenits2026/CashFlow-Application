@@ -23,7 +23,7 @@
 }
 
 .card-subtitle {
-  font-size: $font-size-xs;
+  font-size: $font-size-sm;
   color: $color-text-muted;
 }
 
@@ -74,7 +74,7 @@
 }
 
 .source-title {
-  font-size: $font-size-sm;
+  font-size: $font-size-base;
   font-weight: $font-weight-semibold;
   color: $color-text-primary;
 }
@@ -88,7 +88,7 @@
 }
 
 .date-info {
-  font-size: $font-size-xs;
+  font-size: $font-size-sm;
   color: $color-text-muted;
   display: flex;
   align-items: center;
@@ -140,7 +140,7 @@
 }
 
 .amount-type {
-  font-size: 11px;
+  font-size: $font-size-xs;
   color: $color-text-muted;
 }
 
@@ -149,17 +149,17 @@
   align-items: center;
   gap: $spacing-1;
   padding: $spacing-2 $spacing-3;
-  background: #10B981;
+  background: #2563EB;
   color: #ffffff;
   border: none;
   border-radius: $radius-md;
-  font-size: $font-size-xs;
+  font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   cursor: pointer;
   transition: background $transition-fast;
 
   &:hover {
-    background: #059669;
+    background: #1D4ED8;
   }
 }
 

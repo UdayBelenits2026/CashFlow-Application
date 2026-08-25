@@ -17,11 +17,11 @@
   border: $border-width-sm solid $color-border;
   border-radius: $radius-xl;
   width: 100%;
-  max-width: 580px;
+  max-width: 600px;
   box-shadow: $shadow-lg;
   display: flex;
   flex-direction: column;
-  max-height: 90vh;
+  max-height: 92vh;
   overflow: hidden;
   animation: modalIn 0.2s ease-out;
 }
@@ -31,12 +31,20 @@
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
+/* Header */
 .modal-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   padding: $spacing-5 $spacing-6;
   border-bottom: $border-width-sm solid $color-border;
+  background: linear-gradient(135deg, $color-info-bg 0%, $color-card 65%);
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
 }
 
 .modal-title {
@@ -47,9 +55,15 @@
 }
 
 .step-indicator {
-  font-size: $font-size-xs;
-  color: $color-text-muted;
-  display: block;
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $color-info;
+  background: rgba(37, 99, 235, 0.1);
+  padding: 2px 10px;
+  border-radius: 9999px;
 }
 
 .btn-close {
@@ -67,6 +81,7 @@
   }
 }
 
+/* Stepper */
 .wizard-progress {
   display: flex;
   align-items: center;
@@ -82,27 +97,43 @@
   color: $color-text-muted;
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
+  transition: color $transition-fast;
 
-  &.active {
-    color: #10B981;
-  }
-
-  &.current {
-    color: #047857;
-    font-weight: $font-weight-bold;
-  }
+  &.active { color: $color-info; }
+  &.current { color: $color-primary; font-weight: $font-weight-bold; }
 }
 
 .step-num {
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: $color-card;
-  border: 1.5px solid currentColor;
+  border: 1.5px solid $color-border;
+  color: $color-text-muted;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 11px;
+  font-weight: $font-weight-bold;
+  transition: all $transition-fast;
+}
+
+.progress-step.active .step-num {
+  border-color: $color-info;
+  color: $color-info;
+}
+
+.progress-step.current .step-num {
+  background: $color-info;
+  border-color: $color-info;
+  color: $color-white;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+.progress-step.completed .step-num {
+  background: $color-info;
+  border-color: $color-info;
+  color: $color-white;
 }
 
 .progress-bar {
@@ -110,12 +141,12 @@
   height: 2px;
   background: $color-border;
   margin: 0 $spacing-3;
+  transition: background $transition-fast;
 
-  &.filled {
-    background: #10B981;
-  }
+  &.filled { background: $color-info; }
 }
 
+/* Body */
 .modal-body {
   padding: $spacing-6;
   overflow-y: auto;
@@ -134,12 +165,11 @@
 
   &.checkbox-row {
     margin-top: $spacing-1;
+    gap: $spacing-3;
   }
 }
 
-.flex-1 {
-  flex: 1;
-}
+.flex-1 { flex: 1; }
 
 .form-group {
   display: flex;
@@ -159,20 +189,25 @@
 }
 
 .form-input, .form-textarea, select.form-input {
-  padding: $spacing-2 $spacing-3;
+  padding: $spacing-3;
   border: 1px solid $color-border;
   border-radius: $radius-md;
   font-size: $font-size-sm;
   background: $color-card;
   color: $color-text-primary;
   outline: none;
-  transition: border-color $transition-fast;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &::placeholder { color: $color-placeholder; }
 
   &:focus {
-    border-color: #10B981;
-    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
+    border-color: $color-info;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
   }
 }
+
+.text-lg { font-size: $font-size-lg; }
+.font-bold { font-weight: $font-weight-bold; }
 
 .input-with-icon {
   position: relative;
@@ -183,7 +218,7 @@
     position: absolute;
     left: $spacing-3;
     font-weight: $font-weight-bold;
-    color: #10B981;
+    color: $color-info;
   }
 
   .form-input {
@@ -194,18 +229,70 @@
 
 .error-text {
   font-size: 11px;
-  color: #DC2626;
+  color: $color-danger;
+  font-weight: $font-weight-semibold;
 }
 
+.form-input.ng-invalid.ng-touched,
+.form-textarea.ng-invalid.ng-touched,
+select.form-input.ng-invalid.ng-touched {
+  border-color: $color-danger;
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+  }
+}
+
+.guard-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: $spacing-3 $spacing-4;
+  border-radius: $radius-md;
+  background: $color-warning-bg;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #92400e;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+
+  .guard-sub {
+    font-weight: $font-weight-regular;
+    font-size: 11px;
+    color: #b45309;
+  }
+}
+
+/* Checkbox pills */
 .checkbox-label {
   display: flex;
   align-items: center;
   gap: $spacing-2;
+  flex: 1;
   font-size: $font-size-xs;
-  color: $color-text-primary;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
   cursor: pointer;
+  padding: $spacing-2 $spacing-3;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  transition: all $transition-fast;
+
+  input {
+    accent-color: $color-info;
+    width: 15px;
+    height: 15px;
+  }
+
+  &:hover { border-color: $color-border-hover; }
+
+  &:has(input:checked) {
+    border-color: $color-info;
+    background: $color-info-bg;
+    color: $color-primary;
+  }
 }
 
+/* Step 2 - source selection */
 .sources-header {
   display: flex;
   align-items: center;
@@ -219,16 +306,16 @@
 }
 
 .btn-toggle-new {
-  background: transparent;
+  background: $color-info-bg;
   border: none;
-  color: #10B981;
+  color: $color-info;
   font-size: $font-size-xs;
-  font-weight: $font-weight-semibold;
+  font-weight: $font-weight-bold;
   cursor: pointer;
+  padding: $spacing-1 $spacing-3;
+  border-radius: 9999px;
 
-  &:hover {
-    text-decoration: underline;
-  }
+  &:hover { background: rgba(37, 99, 235, 0.16); }
 }
 
 .sources-grid {
@@ -249,13 +336,13 @@
   position: relative;
 
   &:hover {
-    border-color: #A7F3D0;
-    background: #F0FDF4;
+    border-color: $color-border-hover;
+    background: $color-background;
   }
 
   &.selected {
-    border-color: #10B981;
-    background: #ECFDF5;
+    border-color: $color-info;
+    background: $color-info-bg;
   }
 }
 
@@ -289,44 +376,62 @@
 
 .selected-check {
   margin-left: auto;
-  color: #10B981;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: $color-info;
+  color: $color-white;
+  font-size: 11px;
   font-weight: $font-weight-bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
+.new-source-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+}
+
+/* Step 3 - review */
 .review-card {
-  background: $color-background;
+  background: $color-card;
   border: 1px solid $color-border;
   border-radius: $radius-lg;
-  padding: $spacing-4;
+  overflow: hidden;
 }
 
 .review-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: $spacing-3;
-  border-bottom: 1px solid $color-border;
-  margin-bottom: $spacing-3;
+  padding: $spacing-4;
+  background: linear-gradient(135deg, $color-info-bg 0%, #DBEAFE 100%);
+  border-bottom: 1px solid #BFDBFE;
 }
 
 .review-source-badge {
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 9999px;
-  color: #ffffff;
+  color: $color-white;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
 }
 
 .review-amount {
-  font-size: $font-size-xl;
+  font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
-  color: #059669;
+  color: $color-primary-button-hover;
+  letter-spacing: -0.02em;
 }
 
 .review-details-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-3;
+  gap: $spacing-4;
+  padding: $spacing-4;
 }
 
 .review-item {
@@ -334,33 +439,35 @@
   flex-direction: column;
   gap: 2px;
 
-  &.full-width {
-    grid-column: span 2;
-  }
+  &.full-width { grid-column: span 2; }
 }
 
 .review-label {
   font-size: 11px;
   color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .review-val {
-  font-size: $font-size-xs;
+  font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   color: $color-text-primary;
 }
 
+/* Footer */
 .modal-footer {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: $spacing-3;
   padding-top: $spacing-4;
+  margin-top: $spacing-2;
   border-top: $border-width-sm solid $color-border;
 }
 
 .btn-secondary {
-  padding: $spacing-2 $spacing-4;
+  padding: $spacing-3 $spacing-5;
   border: 1px solid $color-border;
   background: $color-card;
   color: $color-text-secondary;
@@ -369,22 +476,20 @@
   font-weight: $font-weight-semibold;
   cursor: pointer;
 
-  &:hover {
-    background: $color-background;
-  }
+  &:hover { background: $color-background; }
 }
 
 .btn-primary {
-  padding: $spacing-2 $spacing-5;
+  padding: $spacing-3 $spacing-6;
   border: none;
-  background: #10B981;
-  color: #ffffff;
+  background: $color-info;
+  color: $color-white;
   border-radius: $radius-md;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   cursor: pointer;
 
-  &:hover {
-    background: #059669;
-  }
+  &:hover { background: $color-primary-button-hover; }
+
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
 }

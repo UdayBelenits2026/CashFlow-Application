@@ -76,10 +76,17 @@ export class AddExpenseModalComponent implements OnInit {
   }
 
   nextStep(): void {
-    if (this.currentStep() === 1 && this.isStep1Valid()) {
-      this.currentStep.set(2);
-    } else if (this.currentStep() === 2 && this.selectedCategoryId()) {
-      this.currentStep.set(3);
+    switch (this.currentStep()) {
+      case 1:
+        if (this.isStep1Valid()) {
+          this.currentStep.set(2);
+        }
+        break;
+      case 2:
+        if (this.selectedCategoryId()) {
+          this.currentStep.set(3);
+        }
+        break;
     }
   }
 

@@ -3,8 +3,17 @@
     <div class="drawer-panel" (click)="$event.stopPropagation()">
       <div class="drawer-header">
         <div class="header-left">
-          <span class="tx-badge">Income Transaction</span>
-          <h2 class="drawer-title">{{ inc.description }}</h2>
+          <div
+            class="source-avatar"
+            [style.backgroundColor]="(inc.sourceColor || '#2563EB') + '1A'"
+            [style.color]="inc.sourceColor || '#2563EB'"
+          >
+            {{ (inc.sourceName || 'I').charAt(0).toUpperCase() }}
+          </div>
+          <div class="header-text">
+            <span class="tx-badge">Income Transaction</span>
+            <h2 class="drawer-title">{{ inc.description }}</h2>
+          </div>
         </div>
         <button type="button" class="btn-close" (click)="onClose()" title="Close">
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
@@ -18,57 +27,67 @@
         <div class="hero-amount-box">
           <span class="hero-label">Amount Received</span>
           <span class="hero-amount">+₹{{ inc.amount | number:'1.2-2' }}</span>
-          <span class="hero-status">
+          <span
+            class="status-pill"
+            [ngClass]="{
+              'status-recorded': inc.status === 'RECORDED',
+              'status-cleared': inc.status === 'CLEARED',
+              'status-pending': inc.status === 'PENDING',
+              'status-cancelled': inc.status === 'CANCELLED'
+            }"
+          >
             <span class="status-dot">●</span> {{ inc.status }}
           </span>
         </div>
 
         <div class="details-section">
           <h3 class="section-title">Transaction Details</h3>
-          <div class="details-grid">
-            <div class="detail-item">
+          <ul class="detail-list">
+            <li class="detail-row">
               <span class="detail-label">Income Source</span>
               <span
                 class="source-pill"
-                [style.backgroundColor]="(inc.sourceColor || '#10B981') + '20'"
-                [style.color]="inc.sourceColor || '#10B981'"
+                [style.backgroundColor]="(inc.sourceColor || '#2563EB') + '20'"
+                [style.color]="inc.sourceColor || '#2563EB'"
               >
                 {{ inc.sourceName }}
               </span>
-            </div>
+            </li>
 
-            <div class="detail-item">
-              <span class="detail-label">Source Category</span>
+            <li class="detail-row">
+              <span class="detail-label">Category</span>
               <span class="detail-val">{{ inc.sourceType }}</span>
-            </div>
+            </li>
 
-            <div class="detail-item">
+            <li class="detail-row">
               <span class="detail-label">Received Date</span>
               <span class="detail-val">{{ inc.date | date:'fullDate' }}</span>
-            </div>
+            </li>
 
-            <div class="detail-item">
+            <li class="detail-row">
               <span class="detail-label">Destination Account</span>
               <span class="detail-val">{{ inc.accountName }}</span>
-            </div>
+            </li>
 
-            <div class="detail-item">
+            <li class="detail-row">
               <span class="detail-label">Tax Status</span>
-              <span class="detail-val">{{ inc.taxable ? 'Taxable Income' : 'Non-Taxable' }}</span>
-            </div>
+              <span class="tax-pill" [ngClass]="inc.taxable ? 'taxable' : 'non-taxable'">
+                {{ inc.taxable ? 'Taxable' : 'Non-Taxable' }}
+              </span>
+            </li>
 
-            <div class="detail-item">
+            <li class="detail-row">
               <span class="detail-label">Origin</span>
               <span class="detail-val">{{ inc.isRecurring ? 'Recurring Schedule' : 'Manual Entry' }}</span>
-            </div>
+            </li>
+          </ul>
 
-            @if (inc.notes) {
-              <div class="detail-item full-width">
-                <span class="detail-label">Notes</span>
-                <span class="detail-val notes-text">{{ inc.notes }}</span>
-              </div>
-            }
-          </div>
+          @if (inc.notes) {
+            <div class="notes-block">
+              <span class="detail-label">Notes</span>
+              <p class="notes-text">{{ inc.notes }}</p>
+            </div>
+          }
         </div>
       </div>
 

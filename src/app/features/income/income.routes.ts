@@ -16,15 +16,13 @@ export const INCOME_ROUTES: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'overview',
+        redirectTo: 'dashboard',
         pathMatch: 'full'
       },
       {
         path: 'overview',
-        loadComponent: () =>
-          import('./pages/income-overview/income-overview.component').then(
-            (m) => m.IncomeOverviewComponent
-          )
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
       },
       {
         path: 'dashboard',
@@ -80,13 +78,6 @@ export const INCOME_ROUTES: Routes = [
         loadComponent: () =>
           import('./pages/income-trends/income-trends.component').then(
             (m) => m.IncomeTrendsComponent
-          )
-      },
-      {
-        path: 'insights',
-        loadComponent: () =>
-          import('./pages/income-insights/income-insights.component').then(
-            (m) => m.IncomeInsightsComponent
           )
       }
     ]

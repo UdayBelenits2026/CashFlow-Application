@@ -70,25 +70,21 @@
       </div>
     </section>
 
-    <!-- Recent Expenses + Top Merchants -->
-    <section class="section-split">
-      <div class="split-left">
-        <app-recent-expenses
-          [expenses]="(recentExpenses$ | async) || []"
-          (expenseSelected)="onExpenseSelected($event)"
-        ></app-recent-expenses>
-      </div>
-      <div class="split-right">
-        <app-top-merchants
-          [merchants]="(topMerchants$ | async) || []"
-          [limit]="6"
-          [showViewAll]="false"
-        ></app-top-merchants>
-      </div>
+    <!-- Recent Expenses (full width) -->
+    <section class="recent-expenses-section">
+      <app-recent-expenses
+        [expenses]="(recentExpenses$ | async) || []"
+        (expenseSelected)="onExpenseSelected($event)"
+      ></app-recent-expenses>
     </section>
 
-    <!-- Budget vs Actual -->
-    <section class="section-budget">
+    <!-- Bottom Row: Top Merchants + Budget vs Actual -->
+    <section class="bottom-grid">
+      <app-top-merchants
+        [merchants]="(topMerchants$ | async) || []"
+        [limit]="6"
+        [showViewAll]="false"
+      ></app-top-merchants>
       <app-budget-vs-actual [items]="(budgetVsActual$ | async) || []"></app-budget-vs-actual>
     </section>
 

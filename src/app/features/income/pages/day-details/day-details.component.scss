@@ -10,7 +10,7 @@
 .back-link {
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
-  color: #10B981;
+  color: #2563EB;
   text-decoration: none;
 
   &:hover {
@@ -63,7 +63,7 @@
 .total-val {
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
-  color: #059669;
+  color: #1D4ED8;
 }
 
 .items-list {
@@ -141,12 +141,12 @@
 .item-amount {
   font-size: $font-size-base;
   font-weight: $font-weight-bold;
-  color: #059669;
+  color: #1D4ED8;
 }
 
 .btn-record {
   padding: $spacing-2 $spacing-3;
-  background: #10B981;
+  background: #2563EB;
   color: #ffffff;
   border: none;
   border-radius: $radius-sm;
@@ -155,7 +155,7 @@
   cursor: pointer;
 
   &:hover {
-    background: #059669;
+    background: #1D4ED8;
   }
 }
 

@@ -1,5 +1,7 @@
 import { IncomeSourceType } from './income-source.model';
 
+export type ReportPeriod = 'THIS_MONTH' | 'LAST_MONTH' | 'THIS_QUARTER' | 'THIS_YEAR';
+
 export interface IncomeOverviewData {
   totalIncome: number;
   incomeGrowthPercentage: number;
@@ -47,22 +49,4 @@ export interface UpcomingIncomeItem {
   expectedDate: string;
   daysRemaining: number;
   status: 'UPCOMING' | 'DUE_TODAY' | 'OVERDUE';
-}
-
-export interface IncomeInsight {
-  id: string;
-  title: string;
-  description: string;
-  type: 'positive' | 'negative' | 'info' | 'neutral';
-  icon: string;
-  metric?: string;
-}
-
-export interface IncomePeriodComparison {
-  sourceName: string;
-  sourceType: IncomeSourceType;
-  currentPeriodAmount: number;
-  previousPeriodAmount: number;
-  varianceAmount: number;
-  variancePercentage: number;
 }

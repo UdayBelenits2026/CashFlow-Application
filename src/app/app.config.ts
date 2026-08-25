@@ -25,6 +25,7 @@ import { routes } from './app.routes';
 import { authReducer } from './core/auth/store/auth.reducer';
 import { AuthEffects } from './core/auth/store/auth.effects';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { spendingDevUserInterceptor } from './core/interceptors/spending-dev-user.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -51,6 +52,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([
         authInterceptor,
+        spendingDevUserInterceptor,
       ]),
     ),
 
