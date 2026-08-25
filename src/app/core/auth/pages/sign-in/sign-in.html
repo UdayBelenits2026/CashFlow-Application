@@ -113,7 +113,7 @@
           </div>
           }
           <!-- LOGIN ERROR -->
-          @if ((accountLock$ | async) === null && (error$ | async); as error) {
+          @if (!isLocked() && (error$ | async); as error) {
           <div class="auth-error" role="alert">
             <i class="fa-solid fa-circle-exclamation error-icon" aria-hidden="true"></i>
             <span>
@@ -122,7 +122,7 @@
           </div>
           }
           <!-- ACCOUNT LOCKED -->
-          @if (accountLock$ | async; as lock) {
+          @if (accountLock(); as lock) {
           <div class="auth-lock" role="alert" aria-live="assertive">
             <i class="fa-solid fa-triangle-exclamation lock-icon" aria-hidden="true"></i>
             <div class="lock-body">
@@ -138,8 +138,8 @@
           </div>
           }
           <!-- SIGN IN BUTTON -->
-          <button type="submit" class="btn btn-primary submit-button" [disabled]="SignInform.invalid || (loading$ | async) || (accountLock$ | async)">
-            @if (loading$ | async) {
+          <button type="submit" class="btn btn-primary submit-button" [disabled]="SignInform.invalid || loading() || isLocked()">
+            @if (loading()) {
             <span class="spinner"></span>
             <span>
               Signing In...

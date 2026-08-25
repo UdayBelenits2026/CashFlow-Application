@@ -1,6 +1,6 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, computed, inject } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { map, of, switchMap, takeWhile, tap, timer } from 'rxjs';
@@ -18,7 +18,11 @@ export class SignInComponent {
   // DEPENDENCIES
   private readonly fb = inject(FormBuilder);
   private readonly authFacade = inject(AuthFacade);
-  readonly loading$ = this.authFacade.loading$;
+  // Single synchronous source for loading/lock so the guard and the disabled
+  // binding always agree (no multi-subscription flicker).
+  readonly loading = toSignal(this.authFacade.loading$, { initialValue: false });
+  readonly accountLock = toSignal(this.authFacade.accountLock$, { initialValue: null });
+  readonly isLocked = computed(() => this.accountLock() !== null);
   readonly error$ = this.authFacade.error$;
   readonly notice$ = this.authFacade.notice$;
   // ACCOUNT LOCK
@@ -64,6 +68,11 @@ export class SignInComponent {
   }
   // SIGN IN
   submit(): void {
+    // Guard the actual submission, not just the button: Enter key or a stale
+    // disabled state must never start a login while loading or locked.
+    if (this.loading() || this.isLocked()) {
+      return;
+    }
     if (this.SignInform.invalid) {
       this.SignInform.markAllAsTouched();
       return;

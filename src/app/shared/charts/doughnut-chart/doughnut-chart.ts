@@ -2,11 +2,13 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
-  OnDestroy,
-  ViewChild,
+  computed,
   effect,
+  ElementRef,
   input,
+  OnDestroy,
+  output,
+  ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -32,14 +34,64 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
   @ViewChild('chartCanvas')
   chartCanvas!: ElementRef<HTMLCanvasElement>;
 
+  // ---------------------------------------------------------------------------
+  // Inputs
+  // ---------------------------------------------------------------------------
+
   readonly title = input<string>('Spending by Category');
-  readonly subtitle = input<string>('Distribution across expense categories');
+
+  readonly subtitle = input<string>(
+    'Distribution across expense categories',
+  );
+
   readonly total = input<number>(2650);
+
   readonly datasets =
     input<ChartConfiguration<'doughnut'>['data']['datasets']>([]);
+
   readonly labels = input<string[]>([]);
 
+  readonly isLoading = input<boolean>(false);
+
+  readonly hasError = input<boolean>(false);
+
+  // ---------------------------------------------------------------------------
+  // Outputs
+  // ---------------------------------------------------------------------------
+
+  readonly retry = output<void>();
+
+  // ---------------------------------------------------------------------------
+  // Chart
+  // ---------------------------------------------------------------------------
+
   private chart: Chart<'doughnut'> | null = null;
+
+  // ---------------------------------------------------------------------------
+  // Computed state
+  // ---------------------------------------------------------------------------
+
+  readonly isEmpty = computed(() => {
+    const datasets = this.datasets();
+    const labels = this.labels();
+
+    return (
+      !datasets ||
+      datasets.length === 0 ||
+      !labels ||
+      labels.length === 0 ||
+      datasets.every(
+        (dataset) =>
+          !dataset.data ||
+          dataset.data.length === 0 ||
+          dataset.data.every((value) => Number(value) === 0),
+      )
+    );
+  });
+
+  // ---------------------------------------------------------------------------
+  // Constructor
+  // ---------------------------------------------------------------------------
 
   constructor() {
     effect(() => {
@@ -53,6 +105,10 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
       }
     });
   }
+
+  // ---------------------------------------------------------------------------
+  // Enhanced dataset styling
+  // ---------------------------------------------------------------------------
 
   private applyEnhancedDatasets(
     datasets: ChartConfiguration<'doughnut'>['data']['datasets'],
@@ -68,6 +124,10 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
       spacing: 2,
     }));
   }
+
+  // ---------------------------------------------------------------------------
+  // Chart initialization
+  // ---------------------------------------------------------------------------
 
   ngAfterViewInit(): void {
     if (!this.chartCanvas?.nativeElement) {
@@ -93,6 +153,8 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+
+        // More space in the center for the total amount
         cutout: '72%',
 
         animation: {
@@ -102,6 +164,10 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
         },
 
         plugins: {
+          // -----------------------------------------------------------------
+          // Legend
+          // -----------------------------------------------------------------
+
           legend: {
             position: 'right',
             align: 'center',
@@ -109,8 +175,10 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
             labels: {
               usePointStyle: true,
               pointStyle: 'circle',
+
               boxWidth: 8,
               boxHeight: 8,
+
               padding: 12,
 
               font: {
@@ -137,7 +205,8 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
                 );
 
                 return data.labels.map((label, index) => {
-                  const value = Number(dataset.data[index]) || 0;
+                  const value =
+                    Number(dataset.data[index]) || 0;
 
                   const percentage =
                     totalSum > 0
@@ -153,11 +222,18 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
 
                   return {
                     text: `${label} (${percentage}%)`,
+
                     fillStyle: fill as string,
+
                     strokeStyle: fill as string,
+
                     lineWidth: 0,
+
                     pointStyle: 'circle',
-                    hidden: !chart.getDataVisibility(index),
+
+                    hidden:
+                      !chart.getDataVisibility(index),
+
                     index,
                   };
                 });
@@ -165,16 +241,29 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
             },
           },
 
+          // -----------------------------------------------------------------
+          // Tooltip
+          // -----------------------------------------------------------------
+
           tooltip: {
             enabled: true,
+
             backgroundColor: '#0f172a',
+
             titleColor: '#ffffff',
+
             bodyColor: '#f1f5f9',
+
             borderColor: '#1e293b',
+
             borderWidth: 1,
+
             padding: 10,
+
             cornerRadius: 8,
+
             boxPadding: 4,
+
             usePointStyle: true,
 
             titleFont: {
@@ -214,6 +303,10 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
         },
       },
 
+      // ---------------------------------------------------------------------
+      // Custom center text plugin
+      // ---------------------------------------------------------------------
+
       plugins: [
         {
           id: 'centerDoughnutText',
@@ -232,6 +325,7 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
             canvasCtx.textAlign = 'center';
             canvasCtx.textBaseline = 'middle';
 
+            // Default center text
             let labelText = 'TOTAL SPENT';
 
             const dataset =
@@ -252,6 +346,10 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
                 maximumFractionDigits: 0,
               });
 
+            // ---------------------------------------------------------------
+            // Show selected category when hovering
+            // ---------------------------------------------------------------
+
             const activeElements =
               chart.getActiveElements();
 
@@ -268,7 +366,9 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
                   | undefined;
 
               const categoryValue =
-                Number(dataset?.data?.[activeIndex]) || 0;
+                Number(
+                  dataset?.data?.[activeIndex],
+                ) || 0;
 
               if (categoryLabel) {
                 labelText =
@@ -286,6 +386,10 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
               }
             }
 
+            // ---------------------------------------------------------------
+            // Center label
+            // ---------------------------------------------------------------
+
             canvasCtx.font =
               "700 10.5px 'Roboto', sans-serif";
 
@@ -298,6 +402,10 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
               centerX,
               centerY - 10,
             );
+
+            // ---------------------------------------------------------------
+            // Center amount
+            // ---------------------------------------------------------------
 
             canvasCtx.font =
               "800 17px 'Roboto', sans-serif";
@@ -319,8 +427,38 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
     this.chart = new Chart(ctx, config);
   }
 
+  // ---------------------------------------------------------------------------
+  // Destroy chart
+  // ---------------------------------------------------------------------------
+
   ngOnDestroy(): void {
     this.chart?.destroy();
     this.chart = null;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Retry handler
+  // ---------------------------------------------------------------------------
+
+  onRetry(): void {
+    this.retry.emit();
+  }
+
+  // ---------------------------------------------------------------------------
+  // External legend color support
+  // ---------------------------------------------------------------------------
+
+  legendColor(index: number): string {
+    const backgroundColor =
+      this.datasets()?.[0]?.backgroundColor;
+
+    if (
+      Array.isArray(backgroundColor) &&
+      typeof backgroundColor[index] === 'string'
+    ) {
+      return backgroundColor[index] as string;
+    }
+
+    return '#94a3b8';
   }
 }
