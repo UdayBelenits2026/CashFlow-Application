@@ -253,9 +253,42 @@
     "onboardingSteps": [
       {
         "id": "complete-profile",
-        "completed": true
+        "title": "Complete your profile setup",
+        "actionId": "complete-profile",
+        "completed": false
+      },
+      {
+        "id": "connect-account",
+        "title": "Connect your first bank account",
+        "actionId": "connect-account",
+        "completed": false
+      },
+      {
+        "id": "add-income",
+        "title": "Add your first income",
+        "actionId": "add-income",
+        "completed": false
+      },
+      {
+        "id": "add-expense",
+        "title": "Add your first expense",
+        "actionId": "add-expense",
+        "completed": false
+      },
+      {
+        "id": "create-budget",
+        "title": "Create your first budget",
+        "actionId": "create-budget",
+        "completed": false
+      },
+      {
+        "id": "customize-dashboard",
+        "title": "Customize your dashboard",
+        "actionId": "customize-dashboard",
+        "completed": false
       }
     ],
+ 
     "onboardingActions": [
       {
         "id": "connect-account",

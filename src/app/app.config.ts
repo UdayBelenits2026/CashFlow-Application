@@ -4,7 +4,7 @@ import {
   provideZoneChangeDetection,
 } from '@angular/core';
 
-import { provideRouter } from '@angular/router';
+import { provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 
 import { provideStore } from '@ngrx/store';
@@ -33,7 +33,9 @@ export const appConfig: ApplicationConfig = {
       eventCoalescing: true,
     }),
 
-    provideRouter(routes),
+    // Preload lazy feature chunks in the background so navigation after
+    // sign-in is instant instead of waiting on an on-demand chunk fetch.
+    provideRouter(routes, withPreloading(PreloadAllModules)),
 
     provideStore({
       auth: authReducer,
