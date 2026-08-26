@@ -9,7 +9,10 @@ export const DASHBOARD_ROUTES: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'home',
+        loadComponent: () =>
+          import('./pages/dashboard-route-entry/dashboard-route-entry').then(
+            (m) => m.DashboardRouteEntry,
+          ),
       },
       {
         path: 'new',

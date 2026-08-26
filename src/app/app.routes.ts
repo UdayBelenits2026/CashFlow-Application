@@ -35,41 +35,10 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        loadComponent: () =>
-          import('./features/dashboard/pages/dashboard-home/dashboard-home').then(
-            (m) => m.DashboardHome,
+        loadChildren: () =>
+          import('./features/dashboard/dashboard.routes').then(
+            (m) => m.DASHBOARD_ROUTES,
           ),
-        children: [
-          {
-            path: '',
-            pathMatch: 'full',
-            loadComponent: () =>
-              import('./features/dashboard/pages/dashboard-route-entry/dashboard-route-entry').then(
-                (m) => m.DashboardRouteEntry,
-              ),
-          },
-          {
-            path: 'new',
-            loadComponent: () =>
-              import('./features/dashboard/pages/dashboard-new-user/dashboard-new-user').then(
-                (m) => m.DashboardNewUser,
-              ),
-          },
-          {
-            path: 'home',
-            loadComponent: () =>
-              import('./features/dashboard/pages/dashboard-existing-user/dashboard-existing-user').then(
-                (m) => m.DashboardExistingUser,
-              ),
-          },
-          {
-            path: 'customize',
-            loadComponent: () =>
-              import('./features/dashboard/pages/dashboard-customize/dashboard-customize').then(
-                (m) => m.DashboardCustomize,
-              ),
-          },
-        ],
       },
       {
         path: 'transactions',
