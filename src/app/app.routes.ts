@@ -69,13 +69,6 @@ export const routes: Routes = [
                 (m) => m.DashboardCustomize,
               ),
           },
-          {
-            path: 'filter',
-            loadComponent: () =>
-              import('./features/dashboard/pages/dashboard-filter/dashboard-filter').then(
-                (m) => m.DashboardFilter,
-              ),
-          },
         ],
       },
       {
