@@ -1,0 +1,291 @@
+@use '../../../../../styles/variables' as *;
+
+:host {
+  display: block;
+  font-family: $font-family-base;
+  color: $color-text-primary;
+  background-color: $color-background;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.trends-page {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: $spacing-6 $spacing-6 $spacing-16 $spacing-6;
+  box-sizing: border-box;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-5;
+  flex-wrap: wrap;
+  gap: $spacing-4;
+}
+
+.back-link {
+  font-size: $font-size-base;
+  color: $color-info;
+  text-decoration: none;
+  font-weight: $font-weight-semibold;
+  display: inline-block;
+  margin-bottom: $spacing-1;
+
+  &:hover { text-decoration: underline; }
+}
+
+.page-title {
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  font-size: $font-size-base;
+  color: $color-text-muted;
+  margin: 0;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  height: $spacing-10;
+  padding: 0 $spacing-4;
+  background: $color-primary-button;
+  color: $color-white;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  box-shadow: $shadow-sm;
+
+  &:hover { background: $color-primary-button-hover; }
+}
+
+// TABS
+.tabs {
+  display: inline-flex;
+  gap: $spacing-1;
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-md;
+  padding: $spacing-1;
+  margin-bottom: $spacing-6;
+  box-shadow: $shadow-sm;
+  flex-wrap: wrap;
+}
+
+.tab {
+  border: none;
+  background: transparent;
+  color: $color-text-secondary;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  font-family: inherit;
+  padding: $spacing-2 $spacing-4;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover { color: $color-text-primary; }
+
+  &.active {
+    background: $color-primary-button;
+    color: $color-white;
+  }
+}
+
+// STATS
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-4;
+  margin-bottom: $spacing-6;
+
+  @include respond-max($bp-840) { grid-template-columns: repeat(2, 1fr); }
+  @include respond-max($bp-480) { grid-template-columns: 1fr; }
+}
+
+.stat-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-4 $spacing-5;
+  box-shadow: $shadow-sm;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+}
+
+.stat-label {
+  font-size: $font-size-md;
+  color: $color-text-muted;
+  font-weight: $font-weight-medium;
+}
+
+.stat-value {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.stat-meta {
+  font-size: $font-size-sm;
+  color: $color-text-light;
+}
+
+// CHARTS
+.charts-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: $spacing-5;
+  margin-bottom: $spacing-6;
+  align-items: stretch;
+
+  .chart-main, .chart-side {
+    height: 320px;
+
+    app-cf-line-chart, app-cf-doughnut-chart {
+      display: block;
+      width: 100%;
+      height: 100%;
+
+      ::ng-deep .chart-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: $border-width-sm solid $color-border-light;
+        border-radius: $radius-lg;
+        background: $color-card;
+        box-shadow: $shadow-sm;
+        padding: $spacing-4;
+      }
+
+      ::ng-deep .chart-container {
+        flex: 1;
+        min-height: 220px;
+        max-height: 250px;
+      }
+    }
+  }
+
+  @include respond-max($bp-960) {
+    grid-template-columns: 1fr;
+    .chart-main, .chart-side { height: 300px; }
+  }
+}
+
+// BREAKDOWN
+.breakdown-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-5 $spacing-6;
+  box-shadow: $shadow-sm;
+}
+
+.card-header { margin-bottom: $spacing-4; }
+
+.card-title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  margin: 0;
+}
+
+.card-subtitle {
+  font-size: $font-size-md;
+  color: $color-text-muted;
+  margin: $spacing-1 0 0;
+}
+
+.table-responsive { overflow-x: auto; }
+
+.breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    text-align: left;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: $color-text-muted;
+    padding: $spacing-2 $spacing-3;
+    border-bottom: $border-width-sm solid $color-border;
+  }
+
+  td {
+    font-size: $font-size-base;
+    padding: $spacing-3;
+    border-bottom: $border-width-sm solid $color-border-light;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  th.text-right,
+  td.text-right { text-align: right; }
+}
+
+.text-right { text-align: right; }
+
+.progress-col { width: 40%; }
+
+.progress-track {
+  height: 0.5rem;
+  background: $color-border-light;
+  border-radius: $radius-sm;
+  overflow: hidden;
+}
+
+.progress-fill {
+  display: block;
+  height: 100%;
+  background: $color-info;
+  border-radius: $radius-sm;
+}
+
+.empty-state {
+  text-align: center;
+  padding: $spacing-10 0;
+  color: $color-text-muted;
+
+  .empty-icon {
+    font-size: $font-size-4xl;
+    display: block;
+    margin-bottom: $spacing-2;
+  }
+}
+
+// RESPONSIVE
+@include respond-max($bp-1280) {
+  .trends-page { max-width: 100%; }
+}
+
+@include respond-max($bp-840) {
+  .trends-page { padding: $spacing-4 $spacing-4 $spacing-10 $spacing-4; }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .btn-primary { width: 100%; justify-content: center; }
+  }
+}
+
+@include respond-max($bp-480) {
+  .trends-page { padding: $spacing-3 $spacing-3 $spacing-8 $spacing-3; }
+
+  .page-title { font-size: $font-size-2xl; }
+
+  .tabs { width: 100%; justify-content: center; }
+
+  .breakdown-card { padding: $spacing-4; }
+
+  .breakdown-table th, .breakdown-table td { padding: $spacing-2; }
+}

@@ -1,0 +1,180 @@
+@use '../../../../../styles/variables' as *;
+
+.recent-income-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-5;
+  box-shadow: $shadow-sm;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-4;
+}
+
+.card-title {
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.card-subtitle {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+.table-responsive {
+  width: 100%;
+}
+
+.income-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: $font-size-base;
+
+  th:nth-child(1) { width: 11%; }  /* Date */
+  th:nth-child(2) { width: 34%; }  /* Description */
+  th:nth-child(3) { width: 17%; }  /* Source */
+  th:nth-child(4) { width: 20%; }  /* Account */
+  th:nth-child(5) { width: 12%; }  /* Amount */
+  th:nth-child(6) { width: 6%; }   /* Actions */
+
+  th {
+    text-align: left;
+    padding: $spacing-2 $spacing-3;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: $border-width-sm solid $color-border;
+  }
+
+  td {
+    padding: $spacing-2 $spacing-3;
+    border-bottom: $border-width-sm solid $color-border;
+    color: $color-text-primary;
+    vertical-align: middle;
+  }
+}
+
+.table-row {
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $color-background;
+  }
+
+  &:last-child td {
+    border-bottom: none;
+  }
+}
+
+.date-cell {
+  white-space: nowrap;
+  color: $color-text-muted;
+  font-size: $font-size-sm;
+}
+
+.desc-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.desc-cell,
+.desc-title,
+.desc-notes {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.desc-title {
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.desc-notes {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+.source-badge {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+}
+
+.account-text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.amount-positive {
+  font-weight: $font-weight-bold;
+  color: #1D4ED8;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.action-buttons {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-1;
+}
+
+.btn-action {
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-md;
+  border: 1px solid $color-border;
+  background: $color-white;
+  color: $color-text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $color-background;
+    color: $color-text-primary;
+  }
+
+  &.delete:hover {
+    background: #FEE2E2;
+    color: #DC2626;
+    border-color: #FCA5A5;
+  }
+}
+
+.empty-state {
+  padding: $spacing-8;
+  text-align: center;
+  color: $color-text-muted;
+}

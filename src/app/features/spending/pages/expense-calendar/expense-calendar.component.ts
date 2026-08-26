@@ -1,114 +1,76 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, computed, WritableSignal, Signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { SpendingFacade } from '../../facades/spending.facade';
 import { Expense } from '../../models/expense.model';
+import { CalendarDay } from '../../models/calendar-day.model';
+import { exportExpensesToCsv } from '../../utility/spending.helpers';
+import { buildCalendarDays } from '../../utility/spending.calculations';
 import { ExpenseDetailsDrawerComponent } from '../../components/expense-details-drawer/expense-details-drawer.component';
-
-interface CalendarDay {
-  date: Date;
-  dateString: string; // YYYY-MM-DD
-  dayNumber: number;
-  isCurrentMonth: boolean;
-  isToday: boolean;
-  totalSpending: number;
-  expenses: Expense[];
-}
 
 @Component({
   selector: 'app-expense-calendar',
   standalone: true,
-  imports: [CommonModule, DatePipe, DecimalPipe, ExpenseDetailsDrawerComponent],
+  imports: [CommonModule, RouterLink, DatePipe, DecimalPipe, ExpenseDetailsDrawerComponent],
   templateUrl: './expense-calendar.component.html',
-  styleUrl: './expense-calendar.component.scss'
+  styleUrl: './expense-calendar.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExpenseCalendarComponent implements OnInit {
-  private readonly spendingFacade = inject(SpendingFacade);
+  private readonly spendingFacade: SpendingFacade = inject(SpendingFacade);
+  private readonly today: Date = new Date();
 
-  currentDate = new Date(2026, 4, 29); // May 2026
-  calendarDays: CalendarDay[] = [];
-  selectedDay: CalendarDay | null = null;
+  readonly currentDate: WritableSignal<Date> = signal(new Date());
+  private readonly expenses: Signal<Expense[]> = toSignal(this.spendingFacade.allExpenses$, { initialValue: [] as Expense[] });
+  private readonly selectedDateString: WritableSignal<string | null> = signal<string | null>(null);
 
-  showDetailsDrawer = false;
+  readonly calendarDays: Signal<CalendarDay[]> = computed(() =>
+    buildCalendarDays(this.currentDate(), this.expenses(), this.today)
+  );
+
+  // Resolves the chosen day within the visible grid, falling back to today / first of month.
+  readonly selectedDay: Signal<CalendarDay | null> = computed(() => {
+    const days: CalendarDay[] = this.calendarDays();
+    const chosen: string | null = this.selectedDateString();
+    const found: CalendarDay | undefined = chosen ? days.find((d) => d.dateString === chosen) : undefined;
+    if (found) {
+      return found;
+    }
+    const firstDayIndex: number = new Date(this.currentDate().getFullYear(), this.currentDate().getMonth(), 1).getDay();
+    return days.find((d) => d.isToday) || days.find((d) => d.isCurrentMonth) || days[firstDayIndex] || null;
+  });
+
+  readonly currentYearMonthLabel: Signal<string> = computed(() =>
+    this.currentDate().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  );
+
+  showDetailsDrawer: boolean = false;
   activeExpense: Expense | null = null;
 
   ngOnInit(): void {
     this.spendingFacade.loadDashboard();
-    this.spendingFacade.allExpenses$.subscribe((expenses) => {
-      this.buildCalendar(expenses);
-    });
-  }
-
-  get currentYearMonthLabel(): string {
-    return this.currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   }
 
   changeMonth(delta: number): void {
-    this.currentDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + delta, 1);
-    this.spendingFacade.allExpenses$.subscribe((expenses) => {
-      this.buildCalendar(expenses);
-    });
-  }
-
-  buildCalendar(expenses: Expense[]): void {
-    const year = this.currentDate.getFullYear();
-    const month = this.currentDate.getMonth();
-
-    const firstDayIndex = new Date(year, month, 1).getDay();
-    const totalDays = new Date(year, month + 1, 0).getDate();
-    const prevMonthDays = new Date(year, month, 0).getDate();
-
-    const days: CalendarDay[] = [];
-
-    // Previous month padding
-    for (let i = firstDayIndex - 1; i >= 0; i--) {
-      const d = new Date(year, month - 1, prevMonthDays - i);
-      days.push(this.createDayObj(d, false, expenses));
-    }
-
-    // Current month days
-    for (let i = 1; i <= totalDays; i++) {
-      const d = new Date(year, month, i);
-      days.push(this.createDayObj(d, true, expenses));
-    }
-
-    // Next month padding to fill 35 or 42 grid cells
-    const remaining = (7 - (days.length % 7)) % 7;
-    for (let i = 1; i <= remaining; i++) {
-      const d = new Date(year, month + 1, i);
-      days.push(this.createDayObj(d, false, expenses));
-    }
-
-    this.calendarDays = days;
-
-    // Default selection: today or 29th
-    const target = days.find((d) => d.dayNumber === 29 && d.isCurrentMonth) || days[firstDayIndex];
-    if (target) {
-      this.selectedDay = target;
-    }
-  }
-
-  createDayObj(date: Date, isCurrentMonth: boolean, expenses: Expense[]): CalendarDay {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    const dateString = `${y}-${m}-${d}`;
-
-    const matchingExpenses = expenses.filter((e) => e.date === dateString);
-    const total = matchingExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-
-    return {
-      date,
-      dateString,
-      dayNumber: date.getDate(),
-      isCurrentMonth,
-      isToday: date.getDate() === 29 && date.getMonth() === 4 && date.getFullYear() === 2026,
-      totalSpending: total,
-      expenses: matchingExpenses
-    };
+    this.currentDate.set(new Date(this.currentDate().getFullYear(), this.currentDate().getMonth() + delta, 1));
   }
 
   selectDay(day: CalendarDay): void {
-    this.selectedDay = day;
+    this.selectedDateString.set(day.dateString);
+  }
+
+  severityClass(total: number): string {
+    switch (true) {
+      case total <= 0:
+        return '';
+      case total < 50:
+        return 'sev-low';
+      case total <= 100:
+        return 'sev-medium';
+      default:
+        return 'sev-high';
+    }
   }
 
   openExpenseDetails(exp: Expense): void {
@@ -117,29 +79,8 @@ export class ExpenseCalendarComponent implements OnInit {
   }
 
   exportDayReport(): void {
-    if (!this.selectedDay || this.selectedDay.expenses.length === 0) return;
-
-    const headers = ['Transaction ID', 'Date', 'Merchant', 'Category', 'Account', 'Payment Method', 'Amount ($)', 'Status', 'Notes'];
-    const rows = this.selectedDay.expenses.map((e) => [
-      `"${e.id}"`,
-      `"${e.date}"`,
-      `"${e.merchantName.replace(/"/g, '""')}"`,
-      `"${e.categoryName.replace(/"/g, '""')}"`,
-      `"${e.accountName.replace(/"/g, '""')}"`,
-      `"${e.paymentMethod || 'DEBIT_CARD'}"`,
-      e.amount,
-      `"${e.status || 'CLEARED'}"`,
-      `"${(e.notes || '').replace(/"/g, '""')}"`
-    ]);
-
-    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `spending_day_report_${this.selectedDay.dateString}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const sel: CalendarDay | null = this.selectedDay();
+    if (!sel || sel.expenses.length === 0) return;
+    exportExpensesToCsv(sel.expenses, `spending_day_report_${sel.dateString}`);
   }
 }

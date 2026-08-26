@@ -2,11 +2,13 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  computed,
+  effect,
   ElementRef,
+  input,
   OnChanges,
   OnDestroy,
   SimpleChanges,
-  input,
   ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -63,6 +65,34 @@ export class BarChart implements AfterViewInit, OnChanges, OnDestroy {
   readonly emptyState = input<boolean>(false);
 
   private chart: Chart<'bar'> | null = null;
+
+  readonly isEmpty = computed(() => {
+    if (this.emptyState()) {
+      return true;
+    }
+    const ds = this.datasets();
+    const lbls = this.labels();
+    return (
+      !ds ||
+      ds.length === 0 ||
+      !lbls ||
+      lbls.length === 0 ||
+      ds.every((d) => !d.data || d.data.length === 0 || d.data.every((v) => v === 0))
+    );
+  });
+
+  constructor() {
+    effect(() => {
+      this.labels();
+      this.datasets();
+      this.stacked();
+      this.horizontal();
+      this.currency();
+      if (this.chart) {
+        this.updateChart();
+      }
+    });
+  }
 
   ngAfterViewInit(): void {
     this.renderChart();
@@ -165,7 +195,7 @@ export class BarChart implements AfterViewInit, OnChanges, OnDestroy {
     }
 
     return this.currency()
-      ? `$${numericValue.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
-      : numericValue.toLocaleString('en-US');
+      ? `₹${numericValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
+      : numericValue.toLocaleString('en-IN');
   }
 }

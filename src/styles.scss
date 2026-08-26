@@ -5,7 +5,6 @@
 @use './styles/forms';
 @use './styles/tables';
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
 html {
   @include mat.theme(
     (
@@ -29,7 +28,7 @@ body {
   min-height: 100%;
 }
 html {
-  font-size: 16px;
+  font-size: 1rem;
 }
 body {
   margin: 0;
@@ -63,3 +62,71 @@ a {
   color: $color-white;
   background: $color-secondary;
 }
+
+/* ============================================================
+   ICON TOOLTIPS (reusable, hover/focus)
+   Usage: add data-tooltip="Label" to any element.
+   Optional: data-tooltip-align="start" | "end" to shift the
+   bubble when the element sits near a screen edge.
+   ============================================================ */
+
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 50%;
+
+  z-index: $z-index-toast;
+
+  padding: 0.3125rem 0.5rem;
+
+  border-radius: $radius-sm;
+
+  color: $color-white;
+  background: $color-text-primary;
+
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1;
+
+  white-space: nowrap;
+
+  pointer-events: none;
+
+  opacity: 0;
+  transform: translate(-50%, -0.25rem);
+
+  transition:
+    opacity $transition-fast,
+    transform $transition-fast;
+}
+
+[data-tooltip][data-tooltip-align='start']::after {
+  left: 0;
+  transform: translate(0, -0.25rem);
+}
+
+[data-tooltip][data-tooltip-align='end']::after {
+  left: auto;
+  right: 0;
+  transform: translate(0, -0.25rem);
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+[data-tooltip][data-tooltip-align='start']:hover::after,
+[data-tooltip][data-tooltip-align='start']:focus-visible::after,
+[data-tooltip][data-tooltip-align='end']:hover::after,
+[data-tooltip][data-tooltip-align='end']:focus-visible::after {
+  transform: translate(0, 0);
+}
+

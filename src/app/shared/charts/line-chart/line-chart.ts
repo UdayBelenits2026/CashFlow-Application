@@ -2,10 +2,12 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
+  computed,
   effect,
+  ElementRef,
   input,
   OnDestroy,
+  output,
   ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -52,54 +54,29 @@ export class LineChart implements AfterViewInit, OnDestroy {
   readonly datasets =
     input<ChartConfiguration<'line'>['data']['datasets']>([]);
   readonly emptyState = input<boolean>(false);
-
+  readonly showInfoIcon = input<boolean>(true);
+  readonly isLoading = input<boolean>(false);
+  readonly hasError = input<boolean>(false);
+  readonly retry = output<void>();
   private chart: Chart<'line'> | null = null;
+
+  readonly isEmpty = computed(() => {
+    if (this.emptyState()) {
+      return true;
+    }
+    const ds = this.datasets();
+    return !ds || ds.length === 0 || ds.every((d) => !d.data || d.data.length === 0);
+  });
 
   constructor() {
     effect(() => {
       const labels = this.labels();
-      const datasets = this.datasets();
-
+      const datasets = this.applyEnhancedStyling(this.datasets());
       if (this.chart) {
         this.chart.data.labels = labels;
-        this.chart.data.datasets = this.applyEnhancedStyling(datasets);
+        this.chart.data.datasets = datasets;
         this.chart.update();
       }
-    });
-  }
-
-  private applyEnhancedStyling(datasets: ChartConfiguration<'line'>['data']['datasets']): ChartConfiguration<'line'>['data']['datasets'] {
-    if (!this.chartCanvas?.nativeElement) return datasets;
-    const ctx = this.chartCanvas.nativeElement.getContext('2d');
-
-    return datasets.map((ds, index) => {
-      if (ctx && (index === 0 || ds.fill)) {
-        const gradient = ctx.createLinearGradient(0, 0, 0, 240);
-        gradient.addColorStop(0, 'rgba(37, 99, 235, 0.22)');
-        gradient.addColorStop(0.65, 'rgba(37, 99, 235, 0.05)');
-        gradient.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
-
-        return {
-          ...ds,
-          backgroundColor: gradient,
-          borderColor: ds.borderColor || '#2563EB',
-          borderWidth: 2.5,
-          tension: 0.4,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          pointBackgroundColor: '#2563EB',
-          pointBorderColor: '#ffffff',
-          pointBorderWidth: 2,
-          pointHoverBorderWidth: 3,
-        };
-      }
-      return {
-        ...ds,
-        borderWidth: 2,
-        tension: 0.4,
-        pointRadius: 3.5,
-        pointHoverRadius: 5.5,
-      };
     });
   }
 
@@ -179,17 +156,9 @@ export class LineChart implements AfterViewInit, OnDestroy {
                   color: '#f1f5f9',
                 },
                 ticks: {
-                  font: { size: 11, family: "'Roboto', sans-serif" },
-                  color: '#94a3b8',
-                  padding: 8,
-                  callback: (value: any) => {
-                    const num = Number(value);
-                    return num >= 1000 ? '₹' + (num / 1000) + 'K' : '₹' + num;
-                  },
-                },
-                border: {
-                  dash: [4, 4],
-                  display: false,
+                  font: { size: 11, family: "'Inter', sans-serif" },
+                  color: '#64748b',
+                  callback: (value: any) => '₹' + value / 1000 + 'K',
                 },
               },
               x: {
@@ -225,7 +194,26 @@ export class LineChart implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.chart?.destroy();
-    this.chart = null;
+  }
+
+  // Applies chart defaults while preserving any caller-provided dataset options.
+  private applyEnhancedStyling(
+    datasets: ChartConfiguration<'line'>['data']['datasets'],
+  ): ChartConfiguration<'line'>['data']['datasets'] {
+    return (datasets ?? []).map((dataset) => ({
+      fill: false,
+      tension: 0.4,
+      borderWidth: 2.5,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      pointBackgroundColor: '#ffffff',
+      pointBorderWidth: 2,
+      ...dataset,
+    }));
+  }
+
+  onRetry(): void {
+    this.retry.emit();
   }
 }
 

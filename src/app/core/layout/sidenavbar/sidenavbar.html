@@ -21,7 +21,7 @@
             [class.active]="isParentRouteActive(item)"
             [attr.aria-expanded]="isExpanded(item)"
             [attr.aria-label]="item.label"
-            [attr.title]="layoutService.isSidebarCollapsed() ? item.label : null"
+            [attr.data-tooltip]="layoutService.isSidebarCollapsed() ? item.label : null"
             (click)="onParentItemClick(item)">
             <i [class]="item.icon" aria-hidden="true"></i>
             <span class="nav-label">{{ item.label }}</span>
@@ -37,14 +37,11 @@
                 <a
                   class="sub-navigation-item"
                   [routerLink]="child.route"
-                  routerLinkActive="active"
+                  [routerLinkActive]="'active'"
                   [routerLinkActiveOptions]="{ exact: child.exact ?? true }"
-                  [attr.title]="layoutService.isSidebarCollapsed() ? child.label : null"
                   (click)="closeMobileMenu()">
                   @if (child.icon) {
                     <i [class]="child.icon" aria-hidden="true"></i>
-                  } @else {
-                    <span class="sub-nav-indicator"></span>
                   }
                   <span class="sub-nav-label">{{ child.label }}</span>
                 </a>
@@ -58,7 +55,7 @@
           [routerLink]="item.route"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: item.route === '/' || item.route === '/dashboard' }"
-          [attr.title]="layoutService.isSidebarCollapsed() ? item.label : null"
+          [attr.data-tooltip]="layoutService.isSidebarCollapsed() ? item.label : null"
           (click)="closeMobileMenu()">
           <i [class]="item.icon" aria-hidden="true"></i>
           <span class="nav-label">{{ item.label }}</span>
@@ -71,8 +68,8 @@
     <button
       type="button"
       class="logout-button"
-      [attr.title]="layoutService.isSidebarCollapsed() ? 'Logout' : null"
-      (click)="closeMobileMenu()">
+      [attr.data-tooltip]="layoutService.isSidebarCollapsed() ? 'Logout' : null"
+      (click)="onLogout()">
       <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
       <span>Logout</span>
     </button>

@@ -1,0 +1,289 @@
+<div class="income-history-page">
+  @let rows = filteredIncomes();
+
+  <!-- Header -->
+  <div class="top-bar">
+    <div class="title-wrap">
+      <h1 class="page-title">Income History</h1>
+      <p class="page-subtitle">Search, filter, and audit all recorded incoming revenue transactions</p>
+    </div>
+
+    <div class="action-buttons">
+      <button type="button" class="btn-secondary" (click)="onExportCsv(rows)">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Export CSV
+      </button>
+      <button type="button" class="btn-primary" (click)="activeIncome.set(null); showAddModal.set(true)">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        + Record Income
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary Cards Row -->
+  <div class="summary-cards-grid">
+    <div class="summary-card">
+      <span class="card-label">Total Received</span>
+      <span class="card-val green">₹{{ totalReceived() | number:'1.2-2' }}</span>
+      <span class="card-sub">{{ rows.length }} recorded entries</span>
+    </div>
+
+    <div class="summary-card">
+      <span class="card-label">Transactions</span>
+      <span class="card-val">{{ rows.length }}</span>
+      <span class="card-sub">Filtered count</span>
+    </div>
+
+    <div class="summary-card">
+      <span class="card-label">Average Amount</span>
+      <span class="card-val">₹{{ averageAmount() | number:'1.2-2' }}</span>
+      <span class="card-sub">Per transaction</span>
+    </div>
+
+    <div class="summary-card">
+      <span class="card-label">Highest Receipt</span>
+      <span class="card-val">₹{{ highestAmount() | number:'1.2-2' }}</span>
+      <span class="card-sub">Single largest inflow</span>
+    </div>
+
+    <div class="summary-card">
+      <span class="card-label">Taxable Income</span>
+      <span class="card-val">₹{{ taxableTotal() | number:'1.2-2' }}</span>
+      <span class="card-sub">of ₹{{ totalReceived() | number:'1.2-2' }} total</span>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-panel">
+    <div class="filter-row main-search-row">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search by description, source, or notes..."
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event); onFilterChange()"
+        />
+      </div>
+
+      <div class="quick-filters">
+        <select class="filter-select" [ngModel]="selectedSource()" (ngModelChange)="selectedSource.set($event); onFilterChange()">
+          <option value="ALL">All Sources</option>
+          @for (src of sources(); track src.id) {
+            <option [value]="src.id">{{ src.name }}</option>
+          }
+        </select>
+
+        <select class="filter-select" [ngModel]="selectedAccount()" (ngModelChange)="selectedAccount.set($event); onFilterChange()">
+          <option value="ALL">All Accounts</option>
+          @for (acc of accounts(); track acc.id) {
+            <option [value]="acc.id">{{ acc.name }}</option>
+          }
+        </select>
+
+        <select class="filter-select" [ngModel]="selectedTaxable()" (ngModelChange)="selectedTaxable.set($event); onFilterChange()">
+          <option value="ALL">Tax Status: All</option>
+          <option value="TAXABLE">Taxable Only</option>
+          <option value="NON_TAXABLE">Non-Taxable Only</option>
+        </select>
+
+        <button type="button" class="btn-reset" (click)="resetFilters()">
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-row secondary-filter-row">
+      <div class="date-range-wrap">
+        <label class="range-label">From:</label>
+        <input type="date" class="date-input" [ngModel]="startDate()" (ngModelChange)="startDate.set($event); onFilterChange()" />
+        <label class="range-label">To:</label>
+        <input type="date" class="date-input" [ngModel]="endDate()" (ngModelChange)="endDate.set($event); onFilterChange()" />
+      </div>
+
+      <div class="amount-range-wrap">
+        <label class="range-label">Amount:</label>
+        <input type="number" class="amount-input" placeholder="Min" [ngModel]="minAmount()" (ngModelChange)="minAmount.set($event); onFilterChange()" />
+        <span class="range-sep">–</span>
+        <input type="number" class="amount-input" placeholder="Max" [ngModel]="maxAmount()" (ngModelChange)="maxAmount.set($event); onFilterChange()" />
+      </div>
+    </div>
+  </div>
+
+  @if (hasActiveFilters()) {
+    <div class="active-filters">
+      @if (searchTerm()) { <span class="chip">Search: “{{ searchTerm() }}” <button (click)="clearSearch()">✕</button></span> }
+      @if (selectedSource() !== 'ALL') { <span class="chip">Source: {{ sourceName(selectedSource(), sources()) }} <button (click)="clearSource()">✕</button></span> }
+      @if (selectedAccount() !== 'ALL') { <span class="chip">Account: {{ accountName(selectedAccount(), accounts()) }} <button (click)="clearAccount()">✕</button></span> }
+      @if (selectedTaxable() !== 'ALL') { <span class="chip">{{ selectedTaxable() === 'TAXABLE' ? 'Taxable' : 'Non-Taxable' }} <button (click)="clearTaxable()">✕</button></span> }
+      @if (startDate() || endDate()) { <span class="chip">Date: {{ startDate() || '…' }} → {{ endDate() || '…' }} <button (click)="clearDates()">✕</button></span> }
+      @if (minAmount() != null || maxAmount() != null) { <span class="chip">Amount: {{ minAmount() ?? 0 }}–{{ maxAmount() ?? '∞' }} <button (click)="clearAmount()">✕</button></span> }
+      <button class="chip-clear-all" (click)="resetFilters()">Clear all</button>
+    </div>
+  }
+
+  <!-- Data Table -->
+  <div class="table-card">
+    @if (isLoading()) {
+      <div class="skeleton-rows">
+        @for (n of [1,2,3,4,5,6]; track n) { <div class="skeleton-row"></div> }
+      </div>
+    } @else if (rows.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </div>
+        <h3>No income records found</h3>
+        <p>Try adjusting your search criteria or date filters.</p>
+        <button type="button" class="btn-secondary" (click)="resetFilters()">Clear Filters</button>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th class="sortable" (click)="setSort('date')">Date <span class="sort-arrow">{{ sortBy()==='date' ? (sortOrder()==='asc' ? '↑' : '↓') : '↕' }}</span></th>
+              <th class="sortable" (click)="setSort('description')">Description <span class="sort-arrow">{{ sortBy()==='description' ? (sortOrder()==='asc' ? '↑' : '↓') : '↕' }}</span></th>
+              <th class="sortable" (click)="setSort('source')">Income Source <span class="sort-arrow">{{ sortBy()==='source' ? (sortOrder()==='asc' ? '↑' : '↓') : '↕' }}</span></th>
+              <th>Destination Account</th>
+              <th>Tax Status</th>
+              <th class="sortable text-right" (click)="setSort('amount')">Amount <span class="sort-arrow">{{ sortBy()==='amount' ? (sortOrder()==='asc' ? '↑' : '↓') : '↕' }}</span></th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (inc of paginatedIncomes(); track inc.id) {
+              <tr class="table-row" (click)="onRowClick(inc)">
+                <td class="date-cell">{{ inc.date | date:'mediumDate' }}</td>
+                <td class="desc-cell">
+                  <span class="desc-main">{{ inc.description }}</span>
+                  @if (inc.notes) {
+                    <span class="desc-sub">{{ inc.notes }}</span>
+                  }
+                </td>
+                <td>
+                  <span
+                    class="source-badge"
+                    [style.backgroundColor]="(inc.sourceColor || '#2563EB') + '1A'"
+                    [style.color]="inc.sourceColor || '#2563EB'"
+                    [style.borderColor]="(inc.sourceColor || '#2563EB') + '33'"
+                  >
+                    {{ inc.sourceName }}
+                  </span>
+                </td>
+                <td class="account-cell">{{ inc.accountName }}</td>
+                <td>
+                  <span class="tax-badge" [ngClass]="inc.taxable ? 'taxable' : 'non-taxable'">
+                    {{ inc.taxable ? 'Taxable' : 'Non-Tax' }}
+                  </span>
+                </td>
+                <td class="amount-cell text-right">
+                  <span class="amount-val">+₹{{ inc.amount | number:'1.2-2' }}</span>
+                </td>
+                <td class="actions-cell text-center" (click)="$event.stopPropagation()">
+                  <div class="action-buttons-cell">
+                    <button type="button" class="btn-tbl-action" (click)="openEditModal(inc)" title="Edit">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      </svg>
+                    </button>
+                    <button type="button" class="btn-tbl-action delete" (click)="openDeleteDialog(inc)" title="Delete">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer -->
+      <div class="pagination-bar">
+        <div class="page-size-wrap">
+          <span>Rows per page:</span>
+          <select class="page-size-select" [ngModel]="pageSize()" (ngModelChange)="setPageSize(+$event)">
+            @for (opt of pageSizeOptions; track opt) {
+              <option [value]="opt">{{ opt }}</option>
+            }
+          </select>
+          <span class="total-info">
+            Showing {{ (currentPage() - 1) * pageSize() + 1 }} -
+            {{ pageRangeEnd() }} of {{ rows.length }}
+          </span>
+        </div>
+
+        <div class="pagination-nav">
+          <button
+            type="button"
+            class="btn-page"
+            [disabled]="currentPage() === 1"
+            (click)="setPage(currentPage() - 1)"
+          >
+            ‹ Prev
+          </button>
+          <span class="page-current">{{ currentPage() }} / {{ totalPages() }}</span>
+          <button
+            type="button"
+            class="btn-page"
+            [disabled]="currentPage() >= totalPages()"
+            (click)="setPage(currentPage() + 1)"
+          >
+            Next ›
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Drawers & Modals -->
+  @if (showDetailsDrawer()) {
+    <app-income-details-drawer
+      [income]="activeIncome()"
+      (close)="showDetailsDrawer.set(false)"
+      (edit)="openEditModal($event)"
+      (delete)="openDeleteDialog($event)"
+    ></app-income-details-drawer>
+  }
+
+  @if (showAddModal()) {
+    <app-add-income-modal
+      [income]="activeIncome()"
+      [sources]="sources()"
+      [accounts]="accounts()"
+      (close)="showAddModal.set(false); activeIncome.set(null)"
+      (save)="onSaveIncome($event)"
+      (update)="onUpdateIncome($event)"
+    ></app-add-income-modal>
+  }
+
+  @if (showDeleteDialog()) {
+    <app-income-delete-confirm-dialog
+      [itemAmount]="activeIncome()?.amount"
+      [itemDescription]="activeIncome()?.description"
+      [itemDate]="activeIncome()?.date"
+      [itemAccount]="activeIncome()?.accountName"
+      [itemSource]="activeIncome()?.sourceName"
+      (close)="showDeleteDialog.set(false)"
+      (confirm)="onConfirmDelete()"
+    ></app-income-delete-confirm-dialog>
+  }
+</div>

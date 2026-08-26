@@ -1,0 +1,37 @@
+<section class="summary-card" [class]="data().id">
+  @if (isLoading()) {
+    <div class="summary-icon">
+      <fa-icon [icon]="icons[data().icon]"></fa-icon>
+    </div>
+    <div class="summary-content skeleton-content amount-only-loading">
+      <p>{{ data().title }}</p>
+      <span class="skeleton-line wide"></span>
+      <span class="skeleton-line medium"></span>
+    </div>
+  } @else {
+    <div class="summary-icon">
+      <fa-icon [icon]="icons[data().icon]"></fa-icon>
+    </div>
+    <div class="summary-content">
+      <p>{{ data().title }}</p>
+      @if (hasError()) {
+        <h2>&mdash; &mdash;</h2>
+        <span class="error-state">
+          <fa-icon [icon]="errorIcon"></fa-icon>
+          Please try again
+        </span>
+      } @else {
+        <h2>{{ data().amount | currency: 'INR' : 'symbol' : '1.2-2' }}</h2>
+        <span [class]="data().trend">
+          @if (data().amount === 0) {
+            —
+          } @else {
+            <fa-icon [icon]="trendIcons[data().trend]"></fa-icon>
+            {{ data().percentage }}%
+          }
+          <small>{{ data().comparison }}</small>
+        </span>
+      }
+    </div>
+  }
+</section>

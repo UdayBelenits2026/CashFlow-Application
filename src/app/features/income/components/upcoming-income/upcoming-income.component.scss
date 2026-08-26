@@ -1,0 +1,170 @@
+@use '../../../../../styles/variables' as *;
+
+.upcoming-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-5;
+  box-shadow: $shadow-sm;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-4;
+}
+
+.card-title {
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.card-subtitle {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+}
+
+.upcoming-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+}
+
+.upcoming-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-3 $spacing-4;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  background: $color-card;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: #CBD5E1;
+    background: $color-background;
+  }
+}
+
+.item-left {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+}
+
+.source-indicator {
+  width: 4px;
+  height: 36px;
+  border-radius: 9999px;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.source-title {
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.account-pill {
+  font-size: 11px;
+  color: $color-text-muted;
+  background: $color-background;
+  padding: 1px 6px;
+  border-radius: $radius-sm;
+}
+
+.date-info {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.badge-upcoming {
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  color: #2563EB;
+  background: #EFF6FF;
+  padding: 1px 6px;
+  border-radius: $radius-sm;
+}
+
+.badge-due-today {
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  color: #D97706;
+  background: #FEF3C7;
+  padding: 1px 6px;
+  border-radius: $radius-sm;
+}
+
+.badge-overdue {
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  color: #DC2626;
+  background: #FEE2E2;
+  padding: 1px 6px;
+  border-radius: $radius-sm;
+}
+
+.item-right {
+  display: flex;
+  align-items: center;
+  gap: $spacing-4;
+}
+
+.amount-wrap {
+  text-align: right;
+}
+
+.amount-val {
+  display: block;
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.amount-type {
+  font-size: $font-size-xs;
+  color: $color-text-muted;
+}
+
+.btn-record {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-1;
+  padding: $spacing-2 $spacing-3;
+  background: #2563EB;
+  color: #ffffff;
+  border: none;
+  border-radius: $radius-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: #1D4ED8;
+  }
+}
+
+.empty-state {
+  padding: $spacing-6;
+  text-align: center;
+  color: $color-text-muted;
+}

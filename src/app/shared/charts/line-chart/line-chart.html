@@ -1,21 +1,30 @@
-<section class="chart-card" [class.empty-state]="emptyState()">
+<section class="chart-card" [class.empty-state]="isEmpty()">
   <header class="chart-header">
-    <div class="header-text">
-      <div class="title-row">
-        <h3 class="chart-title">{{ title() }}</h3>
-        @if (badge()) {
-          <span class="chart-badge">{{ badge() }}</span>
-        }
-      </div>
-      @if (subtitle()) {
-        <p class="chart-subtitle">{{ subtitle() }}</p>
+    <div class="header-left">
+      <h3>{{ title() }}</h3>
+      @if (showInfoIcon()) {
+        <span class="info-icon" title="Cash flow trend overview">&#9432;</span>
       }
     </div>
   </header>
 
   <div class="chart-container">
-    <canvas #chartCanvas></canvas>
-    @if (emptyState()) {
+    <canvas #chartCanvas [class.dimmed]="isLoading() || hasError() || isEmpty()"></canvas>
+    @if (isLoading()) {
+      <div class="chart-loading-state" aria-hidden="true">
+        <span class="loading-line wide"></span>
+        <span class="loading-line medium"></span>
+        <span class="loading-line short"></span>
+      </div>
+    } @else if (hasError()) {
+      <div class="chart-error-state">
+        <div class="error-icon">!</div>
+        <p>We couldn't load the chart right now.</p>
+        <small>Please refresh and try again.</small>
+        <button class="retry-btn" type="button" (click)="onRetry()">Retry</button>
+      </div>
+    }
+    @if (!isLoading() && !hasError() && isEmpty()) {
       <div class="empty-chart-state" role="status" aria-label="No cash flow data yet">
         <div class="empty-chart-legend">
           <span class="legend-item income"><i></i>Income</span>
@@ -24,7 +33,8 @@
         </div>
         <div class="empty-chart-plot">
           <div class="empty-chart-y-axis">
-            <span>₹3K</span><span>₹2K</span><span>₹1K</span><span>₹0</span><span>-₹1K</span><span>-₹2K</span><span>-₹3K</span>
+            <span>₹3K</span><span>₹2K</span><span>₹1K</span><span>₹0</span> <span>-₹1K</span
+            ><span>-₹2K</span><span>-₹3K</span>
           </div>
           <div class="empty-chart-grid"></div>
           <div class="empty-chart-x-axis">

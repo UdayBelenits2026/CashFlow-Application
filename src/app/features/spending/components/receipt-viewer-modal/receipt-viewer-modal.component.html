@@ -18,14 +18,18 @@
     <div class="modal-body">
       @if (expense()?.receiptUrl) {
         <div class="receipt-image-wrapper">
-          <img [src]="expense()?.receiptUrl" alt="Receipt preview" class="receipt-img" />
+          @if (isPdf()) {
+            <iframe [src]="safeReceiptUrl()" class="receipt-frame" title="Receipt document"></iframe>
+          } @else {
+            <img [src]="expense()?.receiptUrl" alt="Receipt preview" class="receipt-img" />
+          }
         </div>
 
         <!-- Metadata info -->
         <div class="meta-card">
           <div class="meta-item">
             <span class="meta-k">File Name</span>
-            <span class="meta-v">{{ expense()?.receiptFileName || 'receipt_scanned.pdf' }}</span>
+            <span class="meta-v">{{ expense()?.receiptFileName || 'receipt_scanned' }}</span>
           </div>
           <div class="meta-item">
             <span class="meta-k">Upload Date</span>
@@ -33,11 +37,11 @@
           </div>
           <div class="meta-item">
             <span class="meta-k">File Size</span>
-            <span class="meta-v">485 KB</span>
+            <span class="meta-v">{{ uploadedSizeLabel() || '—' }}</span>
           </div>
           <div class="meta-item">
             <span class="meta-k">File Type</span>
-            <span class="meta-v">PDF / Image Document</span>
+            <span class="meta-v">{{ uploadedType() || (isPdf() ? 'PDF Document' : 'Image') }}</span>
           </div>
         </div>
       } @else {
@@ -51,6 +55,10 @@
           </label>
         </div>
       }
+
+      @if (uploadError()) {
+        <div class="upload-error">⚠️ {{ uploadError() }}</div>
+      }
     </div>
 
     <!-- Footer -->
@@ -62,6 +70,14 @@
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
           </svg>
           Delete Receipt
+        </button>
+        <button type="button" class="btn-secondary" (click)="onDownload()">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download
         </button>
         <label class="btn-secondary file-label">
           Replace Receipt

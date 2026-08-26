@@ -1,24 +1,109 @@
-<section class="chart-card" [class.embedded]="embedded()">
+<section class="chart-card" [class.embedded]="embedded()" [class.compact]="compact()">
   @if (showTitle()) {
     <header class="chart-header">
       <div class="header-text">
         <div class="title-row">
           <h3 class="chart-title">{{ title() }}</h3>
         </div>
-        @if (subtitle()) {
-          <p class="chart-subtitle">{{ subtitle() }}</p>
-        }
       </div>
     </header>
   }
+
   <div class="chart-container doughnut-container">
-    @if (embedded()) {
-      <div class="doughnut-center">
-        <small>Total</small>
-        <span>{{ total() | currency: 'INR' : 'symbol' : '1.0-0' }}</span>
+
+    <!-- Main chart content -->
+    <div
+      class="doughnut-content-wrap"
+      [class.dimmed]="isLoading() || hasError() || isEmpty()"
+      [class.is-vertical]="isVertical()"
+    >
+      <div class="doughnut-plot-wrap">
+        <canvas #chartCanvas></canvas>
+      </div>
+
+      @if (showLegend() && !isEmpty()) {
+        <ul class="doughnut-legend">
+          @for (item of legendItems(); track item.index) {
+            <li class="legend-item">
+              <button
+                type="button"
+                class="legend-toggle"
+                [class.is-hidden]="item.hidden"
+                [attr.aria-pressed]="!item.hidden"
+                [attr.aria-label]="
+                  (item.hidden ? 'Show ' : 'Hide ') + item.label
+                "
+                (click)="toggleCategory(item.index)"
+              >
+                <span
+                  class="legend-dot"
+                  [style.background-color]="item.color"
+                  aria-hidden="true"
+                ></span>
+                <span class="legend-label" [title]="item.label">{{ item.label }}</span>
+                <span class="legend-percent">{{ item.percentage }}%</span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <!-- Loading state -->
+    @if (isLoading()) {
+      <div
+        class="chart-loading-state"
+        aria-hidden="true"
+      >
+        <div class="doughnut-skeleton"></div>
+
+        <span class="skeleton-line wide"></span>
+
+        <span class="skeleton-line medium"></span>
       </div>
     }
-    <canvas #chartCanvas></canvas>
+
+    <!-- Error state -->
+    @else if (hasError()) {
+      <div class="chart-error-state">
+        <div
+          class="error-icon"
+          aria-hidden="true"
+        >
+          !
+        </div>
+
+        <p>We couldn't load the chart right now.</p>
+
+        <small>Please refresh and try again.</small>
+
+        <button
+          class="retry-btn"
+          type="button"
+          (click)="onRetry()"
+        >
+          Retry
+        </button>
+      </div>
+    }
+
+    <!-- Empty state -->
+    @else if (isEmpty()) {
+      <div class="chart-empty-state">
+        <div class="empty-icon-wrap">
+          <i
+            class="fa-solid fa-chart-pie"
+            aria-hidden="true"
+          ></i>
+        </div>
+
+        <p>No spending data found.</p>
+
+        <small>
+          Add expenses to see your category breakdown.
+        </small>
+      </div>
+    }
+
   </div>
 </section>
-

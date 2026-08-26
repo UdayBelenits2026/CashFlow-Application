@@ -1,19 +1,19 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
-import { AuthTokenService } from '../services/auth-token.service';
+import { SessionService } from '../services/session.service';
 import { RoleGuardData } from '../models/auth.models';
 
 
 export const roleGuard: CanActivateFn = (route): boolean | UrlTree => {
-  const authTokenService = inject(AuthTokenService);
+  const sessionService = inject(SessionService);
   const router = inject(Router);
 
-  if (!authTokenService.isAuthenticated()) {
+  if (!sessionService.isAuthenticated()) {
     return router.createUrlTree(['/']);
   }
 
   const { roles = [] } = (route.data ?? {}) as RoleGuardData;
-  if (!roles.length || authTokenService.hasAnyRole(roles)) {
+  if (!roles.length || sessionService.hasAnyRole(roles)) {
     return true;
   }
 

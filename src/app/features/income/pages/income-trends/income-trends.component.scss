@@ -1,0 +1,226 @@
+@use '../../../../../styles/variables' as *;
+
+.income-trends-page {
+  padding: $spacing-6;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-6;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.page-title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  margin: $spacing-1 0 0 0;
+}
+
+/* KPI row */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: $spacing-4;
+
+  @include respond-max($bp-960) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @include respond-max($bp-600) { grid-template-columns: 1fr; }
+}
+
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-4;
+  box-shadow: $shadow-sm;
+}
+
+.kpi-icon {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.icon-total { background: $color-info-bg; color: $color-info; }
+  &.icon-avg { background: $color-info-bg; color: $color-primary; }
+  &.icon-peak { background: $color-warning-bg; color: $color-warning; }
+  &.icon-up { background: $color-success-bg; color: $color-success; }
+  &.icon-down { background: $color-danger-bg; color: $color-danger; }
+}
+
+.kpi-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.kpi-label {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.kpi-val {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  line-height: 1.1;
+
+  &.val-up { color: $color-success; }
+  &.val-down { color: $color-danger; }
+}
+
+.kpi-sub {
+  font-size: $font-size-xs;
+  color: $color-text-light;
+}
+
+.chart-box {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+
+.table-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+
+.table-header {
+  padding: $spacing-4 $spacing-5;
+  background: $color-background;
+  border-bottom: 1px solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-3;
+}
+
+.table-title {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.table-count {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-muted;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.trends-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $font-size-sm;
+
+  th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    text-align: left;
+    padding: $spacing-3 $spacing-5;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    color: $color-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: $color-background;
+    border-bottom: 1px solid $color-border;
+  }
+
+  td {
+    padding: $spacing-3 $spacing-5;
+    border-bottom: 1px solid $color-border;
+    color: $color-text-primary;
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background $transition-fast;
+
+    &:hover { background: $color-info-bg; }
+
+    &:last-child td { border-bottom: none; }
+  }
+}
+
+.text-right { text-align: right; }
+.trends-table th.text-right { text-align: right; }
+
+.amount-actual { font-weight: $font-weight-bold; color: $color-info; }
+.amount-muted { color: $color-text-muted; }
+.amount-projected { font-weight: $font-weight-semibold; color: $color-primary; }
+
+.variance-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  padding: 2px 8px;
+  border-radius: 9999px;
+
+  &.pos { background: $color-success-bg; color: $color-success; }
+  &.neg { background: $color-danger-bg; color: $color-danger; }
+}
+
+.totals-row td {
+  border-top: 2px solid $color-border;
+  border-bottom: none;
+  background: $color-background;
+  font-weight: $font-weight-semibold;
+}
+
+.empty-state {
+  padding: $spacing-12 $spacing-6;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-1;
+}
+
+.empty-icon {
+  font-size: $font-size-4xl;
+  margin-bottom: $spacing-2;
+  opacity: 0.7;
+}
+
+.empty-title {
+  font-size: $font-size-base;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.empty-sub {
+  font-size: $font-size-sm;
+  color: $color-text-muted;
+  margin: 0;
+}

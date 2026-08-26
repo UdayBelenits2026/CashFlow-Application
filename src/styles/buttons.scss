@@ -1,32 +1,27 @@
 @use './variables' as *;
-
-
+ 
+ 
 // ============================================================
 // Base Button
 // ============================================================
-
+ 
 .btn {
   display: inline-flex;
-
   align-items: center;
   justify-content: center;
-
-  gap: 8px;
-
-  min-height: 42px;
-
-  padding: 0 18px;
-
-  border: 1px solid transparent;
+  gap: 0.5rem;
+  min-height: 2.625rem;
+  padding: 0 1.125rem;
+  border: 0.0625rem solid transparent;
 
   border-radius: $radius-md;
-
+ 
   font-family: inherit;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
-
+ 
   cursor: pointer;
-
+ 
   transition:
     background $transition-normal,
     border-color $transition-normal,
@@ -34,101 +29,95 @@
     box-shadow $transition-normal,
     transform $transition-fast;
 }
-
-
+ 
+ 
 .btn:hover:not(:disabled) {
-  transform: translateY(-1px);
+  transform: translateY(-0.0625rem);
 }
-
-
+ 
+ 
 .btn:active:not(:disabled) {
   transform: translateY(0);
 }
-
-
+ 
+ 
 .btn:disabled {
   opacity: 0.55;
-
+ 
   cursor: not-allowed;
 }
-
-
+ 
+ 
 // ============================================================
 // Primary Button
 // ============================================================
-
+ 
 .btn-primary {
   color: $color-white;
-
   border-color: $color-primary;
-
   background: $color-primary;
 }
-
-
+ 
+ 
 .btn-primary:hover:not(:disabled) {
   border-color: $color-secondary;
-
+ 
   background: $color-secondary;
-
+ 
   box-shadow:
-    0 6px 16px rgba(11, 31, 58, 0.18);
+    0 0.375rem 1rem rgba(11, 31, 58, 0.18);
 }
-
-
+ 
+ 
 // ============================================================
 // Accent Button
 // ============================================================
-
+ 
 .btn-accent {
   color: $color-white;
-
   border-color: $color-accent;
-
   background: $color-accent;
 }
-
-
+ 
+ 
 .btn-accent:hover:not(:disabled) {
   background: #14895F;
 }
-
-
+ 
+ 
 // ============================================================
 // Secondary Button
 // ============================================================
-
+ 
 .btn-secondary {
   color: $color-primary;
-
   border-color: $color-border;
-
   background: $color-white;
 }
-
-
+ 
+ 
 .btn-secondary:hover:not(:disabled) {
   border-color: $color-secondary;
-
+ 
   background: #F8FAFC;
 }
-
-
+ 
+ 
 // ============================================================
 // Ghost Button
 // ============================================================
-
+ 
 .btn-ghost {
   color: $color-secondary;
-
+ 
   border-color: transparent;
-
+ 
   background: transparent;
 }
-
-
+ 
+ 
 .btn-ghost:hover:not(:disabled) {
   color: $color-accent;
-
+ 
   background: rgba(25, 169, 116, 0.06);
 }

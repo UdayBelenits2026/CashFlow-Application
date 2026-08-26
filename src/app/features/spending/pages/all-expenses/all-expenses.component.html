@@ -74,6 +74,18 @@
         </select>
       </div>
 
+      <!-- Payment Method Filter -->
+      <div class="filter-group">
+        <label class="filter-label">Payment Method</label>
+        <select class="filter-select" [(ngModel)]="selectedPayment" (ngModelChange)="onFilterChange()">
+          <option value="ALL">All Methods</option>
+          <option value="DEBIT_CARD">Debit Card</option>
+          <option value="CREDIT_CARD">Credit Card</option>
+          <option value="BANK_TRANSFER">Bank Transfer</option>
+          <option value="CASH">Cash</option>
+        </select>
+      </div>
+
       <!-- Sort By -->
       <div class="filter-group">
         <label class="filter-label">Sort Order</label>
@@ -83,6 +95,28 @@
           <option value="AMOUNT_DESC">Amount: High to Low</option>
           <option value="AMOUNT_ASC">Amount: Low to High</option>
         </select>
+      </div>
+    </div>
+
+    <div class="filters-row">
+      <!-- Date Range -->
+      <div class="filter-group">
+        <label class="filter-label">From Date</label>
+        <input type="date" class="filter-input" [(ngModel)]="startDate" (ngModelChange)="onFilterChange()" />
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">To Date</label>
+        <input type="date" class="filter-input" [(ngModel)]="endDate" (ngModelChange)="onFilterChange()" />
+      </div>
+
+      <!-- Amount Range -->
+      <div class="filter-group">
+        <label class="filter-label">Min Amount</label>
+        <input type="number" min="0" step="0.01" class="filter-input" placeholder="0" [(ngModel)]="minAmount" (ngModelChange)="onFilterChange()" />
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Max Amount</label>
+        <input type="number" min="0" step="0.01" class="filter-input" placeholder="Any" [(ngModel)]="maxAmount" (ngModelChange)="onFilterChange()" />
       </div>
 
       <!-- Reset Action -->
@@ -108,7 +142,7 @@
             <table class="expenses-table">
               <thead>
                 <tr>
-                  <th>Merchant / Payee</th>
+                  <th style="min-width: 240px;">Merchant / Payee</th>
                   <th>Category</th>
                   <th>Account</th>
                   <th>Payment Method</th>
@@ -125,18 +159,18 @@
                       <div class="merchant-avatar">{{ (exp.merchantName || 'E').charAt(0).toUpperCase() }}</div>
                       <div class="merchant-details">
                         <span class="m-name">{{ exp.merchantName }}</span>
-                        @if (exp.notes) {
-                          <span class="m-notes">{{ exp.notes }}</span>
+                        @if (exp.notes && exp.notes.trim() !== exp.merchantName.trim()) {
+                          <span class="m-notes" [title]="exp.notes">{{ exp.notes }}</span>
                         }
                       </div>
                     </td>
                     <td>
-                      <span class="category-pill" [style.backgroundColor]="(exp.categoryColor || '#475569') + '15'" [style.color]="exp.categoryColor || '#0F172A'">
-                        {{ exp.categoryName }}
+                      <span class="category-pill" [style.backgroundColor]="(exp.categoryColor || '#475569') + '18'" [style.color]="exp.categoryColor || '#0F172A'">
+                        {{ exp.categoryName || 'General' }}
                       </span>
                     </td>
                     <td class="account-cell">
-                      <span>{{ exp.accountName }}</span>
+                      <span>{{ exp.accountName || 'Main Checking' }}</span>
                     </td>
                     <td class="method-cell">
                       <span>{{ formatPayment(exp.paymentMethod) }}</span>

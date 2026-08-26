@@ -1,0 +1,337 @@
+@if (isOpen()) {
+  <div class="filter-backdrop" (click)="onClose()">
+    <aside class="dashboard-filter-drawer" (click)="$event.stopPropagation()">
+      <header class="filter-header">
+        <div class="header-title-wrap">
+          <div class="title-row">
+            <fa-icon [icon]="filterIcon" class="header-filter-icon"></fa-icon>
+            <h2>Filters</h2>
+          </div>
+          <p>Apply filters to customize the dashboard.</p>
+        </div>
+        <button class="close-btn" type="button" (click)="onClose()" aria-label="Close filters">
+          <fa-icon [icon]="closeIcon"></fa-icon>
+        </button>
+      </header>
+
+      <div class="filter-scroll-content">
+        <!-- Row 1: Date Filters (3 Columns) -->
+        <div class="grid-3">
+          <div class="field">
+            <label for="dateRange">Date Range</label>
+            <select
+              id="dateRange"
+              [value]="filter().dateRange"
+              (change)="updateFilter('dateRange', $any($event.target).value)"
+            >
+              @for (option of dateRanges; track option.value) {
+                <option [value]="option.value" [selected]="filter().dateRange === option.value">
+                  {{ option.label }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="fromDate">From</label>
+            <input
+              id="fromDate"
+              type="date"
+              [class.input-error]="showDateError()"
+              [value]="filter().fromDate"
+              [disabled]="filter().dateRange !== 'custom'"
+              (change)="updateFilter('fromDate', $any($event.target).value)"
+            />
+          </div>
+
+          <div class="field">
+            <label for="toDate">To</label>
+            <input
+              id="toDate"
+              type="date"
+              [class.input-error]="showDateError()"
+              [value]="filter().toDate"
+              [disabled]="filter().dateRange !== 'custom'"
+              (change)="updateFilter('toDate', $any($event.target).value)"
+            />
+          </div>
+        </div>
+
+        @if (showDateError()) {
+          <div class="validation-error">From date cannot be later than To date.</div>
+        }
+
+        <!-- Row 2: Account / Income-Expense / Category (3 Columns) -->
+        <div class="grid-3">
+          <div class="field">
+            <label for="account">Account</label>
+            <select
+              id="account"
+              [value]="filter().account"
+              (change)="updateFilter('account', $any($event.target).value)"
+            >
+              @for (option of accounts; track option.value) {
+                <option [value]="option.value">
+                  {{ option.label }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="incomeExpense">Income / Expense</label>
+            <select
+              id="incomeExpense"
+              [value]="filter().incomeExpense"
+              (change)="updateFilter('incomeExpense', $any($event.target).value)"
+            >
+              @for (option of incomeExpenseOptions; track option.value) {
+                <option [value]="option.value">
+                  {{ option.label }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="category">Category</label>
+            <select
+              id="category"
+              [value]="filter().category"
+              (change)="updateFilter('category', $any($event.target).value)"
+            >
+              @for (option of categories; track option.value) {
+                <option [value]="option.value">
+                  {{ option.label }}
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 3: Amount Range -->
+        <div class="field amount-range-field">
+          <label>Amount Range</label>
+          <div class="amount-inputs">
+            <div class="input-with-prefix" [class.input-error]="showAmountError()">
+              <span class="currency-prefix">₹</span>
+              <input
+                type="number"
+                placeholder="2,000.00"
+                [value]="filter().minAmount ?? ''"
+                (input)="updateFilter('minAmount', $any($event.target).valueAsNumber || null)"
+              />
+            </div>
+            <span class="to-label">to</span>
+            <div class="input-with-prefix" [class.input-error]="showAmountError()">
+              <span class="currency-prefix">₹</span>
+              <input
+                type="number"
+                placeholder="1,000.00"
+                [value]="filter().maxAmount ?? ''"
+                (input)="updateFilter('maxAmount', $any($event.target).valueAsNumber || null)"
+              />
+            </div>
+          </div>
+          @if (showAmountError()) {
+            <div class="validation-error">Minimum amount must be less than maximum amount.</div>
+          }
+        </div>
+
+        <!-- Row 4: Merchant / Transaction Type (2 Columns) -->
+        <div class="grid-2">
+          <div class="field">
+            <label for="merchant">Merchant</label>
+            <div class="input-with-icon">
+              <fa-icon [icon]="searchIcon" class="field-icon"></fa-icon>
+              <input
+                id="merchant"
+                type="text"
+                placeholder="Search merchant..."
+                [value]="filter().merchant"
+                (input)="updateFilter('merchant', $any($event.target).value)"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="transactionType">Transaction Type</label>
+            <select
+              id="transactionType"
+              [value]="filter().transactionType"
+              (change)="updateFilter('transactionType', $any($event.target).value)"
+            >
+              @for (option of transactionTypes; track option.value) {
+                <option [value]="option.value">
+                  {{ option.label }}
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 5: Payment Method / Transaction Status (2 Columns) -->
+        <div class="grid-2">
+          <div class="field">
+            <label for="paymentMethod">Payment Method</label>
+            <select
+              id="paymentMethod"
+              [value]="filter().paymentMethod"
+              (change)="updateFilter('paymentMethod', $any($event.target).value)"
+            >
+              @for (option of paymentMethods; track option.value) {
+                <option [value]="option.value">
+                  {{ option.label }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="transactionStatus">Transaction Status</label>
+            <select
+              id="transactionStatus"
+              [value]="filter().transactionStatus"
+              (change)="updateFilter('transactionStatus', $any($event.target).value)"
+            >
+              @for (option of transactionStatuses; track option.value) {
+                <option [value]="option.value">
+                  {{ option.label }}
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 6: Tags / Recurring / Budget (3 Columns) -->
+        <div class="grid-3">
+          <div class="field">
+            <label for="tag">Tags</label>
+            <select
+              id="tag"
+              [value]="filter().tag"
+              (change)="updateFilter('tag', $any($event.target).value)"
+            >
+              @for (option of tags; track option.value) {
+                <option [value]="option.value">
+                  {{ option.label }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="recurring">Recurring</label>
+            <select
+              id="recurring"
+              [value]="filter().recurring"
+              (change)="updateFilter('recurring', $any($event.target).value)"
+            >
+              @for (option of recurringOptions; track option.value) {
+                <option [value]="option.value">
+                  {{ option.label }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="budget">Budget</label>
+            <select
+              id="budget"
+              [value]="filter().budget"
+              (change)="updateFilter('budget', $any($event.target).value)"
+            >
+              @for (option of budgets; track option.value) {
+                <option [value]="option.value">
+                  {{ option.label }}
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 7: Action Buttons (Reset / Apply Filters) -->
+        <div class="action-buttons">
+          <button type="button" class="reset-button" (click)="resetFilters()">Reset</button>
+          <button type="button" class="apply-button" (click)="applyFilters()">Apply Filters</button>
+        </div>
+
+        <!-- Row 9: Saved Filters Footer -->
+        <section class="saved-filters-section">
+          <div class="saved-filters-header">
+            <div class="saved-title">
+              <fa-icon [icon]="bookmarkIcon" class="bookmark-icon"></fa-icon>
+              <strong>Saved Filters</strong>
+            </div>
+            <div class="header-action-group">
+              <button
+                type="button"
+                class="save-filter-btn"
+                (click)="toggleSaveFilterInput()"
+                title="Save current filter configuration"
+              >
+                <fa-icon [icon]="plusIcon"></fa-icon>
+                <span>Save Current Filter</span>
+              </button>
+              <button type="button" class="manage-button" (click)="toggleManageFilters()">
+                {{ isManagingFilters() ? 'Done' : 'Manage' }}
+              </button>
+            </div>
+          </div>
+
+          @if (isSavingFilter()) {
+            <div class="save-filter-card">
+              <input
+                type="text"
+                placeholder="Enter filter name (e.g. Q3 Expenses)..."
+                [value]="newFilterName()"
+                (input)="newFilterName.set($any($event.target).value)"
+                (keyup.enter)="saveCurrentFilter()"
+              />
+              <div class="save-card-actions">
+                <button
+                  type="button"
+                  class="save-confirm-btn"
+                  [disabled]="!newFilterName().trim()"
+                  (click)="saveCurrentFilter()"
+                >
+                  Save
+                </button>
+                <button type="button" class="save-cancel-btn" (click)="toggleSaveFilterInput()">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          }
+
+          <div class="saved-filter-list">
+            @for (item of savedFilters(); track item.id) {
+              <div
+                class="saved-filter-chip"
+                [class.active]="activeSavedFilterId() === item.id"
+                (click)="applySavedFilter(item)"
+              >
+                <span>{{ item.name }}</span>
+                @if (isManagingFilters()) {
+                  <button
+                    type="button"
+                    class="chip-delete-btn"
+                    title="Delete saved filter"
+                    (click)="deleteSavedFilter(item.id, $event)"
+                  >
+                    <fa-icon [icon]="trashIcon"></fa-icon>
+                  </button>
+                } @else {
+                  <fa-icon [icon]="ellipsisIcon" class="chip-more-icon"></fa-icon>
+                }
+              </div>
+            } @empty {
+              <p class="no-saved-filters-text">No saved filters available.</p>
+            }
+          </div>
+        </section>
+      </div>
+    </aside>
+  </div>
+}

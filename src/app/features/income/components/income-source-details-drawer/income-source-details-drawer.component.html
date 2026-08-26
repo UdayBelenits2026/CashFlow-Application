@@ -1,0 +1,126 @@
+@if (source(); as src) {
+  <div class="drawer-backdrop" (click)="onClose()">
+    <div class="drawer-panel" (click)="$event.stopPropagation()">
+      <!-- Header -->
+      <div class="drawer-header">
+        <div class="header-main">
+          <span
+            class="source-category-tag"
+            [style.backgroundColor]="(src.color || '#2563EB') + '20'"
+            [style.color]="src.color || '#2563EB'"
+          >
+            {{ src.type }}
+          </span>
+          <h2 class="drawer-title">{{ src.name }}</h2>
+        </div>
+        <button type="button" class="btn-close" (click)="onClose()" title="Close drawer">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Body Content -->
+      <div class="drawer-body">
+        <!-- Hero Metrics -->
+        <div class="hero-metric-box">
+          <span class="metric-label">Total Received (YTD)</span>
+          <span class="metric-amount">₹{{ (src.totalReceivedYtd || 0) | number:'1.2-2' }}</span>
+          <div class="status-indicator-row">
+            <span class="status-pill" [ngClass]="src.status === 'ACTIVE' ? 'active' : 'inactive'">
+              ● {{ src.status }}
+            </span>
+            @if (src.isRecurring) {
+              <span class="recurring-pill">Recurring ({{ src.frequency || 'Monthly' }})</span>
+            }
+          </div>
+        </div>
+
+        <!-- Details Grid -->
+        <div class="details-section">
+          <h3 class="section-title">Source Configuration</h3>
+          <div class="details-grid">
+            <div class="detail-row">
+              <span class="detail-label">Destination Account</span>
+              <span class="detail-val">{{ src.accountName || 'Chase Checking' }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Expected Baseline</span>
+              <span class="detail-val">₹{{ (src.expectedAmount || 0) | number:'1.2-2' }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Tax Status</span>
+              <span class="detail-val">{{ src.taxable ? 'Taxable' : 'Non-Taxable' }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Next Expected Date</span>
+              <span class="detail-val">{{ src.nextExpectedDate || 'Not Scheduled' }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Last Received</span>
+              <span class="detail-val">{{ src.lastReceivedDate || 'No records' }}</span>
+            </div>
+            @if (src.description) {
+              <div class="detail-row full-width">
+                <span class="detail-label">Description / Details</span>
+                <span class="detail-val">{{ src.description }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Associated Transactions -->
+        <div class="transactions-section">
+          <div class="section-header">
+            <h3 class="section-title">Associated Transactions</h3>
+            <span class="tx-count">{{ sourceIncomes().length }} entries</span>
+          </div>
+
+          @if (sourceIncomes().length === 0) {
+            <div class="empty-tx">
+              <p>No recorded transactions found for this source yet.</p>
+            </div>
+          } @else {
+            <div class="tx-list">
+              @for (inc of sourceIncomes(); track inc.id) {
+                <div class="tx-item">
+                  <div class="tx-left">
+                    <span class="tx-desc">{{ inc.description }}</span>
+                    <span class="tx-date">{{ inc.date | date:'mediumDate' }}</span>
+                  </div>
+                  <span class="tx-amount">+₹{{ inc.amount | number:'1.2-2' }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="drawer-footer">
+        <button type="button" class="btn-record-action" (click)="onRecord()">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Record Income Now
+        </button>
+
+        <div class="secondary-actions">
+          <button type="button" class="btn-edit" (click)="onEdit()">
+            Edit Source
+          </button>
+          <button
+            type="button"
+            class="btn-status"
+            [ngClass]="src.status === 'ACTIVE' ? 'deactivate' : 'activate'"
+            (click)="onToggle()"
+          >
+            {{ src.status === 'ACTIVE' ? 'Deactivate' : 'Activate' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

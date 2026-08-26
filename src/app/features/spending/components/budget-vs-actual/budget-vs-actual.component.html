@@ -1,0 +1,59 @@
+<div class="budget-card">
+  <div class="card-header">
+    <div>
+      <h3 class="card-title">Budget vs Actual</h3>
+      <p class="card-subtitle">Category spending against monthly limits</p>
+    </div>
+  </div>
+
+  @if (items().length > 0) {
+    <div class="table-responsive">
+      <table class="budget-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th class="text-right">Budget</th>
+            <th class="text-right">Spent</th>
+            <th class="progress-col">% Used</th>
+            <th class="text-center">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items(); track item.id) {
+            <tr>
+              <td>
+                <span class="cat-dot" [style.background]="item.color"></span>
+                {{ item.name }}
+              </td>
+              <td class="text-right">₹{{ item.budget | number:'1.0-0' }}</td>
+              <td class="text-right">₹{{ item.spent | number:'1.0-0' }}</td>
+              <td class="progress-col">
+                <div class="progress-wrap">
+                  <div class="progress-track">
+                    <span
+                      class="progress-fill"
+                      [class.over]="item.status === 'OVER_BUDGET'"
+                      [class.warning]="item.status === 'WARNING'"
+                      [style.width.%]="item.percentUsed > 100 ? 100 : item.percentUsed"
+                    ></span>
+                  </div>
+                  <span class="progress-label">{{ item.percentUsed }}%</span>
+                </div>
+              </td>
+              <td class="text-center">
+                <span class="status-badge" [ngClass]="statusClass(item.status)">
+                  {{ statusLabel(item.status) }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <span class="empty-icon">🎯</span>
+      <p>No category budgets configured.</p>
+    </div>
+  }
+</div>

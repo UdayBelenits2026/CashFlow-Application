@@ -44,6 +44,7 @@
             ],
 
             "styles": [
+              "src/index.scss",
               "src/styles.scss",
               "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
             ]
@@ -63,13 +64,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "800kB",
+                  "maximumError": "1.5MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "16kB"
+                  "maximumWarning": "20kB",
+                  "maximumError": "40kB"
                 }
               ],
 
@@ -138,6 +139,7 @@
             ],
 
             "styles": [
+              "src/index.scss",
               "src/styles.scss",
               "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
             ]

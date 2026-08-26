@@ -2,7 +2,7 @@
 
 .chart-card {
   padding: $spacing-5;
-  border: 1px solid $color-border;
+  border: 0.0625rem solid $color-border;
   border-radius: $radius-xl;
   background: $color-card;
   height: 100%;
@@ -10,65 +10,156 @@
   flex-direction: column;
   box-sizing: border-box;
   overflow: hidden;
-  font-family: $font-family-base;
-  box-shadow: $shadow-sm;
-  transition: box-shadow $transition-fast, border-color $transition-fast;
-
-  &:hover {
-    box-shadow: $shadow-md;
-    border-color: $color-border-hover;
-  }
 }
 
+.chart-card header,
 .chart-header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: $spacing-3;
+  margin-bottom: 0.75rem;
 }
 
-.header-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.title-row {
+.header-left {
   display: flex;
   align-items: center;
-  gap: $spacing-2;
+  gap: 0.375rem;
 }
 
-.chart-title {
+.chart-card header h3,
+.chart-header h3 {
   margin: 0;
-  color: $color-text-primary;
-  font-size: $font-size-lg;
-  font-weight: $font-weight-bold;
-  letter-spacing: -0.01em;
+  color: #1e293b;
+  font-size: 0.9375rem;
+  font-weight: 600;
 }
 
-.chart-badge {
-  font-size: $font-size-xs;
-  font-weight: $font-weight-bold;
-  padding: 2px $spacing-2;
-  border-radius: $radius-sm;
-  background: $color-info-bg;
-  color: $color-primary-button;
+.info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  cursor: help;
 }
 
-.chart-subtitle {
-  margin: 0;
-  color: $color-text-muted;
-  font-size: $font-size-xs;
-  line-height: $line-height-normal;
+.period-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5625rem;
+  background: #ffffff;
+  border: 0.0625rem solid #e2e8f0;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+  }
+
+  .chevron {
+    font-size: 0.9rem;
+    line-height: 1;
+    color: #64748b;
+    position: relative;
+    bottom: 0.3125rem;
+  }
 }
 
 .chart-container {
   flex: 1;
   position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: 250px;
+  min-height: 16.25rem;
+}
+
+.chart-container canvas.dimmed {
+  opacity: 0;
+}
+
+.chart-loading-state,
+.chart-error-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.loading-line {
+  position: relative;
+  display: block;
+  height: 0.625rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: #e2e8f0;
+  margin: 0.375rem 0;
+}
+
+.loading-line::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .7), transparent);
+  animation: line-skeleton-shimmer 1.3s infinite;
+}
+
+.loading-line.wide {
+  width: 80%;
+}
+
+.loading-line.medium {
+  width: 65%;
+}
+
+.loading-line.short {
+  width: 48%;
+}
+
+.chart-error-state {
+  text-align: center;
+}
+
+.error-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff1f2;
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.chart-error-state p {
+  margin: 0.625rem 0 0.25rem;
+  color: #1e293b;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.chart-error-state small {
+  color: #64748b;
+  font-size: 0.75rem;
+}
+
+.retry-btn {
+  margin-top: 0.75rem;
+  border: 0.0625rem solid #c7d2fe;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #2563eb;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.4375rem 1rem;
 }
 
 .empty-chart-state {
@@ -76,7 +167,7 @@
   inset: 0;
   display: flex;
   flex-direction: column;
-  padding-top: 2px;
+  padding-top: 0.125rem;
   background: $color-card;
 }
 
@@ -120,7 +211,7 @@
   flex-direction: column;
   justify-content: space-between;
   color: $color-text-muted;
-  font-size: 9px;
+  font-size: 0.5625rem;
 }
 
 .empty-chart-grid {
@@ -129,9 +220,9 @@
   background: repeating-linear-gradient(
     to bottom,
     transparent 0,
-    transparent calc(16.66% - 1px),
+    transparent calc(16.66% - 0.0625rem),
     $color-border-light 16.66%,
-    $color-border-light calc(16.66% + 1px)
+    $color-border-light calc(16.66% + 0.0625rem)
   );
 }
 
@@ -143,12 +234,15 @@
   display: flex;
   justify-content: space-between;
   color: $color-text-muted;
-  font-size: 9px;
+  font-size: 0.5625rem;
 }
 
 .chart-card.empty-state canvas {
   visibility: hidden;
 }
 
-
-
+@keyframes line-skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

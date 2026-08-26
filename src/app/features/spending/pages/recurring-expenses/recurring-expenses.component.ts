@@ -1,24 +1,27 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Observable } from 'rxjs';
 import { SpendingFacade } from '../../facades/spending.facade';
 import { RecurringExpense } from '../../models/recurring-expense.model';
+import { MONTHS_PER_YEAR, WEEKS_PER_MONTH } from '../../utility/spending.constants';
+import { DeleteConfirmDialogComponent } from '../../components/delete-confirm-dialog/delete-confirm-dialog.component';
 
 @Component({
   selector: 'app-recurring-expenses',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, DatePipe, DecimalPipe],
+  imports: [CommonModule, ReactiveFormsModule, DatePipe, DecimalPipe, DeleteConfirmDialogComponent],
   templateUrl: './recurring-expenses.component.html',
   styleUrl: './recurring-expenses.component.scss'
 })
 export class RecurringExpensesComponent implements OnInit {
-  private readonly spendingFacade = inject(SpendingFacade);
-  private readonly fb = inject(FormBuilder);
+  private readonly spendingFacade: SpendingFacade = inject(SpendingFacade);
+  private readonly fb: FormBuilder = inject(FormBuilder);
 
-  readonly recurringExpenses$ = this.spendingFacade.recurringExpenses$;
+  readonly recurringExpenses$: Observable<RecurringExpense[]> = this.spendingFacade.recurringExpenses$;
 
-  showAddModal = false;
+  showAddModal: boolean = false;
+  deleteTargetId: string | null = null;
   subForm!: FormGroup;
 
   ngOnInit(): void {
@@ -46,8 +49,8 @@ export class RecurringExpensesComponent implements OnInit {
     return list
       .filter((r) => r.isActive)
       .reduce((sum, r) => {
-        if (r.frequency === 'YEARLY') return sum + r.amount / 12;
-        if (r.frequency === 'WEEKLY') return sum + r.amount * 4.33;
+        if (r.frequency === 'YEARLY') return sum + r.amount / MONTHS_PER_YEAR;
+        if (r.frequency === 'WEEKLY') return sum + r.amount * WEEKS_PER_MONTH;
         return sum + r.amount;
       }, 0);
   }
@@ -57,9 +60,12 @@ export class RecurringExpensesComponent implements OnInit {
   }
 
   deleteItem(id: string): void {
-    if (confirm('Remove this recurring subscription?')) {
-      this.spendingFacade.deleteRecurringExpense(id);
-    }
+    this.deleteTargetId = id;
+  }
+
+  onConfirmDelete(id: string): void {
+    this.spendingFacade.deleteRecurringExpense(id);
+    this.deleteTargetId = null;
   }
 
   openAddModal(): void {

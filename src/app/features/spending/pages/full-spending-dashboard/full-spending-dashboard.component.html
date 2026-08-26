@@ -1,0 +1,163 @@
+<div class="full-dashboard-page">
+  <!-- Toast Notifications -->
+  @if (successMessage$ | async; as msg) {
+    <div class="toast-banner success">
+      <span>✨ {{ msg }}</span>
+      <button class="btn-toast-close" (click)="onClearFeedback()">✕</button>
+    </div>
+  }
+
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-left">
+      <h1 class="page-title">Spending Dashboard</h1>
+      <p class="page-subtitle">Explore your spending in detail across categories, merchants, and budgets.</p>
+    </div>
+
+    <div class="header-actions">
+      <div class="select-box">
+        <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+        <select [(ngModel)]="selectedPeriod" aria-label="Select time period">
+          <option value="THIS_MONTH">This Month</option>
+          <option value="LAST_MONTH">Last Month</option>
+          <option value="LAST_30_DAYS">Last 30 Days</option>
+          <option value="YTD">Year to Date</option>
+        </select>
+      </div>
+      <div class="select-box">
+        <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
+        <select [(ngModel)]="selectedAccount" aria-label="Select account">
+          <option value="ALL">All Accounts</option>
+          <option value="Main Checking">Main Checking</option>
+          <option value="Chase Sapphire">Chase Sapphire</option>
+          <option value="Amex Gold">Amex Gold</option>
+          <option value="Cash Wallet">Cash Wallet</option>
+        </select>
+      </div>
+      <a class="btn-primary" routerLink="/spending/expenses">View All Expenses</a>
+    </div>
+  </div>
+
+  @if (isLoading$ | async) {
+    <div class="skeleton-container">
+      <div class="skeleton-kpis"></div>
+      <div class="skeleton-charts"></div>
+    </div>
+  } @else {
+    <!-- KPI Cards -->
+    <section class="section-kpis">
+      <app-spending-kpi-cards [overview]="overview$ | async"></app-spending-kpi-cards>
+    </section>
+
+    <!-- Charts -->
+    <section class="section-analytics">
+      <div class="analytics-left">
+        <app-cf-line-chart
+          [title]="'Spending Trend'"
+          [subtitle]="'Current vs previous period'"
+          [labels]="(trendLabels$ | async) || []"
+          [datasets]="(trendDatasets$ | async) || []"
+        ></app-cf-line-chart>
+      </div>
+      <div class="analytics-right">
+        <app-cf-doughnut-chart
+          [title]="'Spending by Category'"
+          [subtitle]="'Distribution across all categories'"
+          [total]="(categoryTotal$ | async) || 0"
+          [labels]="(categoryLabels$ | async) || []"
+          [datasets]="(categoryDatasets$ | async) || []"
+          [compact]="true"
+        ></app-cf-doughnut-chart>
+      </div>
+    </section>
+
+    <!-- Recent Expenses (full width) -->
+    <section class="recent-expenses-section">
+      <app-recent-expenses
+        [expenses]="(recentExpenses$ | async) || []"
+        (expenseSelected)="onExpenseSelected($event)"
+      ></app-recent-expenses>
+    </section>
+
+    <!-- Bottom Row: Top Merchants + Budget vs Actual -->
+    <section class="bottom-grid">
+      <app-top-merchants
+        [merchants]="(topMerchants$ | async) || []"
+        [limit]="6"
+        [showViewAll]="false"
+      ></app-top-merchants>
+      <app-budget-vs-actual [items]="(budgetVsActual$ | async) || []"></app-budget-vs-actual>
+    </section>
+
+    <!-- Quick Insights -->
+    <section class="section-insights">
+      <div class="insights-card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Quick Insights</h3>
+            <p class="card-subtitle">Smart observations about your spending</p>
+          </div>
+          <a class="btn-view-all" routerLink="/spending/insights">View All Insights</a>
+        </div>
+        <div class="insights-grid">
+          @for (ins of (insights$ | async) || []; track ins.id) {
+            <div class="insight-item" [ngClass]="insightAccentClass(ins.type)">
+              @if (ins.badge) { <span class="insight-badge">{{ ins.badge }}</span> }
+              <h4 class="insight-title">{{ ins.title }}</h4>
+              <p class="insight-message">{{ ins.message }}</p>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- Drawers & Modals -->
+  @if (showDetailsDrawer && activeExpense) {
+    <app-expense-details-drawer
+      [expense]="activeExpense"
+      (close)="showDetailsDrawer = false"
+      (edit)="openEditModal($event)"
+      (delete)="openDeleteDialog($event)"
+      (viewReceipt)="openReceiptViewer($event)"
+      (uploadReceipt)="openReceiptViewer($event)"
+      (split)="onSplitExpense($event)"
+    ></app-expense-details-drawer>
+  }
+
+  @if (showEditModal && activeExpense) {
+    <app-add-expense-modal
+      [expense]="activeExpense"
+      [categories]="(categories$ | async) || []"
+      (close)="showEditModal = false"
+      (update)="onUpdateExpense($event)"
+      (save)="onUpdateExpense($event)"
+    ></app-add-expense-modal>
+  }
+
+  @if (showSplitModal && activeExpense) {
+    <app-split-expense-modal
+      [expense]="activeExpense"
+      [categories]="(categories$ | async) || []"
+      (close)="showSplitModal = false"
+      (splitSaved)="onSaveSplits($event)"
+    ></app-split-expense-modal>
+  }
+
+  @if (showDeleteDialog && activeExpense) {
+    <app-delete-confirm-dialog
+      [expense]="activeExpense"
+      (cancel)="showDeleteDialog = false"
+      (confirm)="onConfirmDeleteExpense($event)"
+    ></app-delete-confirm-dialog>
+  }
+
+  @if (showReceiptViewer && activeExpense) {
+    <app-receipt-viewer-modal
+      [expense]="activeExpense"
+      (close)="showReceiptViewer = false"
+      (updateReceipt)="onUpdateReceipt($event)"
+      (removeReceipt)="onRemoveReceipt($event)"
+    ></app-receipt-viewer-modal>
+  }
+</div>

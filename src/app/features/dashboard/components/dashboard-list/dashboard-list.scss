@@ -1,0 +1,174 @@
+@use '../../../../../styles/variables' as *;
+@use '../../../../../styles/buttons' as *;
+
+.dashboard-list {
+  height: 100%;
+  padding: $spacing-4 1.125rem;
+  background: $color-card;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.list-card {
+  height: 100%;
+  .list-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-3;
+    h3 {
+      margin: 0;
+      color: $color-text-primary;
+      font-size: $font-size-lg;
+    }
+  }
+}
+.view-all-btn {
+  border: 0;
+  background: transparent;
+  color: $color-info;
+  font-size: 0.8125rem;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: $radius-md;
+  transition: background 0.15s ease;
+  &:hover {
+    background: $color-info-bg;
+  }
+}
+.list-error-state {
+  display: flex;
+  min-height: 11.25rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.list-empty-state {
+  display: flex;
+  min-height: 10rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem $spacing-4;
+  p {
+    margin: 0 0 $spacing-1;
+    color: $color-text-secondary;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+  }
+  small {
+    color: $color-text-light;
+    font-size: $font-size-base;
+  }
+}
+.list-skeleton-state {
+  display: grid;
+  gap: 0.625rem;
+  padding-top: 0.375rem;
+}
+.skeleton-line {
+  position: relative;
+  display: block;
+  height: 2.875rem;
+  border-radius: 0.625rem;
+  overflow: hidden;
+  background: $color-border-light;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+    animation: list-skeleton-shimmer 1.3s infinite;
+  }
+  &.wide {
+    width: 100%;
+  }
+  &.medium {
+    width: 82%;
+  }
+  &.short {
+    width: 68%;
+  }
+}
+.error-icon-wrap {
+  display: grid;
+  width: 2.625rem;
+  height: 2.625rem;
+  place-items: center;
+  border-radius: 50%;
+  background: $color-danger-bg;
+  color: $color-danger;
+}
+.list-error-state p {
+  margin: 0.625rem 0 0.25rem;
+  color: $color-text-primary;
+  font-size: 0.8125rem;
+  font-weight: $font-weight-semibold;
+}
+.list-error-state small {
+  color: $color-text-muted;
+  font-size: $font-size-base;
+}
+.retry-btn {
+  margin-top: $spacing-3;
+  border: $border-width-sm solid #c7d2fe;
+  border-radius: $radius-md;
+  background: $color-card;
+  color: $color-info;
+  cursor: pointer;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  padding: 0.4375rem $spacing-4;
+}
+.list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-2;
+  h3 {
+    margin: 0;
+    font-size: $font-size-lg;
+    color: $color-text-primary;
+  }
+}
+.view-all {
+  border: none;
+  background: transparent;
+  color: $color-info;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+.list-footer {
+  width: 100%;
+  padding-top: $spacing-3;
+  border: none;
+  border-top: $border-width-sm solid $color-border-light;
+  background: transparent;
+  color: $color-info;
+  font-size: 0.8125rem;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+}
+@keyframes list-skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+.reminder-btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-top: $spacing-4;
+  border-top: $border-width-sm solid $color-border-light;
+}
+.reminder-btn {
+  color: $color-info;
+  border: none;
+  background-color: $color-white;
+  cursor: pointer;
+  font-weight: $font-weight-medium;
+}

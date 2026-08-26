@@ -3,12 +3,12 @@ import { provideState } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { spendingFeatureKey, spendingReducer } from './store/spending.reducer';
 import { SpendingEffects } from './store/spending.effects';
-import { SpendingComponent } from './spending.component';
+import { SpendingShell } from './pages/spending-shell/spending-shell/spending-shell';
 
 export const SPENDING_ROUTES: Routes = [
   {
     path: '',
-    component: SpendingComponent,
+    component: SpendingShell,
     providers: [
       provideState(spendingFeatureKey, spendingReducer),
       provideEffects(SpendingEffects)
@@ -22,8 +22,8 @@ export const SPENDING_ROUTES: Routes = [
       {
         path: 'dashboard',
         loadComponent: () =>
-          import('./pages/spending-dashboard/spending-dashboard.component').then(
-            (m) => m.SpendingDashboardComponent
+          import('./pages/full-spending-dashboard/full-spending-dashboard.component').then(
+            (m) => m.FullSpendingDashboardComponent
           )
       },
       {
@@ -34,6 +34,13 @@ export const SPENDING_ROUTES: Routes = [
           )
       },
       {
+        path: 'trends',
+        loadComponent: () =>
+          import('./pages/spending-trends/spending-trends.component').then(
+            (m) => m.SpendingTrendsComponent
+          )
+      },
+      {
         path: 'calendar',
         loadComponent: () =>
           import('./pages/expense-calendar/expense-calendar.component').then(
@@ -41,10 +48,31 @@ export const SPENDING_ROUTES: Routes = [
           )
       },
       {
+        path: 'day-details/:date',
+        loadComponent: () =>
+          import('./pages/day-details/day-details.component').then(
+            (m) => m.DayDetailsComponent
+          )
+      },
+      {
         path: 'recurring',
         loadComponent: () =>
           import('./pages/recurring-expenses/recurring-expenses.component').then(
             (m) => m.RecurringExpensesComponent
+          )
+      },
+      {
+        path: 'insights',
+        loadComponent: () =>
+          import('./pages/spending-insights/spending-insights.component').then(
+            (m) => m.SpendingInsightsComponent
+          )
+      },
+      {
+        path: 'alerts',
+        loadComponent: () =>
+          import('./pages/spending-alerts/spending-alerts.component').then(
+            (m) => m.SpendingAlertsComponent
           )
       },
       {

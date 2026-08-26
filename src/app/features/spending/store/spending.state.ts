@@ -9,6 +9,7 @@ export interface ExpenseFilters {
   searchTerm: string;
   categoryId: string | null;
   accountId: string | null;
+  paymentMethod: string | null;
   startDate: string | null;
   endDate: string | null;
   minAmount: number | null;
@@ -25,7 +26,6 @@ export interface SpendingState {
   tags: Tag[];
   recurringExpenses: RecurringExpense[];
   alerts: SpendingAlert[];
-  selectedExpenseId: string | null;
   filters: ExpenseFilters;
   isLoading: boolean;
   error: string | null;
@@ -36,6 +36,7 @@ export const initialExpenseFilters: ExpenseFilters = {
   searchTerm: '',
   categoryId: null,
   accountId: null,
+  paymentMethod: null,
   startDate: null,
   endDate: null,
   minAmount: null,
@@ -52,7 +53,6 @@ export const initialSpendingState: SpendingState = {
   tags: [],
   recurringExpenses: [],
   alerts: [],
-  selectedExpenseId: null,
   filters: initialExpenseFilters,
   isLoading: false,
   error: null,

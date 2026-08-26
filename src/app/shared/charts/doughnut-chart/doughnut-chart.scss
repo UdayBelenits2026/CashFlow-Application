@@ -1,31 +1,60 @@
 @use '../../../../styles/variables' as *;
 
+// -----------------------------------------------------------------------------
+// Chart Card
+// -----------------------------------------------------------------------------
+
 .chart-card {
-  padding: $spacing-5;
-  border: 1px solid $color-border;
-  border-radius: $radius-xl;
-  background: $color-card;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
   width: 100%;
   height: 100%;
   min-height: 18rem;
+
   padding: 1.125rem;
-  border: 0.0625rem solid #e5e7eb;
-  border-radius: 0.875rem;
-  background: #ffffff;
+
+  display: flex;
+  flex-direction: column;
+
   box-sizing: border-box;
   overflow: hidden;
+
+  border: 0.0625rem solid $color-border;
+  border-radius: 0.875rem;
+
+  background: $color-card;
+
   font-family: $font-family-base;
+
   box-shadow: $shadow-sm;
-  transition: box-shadow $transition-fast, border-color $transition-fast;
+
+  transition:
+    box-shadow $transition-fast,
+    border-color $transition-fast;
 
   &:hover {
     box-shadow: $shadow-md;
     border-color: $color-border-hover;
   }
+
+  // Embedded mode: strip the card chrome so the chart drops cleanly into any
+  // host layout (small widgets, side panels, custom cards).
+  &.embedded {
+    min-height: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+
+    &:hover {
+      box-shadow: none;
+      border-color: transparent;
+    }
+  }
 }
+
+// -----------------------------------------------------------------------------
+// Header
+// -----------------------------------------------------------------------------
 
 .chart-header {
   margin-bottom: $spacing-3;
@@ -34,7 +63,7 @@
 .header-text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0.125rem;
 }
 
 .title-row {
@@ -45,82 +74,524 @@
 
 .chart-title {
   margin: 0;
+
   color: $color-text-primary;
+
   font-size: $font-size-lg;
   font-weight: $font-weight-bold;
+
   letter-spacing: -0.01em;
 }
 
 .chart-subtitle {
   margin: 0;
+
   color: $color-text-muted;
+
   font-size: $font-size-xs;
   line-height: $line-height-normal;
 }
 
+// -----------------------------------------------------------------------------
+// Chart Container
+// -----------------------------------------------------------------------------
+
 .chart-container {
   position: relative;
+
   width: 100%;
-  height: 100%;
-  min-height: 250px;
-  display: flex;
+  min-height: 12rem;
+
   flex: 1;
+
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  min-height: 16.25rem;
+
+  box-sizing: border-box;
 }
 
 .doughnut-container {
   position: relative;
+  min-height: 12rem;
 }
 
-// Centered total label shown inside the ring when the chart is embedded.
-.doughnut-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.125rem;
-  pointer-events: none;
-  text-align: center;
-
-  small {
-    color: $color-text-muted;
-    font-size: $font-size-xs;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-
-  span {
-    color: $color-text-primary;
-    font-size: $font-size-base;
-    font-weight: $font-weight-bold;
-  }
-}
-
-// Compact/embedded mode: drop the card chrome and fixed heights so the chart
-// fills a small parent-controlled box (used by the Accounts by Type section).
+// Embedded hosts control their own dimensions, so let the chart shrink to fit.
 .chart-card.embedded {
-  min-height: 0;
-  height: 100%;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-
-  &:hover {
-    box-shadow: none;
-    border-color: transparent;
-  }
-
-  .chart-container {
+  .chart-container,
+  .doughnut-container,
+  .chart-loading-state,
+  .chart-error-state,
+  .chart-empty-state {
     min-height: 0;
   }
 }
 
+// -----------------------------------------------------------------------------
+// Doughnut Content (chart + HTML legend)
+// -----------------------------------------------------------------------------
 
+.doughnut-content-wrap {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  gap: $spacing-4;
+
+  transition: opacity $transition-fast;
+
+  // Stacked layout for narrow containers: chart on top, legend below.
+  &.is-vertical {
+    flex-direction: column;
+    gap: $spacing-3;
+  }
+
+  &.dimmed {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Doughnut Plot
+// -----------------------------------------------------------------------------
+
+.doughnut-plot-wrap {
+  position: relative;
+
+  // Square canvas keeps the ring perfectly round and centered; it scales down
+  // with the container but never overflows.
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 100%;
+  max-height: 100%;
+
+  flex: 0 1 auto;
+
+  .is-vertical & {
+    height: auto;
+    width: 100%;
+    max-width: 13rem;
+  }
+}
+
+// Reserve room for the legend beside the chart so labels never overlap the ring.
+.doughnut-content-wrap:has(.doughnut-legend):not(.is-vertical) .doughnut-plot-wrap {
+  max-width: 58%;
+}
+
+.doughnut-plot-wrap canvas {
+  display: block;
+
+  width: 100% !important;
+  height: 100% !important;
+}
+
+// Compact mode: shrink the ring inside taller tiles without affecting the legend.
+.chart-card.compact .doughnut-plot-wrap {
+  max-width: 12rem;
+  max-height: 12rem;
+}
+
+// -----------------------------------------------------------------------------
+// HTML Legend
+// -----------------------------------------------------------------------------
+
+.doughnut-legend {
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+
+  flex: 1 1 auto;
+  min-width: 0;
+  max-height: 100%;
+
+  overflow-y: auto;
+
+  // Wrap horizontally when stacked beneath the chart.
+  .is-vertical & {
+    flex: 0 0 auto;
+    flex-flow: row wrap;
+    justify-content: center;
+
+    max-height: none;
+    width: 100%;
+  }
+}
+
+.legend-item {
+  display: flex;
+  min-width: 0;
+}
+
+.legend-toggle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+  padding: 0.1875rem 0.25rem;
+
+  border: 0;
+  border-radius: $radius-sm;
+
+  background: transparent;
+
+  color: $color-text-secondary;
+  text-align: left;
+
+  font-family: inherit;
+  font-size: $font-size-md;
+  line-height: $line-height-normal;
+
+  cursor: pointer;
+
+  transition:
+    background-color $transition-fast,
+    opacity $transition-fast,
+    color $transition-fast;
+
+  &:hover {
+    background: $color-background;
+  }
+
+  &:focus-visible {
+    outline: 0.125rem solid $color-primary;
+    outline-offset: 0.125rem;
+  }
+
+  // Disabled category: muted but still readable and clickable to restore.
+  &.is-hidden {
+    opacity: 0.55;
+
+    .legend-dot {
+      background: $color-text-muted !important;
+    }
+
+    .legend-label {
+      text-decoration: line-through;
+      color: $color-text-muted;
+    }
+  }
+}
+
+.legend-dot {
+  flex: 0 0 auto;
+
+  width: 0.625rem;
+  height: 0.625rem;
+
+  border-radius: 50%;
+
+  transition: background-color $transition-fast;
+}
+
+.legend-label {
+  min-width: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.legend-percent {
+  flex: 0 0 auto;
+
+  margin-left: auto;
+
+  color: $color-text-muted;
+  font-weight: $font-weight-semibold;
+
+  .is-vertical & {
+    margin-left: $spacing-1;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Loading / Error / Empty States
+// -----------------------------------------------------------------------------
+
+.chart-loading-state,
+.chart-error-state,
+.chart-empty-state {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  min-height: 12rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  background: $color-card;
+
+  z-index: 2;
+}
+
+// -----------------------------------------------------------------------------
+// Loading State
+// -----------------------------------------------------------------------------
+
+.chart-loading-state {
+  gap: 0;
+}
+
+.doughnut-skeleton {
+  width: 11.75rem;
+
+  aspect-ratio: 1 / 1;
+
+  border-radius: 50%;
+
+  border: 1rem solid #e2e8f0;
+
+  border-right-color: #cbd5e1;
+
+  animation: spin-placeholder 1.6s linear infinite;
+}
+
+.skeleton-line {
+  position: relative;
+
+  height: 0.75rem;
+
+  margin-top: 0.625rem;
+
+  overflow: hidden;
+
+  border-radius: 0.5rem;
+
+  background: #e2e8f0;
+
+  &::after {
+    content: '';
+
+    position: absolute;
+
+    inset: 0;
+
+    transform: translateX(-100%);
+
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.7),
+      transparent
+    );
+
+    animation: skeleton-shimmer 1.3s infinite;
+  }
+
+  &.wide {
+    width: 5rem;
+  }
+
+  &.medium {
+    width: 7rem;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Empty State
+// -----------------------------------------------------------------------------
+
+.chart-empty-state {
+  padding: 1rem;
+
+  text-align: center;
+
+  .empty-icon-wrap {
+    width: 2.75rem;
+    height: 2.75rem;
+
+    margin-bottom: 0.75rem;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    background: #f1f5f9;
+
+    color: #64748b;
+
+    font-size: 1.25rem;
+  }
+
+  p {
+    margin: 0 0 0.25rem;
+
+    color: #1e293b;
+
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  small {
+    color: #64748b;
+
+    font-size: 0.75rem;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Error State
+// -----------------------------------------------------------------------------
+
+.chart-error-state {
+  text-align: center;
+}
+
+.error-icon {
+  width: 2rem;
+  height: 2rem;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #fff1f2;
+
+  color: #ef4444;
+
+  font-weight: 700;
+}
+
+.chart-error-state p {
+  margin: 0.625rem 0 0.25rem;
+
+  color: #1e293b;
+
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.chart-error-state small {
+  color: #64748b;
+
+  font-size: 0.75rem;
+}
+
+// -----------------------------------------------------------------------------
+// Retry Button
+// -----------------------------------------------------------------------------
+
+.retry-btn {
+  margin-top: 0.75rem;
+
+  padding: 0.4375rem 1rem;
+
+  border: 0.0625rem solid #c7d2fe;
+  border-radius: 0.5rem;
+
+  background: #fff;
+
+  color: #2563eb;
+
+  cursor: pointer;
+
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  transition:
+    background-color $transition-fast,
+    border-color $transition-fast,
+    color $transition-fast;
+
+  &:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+  }
+
+  &:focus-visible {
+    outline: 0.125rem solid #93c5fd;
+    outline-offset: 0.125rem;
+  }
+
+  &:active {
+    transform: translateY(0.03125rem);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Animations
+// -----------------------------------------------------------------------------
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes spin-placeholder {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Tablet
+// -----------------------------------------------------------------------------
+
+@media (max-width: 56rem) {
+  .chart-container,
+  .doughnut-container {
+    min-height: 15rem;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Mobile
+// -----------------------------------------------------------------------------
+
+@media (max-width: 44rem) {
+  .chart-card:not(.embedded) {
+    min-height: 17rem;
+
+    padding: 1rem;
+  }
+
+  .chart-container,
+  .doughnut-container {
+    min-height: 15rem;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Small Mobile
+// -----------------------------------------------------------------------------
+
+@media (max-width: 30rem) {
+  .chart-title {
+    font-size: 0.9375rem;
+  }
+
+  .chart-subtitle {
+    font-size: 0.6875rem;
+  }
+
+  .chart-container,
+  .doughnut-container {
+    min-height: 14rem;
+  }
+}

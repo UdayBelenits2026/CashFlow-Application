@@ -1,0 +1,60 @@
+@use '../../../../../styles/variables' as *;
+@use '../../../../../styles/buttons' as *;
+
+.quick-actions {
+  height: 100%;
+  padding: $spacing-4 1.125rem;
+  box-sizing: border-box;
+}
+h3 {
+  margin: 0 0 0.75rem;
+  color: $color-text-primary;
+  font-size: $font-size-lg;
+}
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.625rem;
+}
+.action-item {
+  padding: 0.5rem 0.375rem;
+  min-height: 4.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  border: $border-width-sm solid $color-border-light;
+  border-radius: 0.625rem;
+  background: $color-card;
+  cursor: pointer;
+  transition: all $transition-fast;
+  &:hover {
+    background: $color-info-bg;
+    border-color: #bfdbfe;
+    transform: translateY(-0.0625rem);
+  }
+}
+.action-icon {
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: $color-info;
+  background: $color-info-bg;
+  font-size: 0.9375rem;
+}
+span {
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  text-align: center;
+}
+
+@include max-xs {
+  .actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-2;
+  }
+}

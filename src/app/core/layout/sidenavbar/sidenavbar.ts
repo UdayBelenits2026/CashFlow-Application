@@ -5,6 +5,7 @@ import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LayoutService } from '../services/layout';
 import { navigationList, SideNavItem } from '../data/navigation.data';
+import { AuthFacade } from '../../auth/facades/auth.facade';
 
 @Component({
   selector: 'app-cf-sidenavbar',
@@ -18,10 +19,10 @@ export class Sidenavbar {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   readonly layoutService = inject(LayoutService);
+  private readonly authFacade = inject(AuthFacade);
   readonly navigationItems = navigationList;
-  // Stores the parent menus that are currently open
-  readonly expandedItems = signal<Set<string>>(new Set());
-  private lastFeaturePrefix = '';
+  // Only one parent menu can be open at a time; null means all collapsed.
+  readonly expandedItem = signal<string | null>(null);
   constructor() {
     this.handleRouteChange(this.router.url);
     this.router.events
@@ -34,24 +35,20 @@ export class Sidenavbar {
       });
   }
   isExpanded(item: SideNavItem): boolean {
-    return this.expandedItems().has(item.label);
+    return this.expandedItem() === item.label;
   }
   onParentItemClick(item: SideNavItem): void {
-    const isCurrentlyExpanded = this.isExpanded(item);
-    const isInsideRoute = this.isRouteInsideItem(this.router.url, item);
-
-    if (!isCurrentlyExpanded) {
-      this.updateExpandedItems(item, true);
+    if (item.children?.length) {
+      this.toggleExpand(item);
+      return;
     }
-
-    if (!isInsideRoute && item.route) {
+    if (item.route) {
       void this.router.navigateByUrl(item.route);
-    } else if (isCurrentlyExpanded && isInsideRoute) {
-      this.updateExpandedItems(item, false);
     }
   }
+  // Opening a parent replaces any other open parent so only one stays expanded.
   toggleExpand(item: SideNavItem): void {
-    this.updateExpandedItems(item, !this.isExpanded(item));
+    this.expandedItem.set(this.isExpanded(item) ? null : item.label);
   }
   isParentRouteActive(item: SideNavItem): boolean {
     const currentUrl = this.router.url;
@@ -63,28 +60,17 @@ export class Sidenavbar {
   closeMobileMenu(): void {
     this.layoutService.closeMobileMenu();
   }
-  private updateExpandedItems(item: SideNavItem, expanded: boolean): void {
-    const current = new Set(this.expandedItems());
-    if (expanded) {
-      current.add(item.label);
-    } else {
-      current.delete(item.label);
-    }
-    this.expandedItems.set(current);
+  onLogout(): void {
+    this.layoutService.closeMobileMenu();
+    this.authFacade.logout();
   }
+  // Keep the open parent in sync with the active route: refresh, direct nav and
+  // sub-item clicks expand the matching parent; leaf navigation collapses all.
   private handleRouteChange(url: string): void {
-    const currentPrefix = url.split('/')[1] || '';
-    if (currentPrefix === this.lastFeaturePrefix) {
-      return;
-    }
-    this.lastFeaturePrefix = currentPrefix;
-    const current = new Set(this.expandedItems());
-    for (const item of this.navigationItems) {
-      if (item.children?.length && this.isRouteInsideItem(url, item)) {
-        current.add(item.label);
-      }
-    }
-    this.expandedItems.set(current);
+    const activeParent = this.navigationItems.find(
+      (item) => !!item.children?.length && this.isRouteInsideItem(url, item),
+    );
+    this.expandedItem.set(activeParent ? activeParent.label : null);
   }
   private isRouteInsideItem(url: string, item: SideNavItem): boolean {
     return url === item.route || url.startsWith(`${item.route}/`);

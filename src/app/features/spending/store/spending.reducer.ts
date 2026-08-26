@@ -1,69 +1,9 @@
 import { createReducer, on } from '@ngrx/store';
 import { initialSpendingState, spendingFeatureKey, SpendingState } from './spending.state';
 import * as SpendingActions from './spending.actions';
-import { Expense } from '../models/expense.model';
-import { SpendingCategoryItem, SpendingOverviewData } from '../models/spending-summary.model';
+import { recalculateOverviewAndCategories } from '../utility/spending.calculations';
 
 export { spendingFeatureKey };
-
-function recalculateOverviewAndCategories(
-  expenses: Expense[],
-  currentOverview: SpendingOverviewData | null,
-  currentCategories: SpendingCategoryItem[]
-): { overview: SpendingOverviewData | null; categories: SpendingCategoryItem[] } {
-  if (!currentOverview) {
-    return { overview: currentOverview, categories: currentCategories };
-  }
-
-  const total = expenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
-  const count = expenses.length;
-  const daysInMonth = 31;
-  const avgDaily = count > 0 ? Number((total / daysInMonth).toFixed(2)) : 0;
-
-  // Group by category to find top category and recalculate amounts
-  const catTotals: { [name: string]: number } = {};
-  for (const exp of expenses) {
-    const cat = exp.categoryName || 'Other';
-    catTotals[cat] = (catTotals[cat] || 0) + (Number(exp.amount) || 0);
-  }
-
-  let topCatName = currentOverview.topCategoryName;
-  let topCatAmount = currentOverview.topCategoryAmount;
-  let maxCatAmount = -1;
-
-  for (const [cName, cAmt] of Object.entries(catTotals)) {
-    if (cAmt > maxCatAmount) {
-      maxCatAmount = cAmt;
-      topCatName = cName;
-      topCatAmount = cAmt;
-    }
-  }
-
-  const updatedOverview: SpendingOverviewData = {
-    ...currentOverview,
-    totalSpending: Number(total.toFixed(2)),
-    transactionsCount: count,
-    averageDaily: avgDaily,
-    topCategoryName: topCatName,
-    topCategoryAmount: Number(topCatAmount.toFixed(2)),
-    budgetUsedPercentage: currentOverview.budgetTotal
-      ? Math.min(100, Math.round((total / currentOverview.budgetTotal) * 100))
-      : currentOverview.budgetUsedPercentage || 66
-  };
-
-  const updatedCategories = currentCategories.map((c) => {
-    const amt = catTotals[c.name] ?? c.amount;
-    const pct = total > 0 ? Number(((amt / total) * 100).toFixed(1)) : 0;
-    return {
-      ...c,
-      amount: Number(amt.toFixed(2)),
-      percentage: pct,
-      barWidth: `${Math.min(100, Math.max(10, Math.round(pct * 3.5)))}%`
-    };
-  });
-
-  return { overview: updatedOverview, categories: updatedCategories };
-}
 
 export const spendingReducer = createReducer(
   initialSpendingState,
@@ -148,7 +88,6 @@ export const spendingReducer = createReducer(
       expenses: updatedExpenses,
       overview: overview || state.overview,
       categories,
-      selectedExpenseId: state.selectedExpenseId === expense.id ? expense.id : state.selectedExpenseId,
       isLoading: false,
       error: null,
       successMessage: 'Expense updated successfully.'
@@ -181,7 +120,6 @@ export const spendingReducer = createReducer(
       expenses: updatedExpenses,
       overview: overview || state.overview,
       categories,
-      selectedExpenseId: state.selectedExpenseId === id ? null : state.selectedExpenseId,
       isLoading: false,
       error: null,
       successMessage: 'Expense deleted successfully.'
@@ -192,12 +130,6 @@ export const spendingReducer = createReducer(
     ...state,
     isLoading: false,
     error
-  })),
-
-  // Active Selection
-  on(SpendingActions.selectExpense, (state, { id }) => ({
-    ...state,
-    selectedExpenseId: id
   })),
 
   // Filters
@@ -215,6 +147,7 @@ export const spendingReducer = createReducer(
       searchTerm: '',
       categoryId: null,
       accountId: null,
+      paymentMethod: null,
       startDate: null,
       endDate: null,
       minAmount: null,
@@ -227,12 +160,14 @@ export const spendingReducer = createReducer(
   // Tags
   on(SpendingActions.addTagSuccess, (state, { tag }) => ({
     ...state,
+    error: null,
     tags: [...state.tags, tag],
     successMessage: 'Tag created successfully.'
   })),
 
   on(SpendingActions.deleteTagSuccess, (state, { id }) => ({
     ...state,
+    error: null,
     tags: state.tags.filter((t) => t.id !== id),
     successMessage: 'Tag deleted successfully.'
   })),
@@ -240,19 +175,29 @@ export const spendingReducer = createReducer(
   // Recurring Expenses
   on(SpendingActions.addRecurringExpenseSuccess, (state, { item }) => ({
     ...state,
+    error: null,
     recurringExpenses: [...state.recurringExpenses, item],
     successMessage: 'Recurring subscription added.'
   })),
 
   on(SpendingActions.toggleRecurringExpenseSuccess, (state, { item }) => ({
     ...state,
+    error: null,
     recurringExpenses: state.recurringExpenses.map((r) => (r.id === item.id ? item : r))
   })),
 
   on(SpendingActions.deleteRecurringExpenseSuccess, (state, { id }) => ({
     ...state,
+    error: null,
     recurringExpenses: state.recurringExpenses.filter((r) => r.id !== id),
     successMessage: 'Recurring expense deleted successfully.'
+  })),
+
+  // Generic mutation failure (tags, recurring)
+  on(SpendingActions.spendingOperationFailure, (state, { error }) => ({
+    ...state,
+    isLoading: false,
+    error
   })),
 
   // Alerts

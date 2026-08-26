@@ -1,0 +1,64 @@
+@use '../../../../../styles/variables' as *;
+
+.transaction-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  padding: 0.875rem 0;
+  border-bottom: $border-width-sm solid $color-border-light;
+  &:last-child {
+    border-bottom: none;
+  }
+}
+.item-icon {
+  width: 2.375rem;
+  height: 2.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 0.625rem;
+  font-size: $font-size-xl;
+  &.income {
+    background: $color-success-bg;
+    color: #15803d;
+  }
+  &.expense {
+    background: $color-danger-bg;
+    color: $color-danger;
+  }
+  &.bill {
+    background: $color-info-bg;
+    color: $color-info;
+  }
+}
+.item-details {
+  flex: 1;
+  min-width: 0;
+}
+.item-title {
+  margin: 0;
+  color: $color-text-primary;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.item-date {
+  display: block;
+  margin-top: $spacing-1;
+  font-size: $font-size-base;
+  color: $color-text-muted;
+}
+.item-amount {
+  font-size: 0.8125rem;
+  font-weight: $font-weight-semibold;
+  white-space: nowrap;
+  &.income {
+    color: #15803d;
+  }
+  &.expense {
+    color: $color-danger;
+  }
+}

@@ -28,6 +28,27 @@ export interface SpendingTrendPoint {
   lastMonth: number;
 }
 
+export interface SpendingMerchant {
+  name: string;
+  amount: number;
+  transactionCount: number;
+  percentage: number;
+  topCategoryName: string;
+  color: string;
+}
+
+export type BudgetStatus = 'ON_TRACK' | 'WARNING' | 'OVER_BUDGET';
+
+export interface BudgetVsActualItem {
+  id: string;
+  name: string;
+  color: string;
+  budget: number;
+  spent: number;
+  percentUsed: number;
+  status: BudgetStatus;
+}
+
 export interface SpendingInsight {
   id: string;
   title: string;
@@ -45,3 +66,5 @@ export interface SpendingAlert {
   date: string;
   isRead: boolean;
 }
+
+export type AlertTab = 'ALL' | 'UNREAD' | 'READ';

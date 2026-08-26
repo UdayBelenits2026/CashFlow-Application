@@ -147,4 +147,14 @@
       </div>
     </div>
   }
+
+  @if (deleteTargetId) {
+    <app-delete-confirm-dialog
+      [title]="'Remove Subscription?'"
+      [message]="'Are you sure you want to remove this recurring subscription? This action cannot be undone.'"
+      [confirmLabel]="'Remove'"
+      [itemId]="deleteTargetId"
+      (cancel)="deleteTargetId = null"
+      (confirm)="onConfirmDelete($event)" />
+  }
 </div>

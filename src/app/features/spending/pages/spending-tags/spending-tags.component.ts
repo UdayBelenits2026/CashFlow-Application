@@ -1,29 +1,34 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { SpendingFacade } from '../../facades/spending.facade';
 import { Tag } from '../../models/tag.model';
+import { Expense } from '../../models/expense.model';
+import { DeleteConfirmDialogComponent } from '../../components/delete-confirm-dialog/delete-confirm-dialog.component';
 
 @Component({
   selector: 'app-spending-tags',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, DeleteConfirmDialogComponent],
   templateUrl: './spending-tags.component.html',
   styleUrl: './spending-tags.component.scss'
 })
 export class SpendingTagsComponent implements OnInit {
-  private readonly spendingFacade = inject(SpendingFacade);
-  private readonly fb = inject(FormBuilder);
+  private readonly spendingFacade: SpendingFacade = inject(SpendingFacade);
+  private readonly fb: FormBuilder = inject(FormBuilder);
 
-  readonly tags$ = this.spendingFacade.tags$;
-  readonly allExpenses$ = this.spendingFacade.allExpenses$;
+  readonly tags$: Observable<Tag[]> = this.spendingFacade.tags$;
+  readonly allExpenses$: Observable<Expense[]> = this.spendingFacade.allExpenses$;
 
   tagForm!: FormGroup;
-  searchTerm = '';
-  showCreateModal = false;
+  searchTerm: string = '';
+  showCreateModal: boolean = false;
   editingTag: Tag | null = null;
+  showDeleteDialog: boolean = false;
+  tagToDelete: Tag | null = null;
 
-  readonly presetColors = [
+  readonly presetColors: string[] = [
     '#2563EB', // Blue
     '#10B981', // Emerald
     '#F59E0B', // Amber
@@ -105,10 +110,20 @@ export class SpendingTagsComponent implements OnInit {
     this.closeModal();
   }
 
-  onDeleteTag(id: string, name: string): void {
-    if (confirm(`Are you sure you want to delete the tag "${name}"?`)) {
-      this.spendingFacade.deleteTag(id);
-    }
+  onDeleteTag(tag: Tag): void {
+    this.tagToDelete = tag;
+    this.showDeleteDialog = true;
+  }
+
+  onConfirmDeleteTag(id: string): void {
+    this.spendingFacade.deleteTag(id);
+    this.showDeleteDialog = false;
+    this.tagToDelete = null;
+  }
+
+  onCancelDeleteTag(): void {
+    this.showDeleteDialog = false;
+    this.tagToDelete = null;
   }
 
   filterTags(tags: Tag[]): Tag[] {

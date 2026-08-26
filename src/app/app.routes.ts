@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/auth/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -29,37 +30,15 @@ export const routes: Routes = [
       import('./core/layout/main-layout/main-layout').then(
         (m) => m.MainLayout,
       ),
+    canActivate: [authGuard],
+    canActivateChild: [authGuard],
     children: [
       {
         path: 'dashboard',
-        loadComponent: () =>
-          import('./features/dashboard/pages/dashboard-home/dashboard-home').then(
-            (m) => m.DashboardHome,
+        loadChildren: () =>
+          import('./features/dashboard/dashboard.routes').then(
+            (m) => m.DASHBOARD_ROUTES,
           ),
-        children: [
-          {
-            path: '',
-            pathMatch: 'full',
-            loadComponent: () =>
-              import('./features/dashboard/pages/dashboard-route-entry/dashboard-route-entry').then(
-                (m) => m.DashboardRouteEntry,
-              ),
-          },
-          {
-            path: 'new',
-            loadComponent: () =>
-              import('./features/dashboard/pages/dashboard-new-user/dashboard-new-user').then(
-                (m) => m.DashboardNewUser,
-              ),
-          },
-          {
-            path: 'home',
-            loadComponent: () =>
-              import('./features/dashboard/pages/dashboard-existing-user/dashboard-existing-user').then(
-                (m) => m.DashboardExistingUser,
-              ),
-          },
-        ],
       },
       {
         path: 'transactions',
@@ -70,9 +49,9 @@ export const routes: Routes = [
       },
       {
         path: 'income',
-        loadComponent: () =>
-          import('./features/income/income.component').then(
-            (m) => m.IncomeComponent,
+        loadChildren: () =>
+          import('./features/income/income.routes').then(
+            (m) => m.INCOME_ROUTES,
           ),
       },
       {

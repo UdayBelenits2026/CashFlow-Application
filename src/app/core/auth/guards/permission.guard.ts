@@ -1,21 +1,21 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, UrlTree } from '@angular/router';
-import { AuthTokenService } from '../services/auth-token.service';
+import { SessionService } from '../services/session.service';
 
 interface PermissionGuardData {
   permissions?: string[];
 }
 
 export const permissionGuard: CanActivateFn = (route): boolean | UrlTree => {
-  const authTokenService = inject(AuthTokenService);
+  const sessionService = inject(SessionService);
   const router = inject(Router);
 
-  if (!authTokenService.isAuthenticated()) {
+  if (!sessionService.isAuthenticated()) {
     return router.createUrlTree(['/']);
   }
 
   const { permissions = [] } = (route.data ?? {}) as PermissionGuardData;
-  if (!permissions.length || authTokenService.hasAnyPermission(permissions)) {
+  if (!permissions.length || sessionService.hasAnyPermission(permissions)) {
     return true;
   }
 

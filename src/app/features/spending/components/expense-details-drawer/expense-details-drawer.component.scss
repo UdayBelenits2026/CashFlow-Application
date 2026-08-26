@@ -8,7 +8,7 @@
   width: 100vw;
   height: 100vh;
   background: rgba(11, 31, 58, 0.5);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(0.25rem);
   z-index: $z-index-modal;
   display: flex;
   justify-content: flex-end;
@@ -17,11 +17,11 @@
 
 .drawer-panel {
   width: 100%;
-  max-width: 460px;
+  max-width: 28.75rem;
   height: 100vh;
   background: $color-card;
   box-shadow: $shadow-lg;
-  border-left: 1px solid $color-border;
+  border-left: $border-width-sm solid $color-border;
   display: flex;
   flex-direction: column;
   animation: slideLeft $transition-normal cubic-bezier(0.16, 1, 0.3, 1);
@@ -29,14 +29,14 @@
 
 .drawer-header {
   padding: $spacing-5 $spacing-6;
-  border-bottom: 1px solid $color-border-light;
+  border-bottom: $border-width-sm solid $color-border-light;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 }
 
 .drawer-tag {
-  font-size: 11px;
+  font-size: $font-size-sm;
   font-weight: $font-weight-bold;
   color: $color-text-muted;
   text-transform: uppercase;
@@ -47,7 +47,7 @@
   font-size: $font-size-2xl;
   font-weight: $font-weight-bold;
   color: $color-text-primary;
-  margin: 4px 0 0 0;
+  margin: $spacing-1 0 0 0;
 }
 
 .btn-close {
@@ -74,7 +74,7 @@
 
 .amount-hero-card {
   background: $color-background;
-  border: 1px solid $color-border;
+  border: $border-width-sm solid $color-border;
   border-radius: $radius-lg;
   padding: $spacing-5;
   text-align: center;
@@ -107,8 +107,8 @@
 .status-pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px $spacing-2;
+  gap: $spacing-1;
+  padding: $spacing-1 $spacing-2;
   border-radius: 999px;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
@@ -117,8 +117,8 @@
 }
 
 .dot {
-  width: 6px;
-  height: 6px;
+  width: $spacing-1;
+  height: $spacing-1;
   border-radius: 50%;
   background: currentColor;
 }
@@ -127,8 +127,8 @@
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
   background: $color-card;
-  border: 1px solid $color-border;
-  padding: 2px $spacing-2;
+  border: $border-width-sm solid $color-border;
+  padding: $spacing-1 $spacing-2;
   border-radius: $radius-sm;
   color: $color-text-primary;
 }
@@ -151,11 +151,11 @@
 .meta-item {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: $spacing-1;
 }
 
 .meta-label {
-  font-size: 11px;
+  font-size: $font-size-sm;
   color: $color-text-light;
   font-weight: $font-weight-semibold;
 }
@@ -179,13 +179,13 @@
   color: $color-info;
   font-size: $font-size-xs;
   font-weight: $font-weight-semibold;
-  padding: 3px $spacing-2;
+  padding: $spacing-1 $spacing-2;
   border-radius: $radius-sm;
 }
 
 .notes-box {
   background: $color-background;
-  border: 1px solid $color-border;
+  border: $border-width-sm solid $color-border;
   border-radius: $radius-md;
   padding: $spacing-3;
   font-size: $font-size-base;
@@ -199,7 +199,7 @@
   align-items: center;
   gap: $spacing-3;
   background: $color-background;
-  border: 1px solid $color-border;
+  border: $border-width-sm solid $color-border;
   border-radius: $radius-md;
   padding: $spacing-3;
   cursor: pointer;
@@ -223,15 +223,15 @@
 }
 
 .receipt-action {
-  font-size: 11px;
+  font-size: $font-size-sm;
   color: $color-primary-button;
   font-weight: $font-weight-semibold;
 }
 
 .btn-view-receipt {
   background: $color-card;
-  border: 1px solid $color-border;
-  padding: 4px $spacing-2;
+  border: $border-width-sm solid $color-border;
+  padding: $spacing-1 $spacing-2;
   border-radius: $radius-sm;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
@@ -244,7 +244,7 @@
   align-items: center;
   padding: $spacing-3;
   background: $color-background;
-  border: 1px dashed $color-border;
+  border: $border-width-sm dashed $color-border;
   border-radius: $radius-md;
   font-size: $font-size-xs;
   color: $color-text-muted;
@@ -261,7 +261,7 @@
 
 .drawer-footer {
   padding: $spacing-4 $spacing-6;
-  border-top: 1px solid $color-border-light;
+  border-top: $border-width-sm solid $color-border-light;
   background: $color-card;
 }
 
@@ -275,13 +275,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: $spacing-2;
   padding: $spacing-2;
   border-radius: $radius-md;
   font-size: $font-size-xs;
   font-weight: $font-weight-bold;
   cursor: pointer;
-  border: 1px solid transparent;
+  border: $border-width-sm solid transparent;
   transition: all $transition-fast;
 
   &.edit {
@@ -309,7 +309,7 @@
   }
 
   &:hover {
-    transform: translateY(-1px);
+    transform: translateY(-0.0625rem);
   }
 }
 
@@ -321,5 +321,13 @@
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+// RESPONSIVE
+@include respond-max($bp-480) {
+  .drawer-header {
+    padding-left: $spacing-4;
+    padding-right: $spacing-4;
+  }
 }
 

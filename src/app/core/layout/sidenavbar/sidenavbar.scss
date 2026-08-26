@@ -7,7 +7,7 @@
   z-index: $z-index-fixed;
   display: flex;
   flex-direction: column;
-  width: 11.5rem;
+  width: 14.5rem;
   height: 100vh;
   padding: $spacing-5 $spacing-2;
   box-sizing: border-box;
@@ -189,6 +189,8 @@
   }
   &.sidebar-collapsed {
     width: 4.5rem;
+    // Allow the icon tooltips to escape the rail instead of being clipped.
+    overflow: visible;
     .brand {
       padding: 0;
       .brand-link {
@@ -199,6 +201,7 @@
       }
     }
     .navigation {
+      overflow: visible;
       .navigation-item {
         justify-content: center;
         gap: 0;
@@ -419,5 +422,19 @@
     &.mobile-menu-open {
       max-height: calc(100vh - 4rem);
     }
+  }
+}
+
+/* Collapsed rail: show the shared tooltip bubble to the right of each icon. */
+.side-navbar .navigation-item[data-tooltip],
+.side-navbar .logout-button[data-tooltip] {
+  &::after {
+    top: 50%;
+    left: calc(100% + 0.75rem);
+    transform: translateY(-50%) translateX(-0.25rem);
+  }
+  &:hover::after,
+  &:focus-visible::after {
+    transform: translateY(-50%) translateX(0);
   }
 }

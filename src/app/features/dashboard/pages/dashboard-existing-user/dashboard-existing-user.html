@@ -1,91 +1,174 @@
 <div class="dashboard-page">
+  @if (loadError() && !bannerDismissed()) {
+    <app-cf-error-banner (retry)="retryLoad()" (dismiss)="dismissBanner()"></app-cf-error-banner>
+  }
+
   <section class="summary-grid">
-    @for (card of summaryCards$ | async; track card.id) {
+    @for (card of summaryCards(); track card.id) {
       <app-cf-summary-card
         [data]="card"
-        [isLoading]="(loading$ | async) ?? false"
-        [hasError]="(loadError$ | async) ?? false"
+        [isLoading]="loading()"
+        [hasError]="loadError()"
       ></app-cf-summary-card>
     }
   </section>
 
-  <section class="second-row">
-    <article class="chart-card wide">
-      <app-cf-line-chart
-        [title]="'Cash Flow Trend'"
-        [labels]="lineChartLabels"
-        [datasets]="lineChartDatasets"
-      ></app-cf-line-chart>
-    </article>
+  @if (selectedWidgets(); as selectedWidgetsList) {
+    <section class="widgets-grid">
+      @for (widget of selectedWidgetsList; track widget.id) {
+        <article
+          class="dashboard-widget"
+          [class.wide]="widget.layout === 'wide'"
+          [class.chart-card]="isChartWidget(widget.id)"
+        >
+          @switch (widget.id) {
+            @case ('cashFlowTrend') {
+              @if (cashFlowTrendChart(); as chartData) {
+                <app-cf-line-chart
+                  [title]="'Cash Flow Trend'"
+                  [labels]="chartData.labels"
+                  [datasets]="chartData.datasets"
+                  [isLoading]="loading()"
+                  [hasError]="loadError()"
+                  (retry)="retryLoad()"
+                ></app-cf-line-chart>
+              }
+            }
 
-    <article class="chart-card">
-      <app-cf-doughnut-chart
-        [title]="'Spending by Category'"
-        [labels]="doughnutLabels"
-        [datasets]="doughnutDatasets"
-        [total]="2650"
-      ></app-cf-doughnut-chart>
-    </article>
+            @case ('spendingByCategory') {
+              @if (spendingByCategoryChart(); as chartData) {
+                <app-cf-doughnut-chart
+                  [title]="'Spending by Category'"
+                  [labels]="chartData.labels"
+                  [datasets]="chartData.datasets"
+                  [total]="chartData.total"
+                  [isLoading]="loading()"
+                  [hasError]="loadError()"
+                  (retry)="retryLoad()"
+                ></app-cf-doughnut-chart>
+              }
+            }
 
-    <article class="dashboard-widget">
-      <app-cf-dashboard-list
-        [title]="'Upcoming Bills'"
-        [items]="(upcomingBills$ | async) || []"
-        [showAddReminder]="true"
-      ></app-cf-dashboard-list>
-    </article>
-  </section>
+            @case ('upcomingBills') {
+              <app-cf-dashboard-list
+                [title]="'Upcoming Bills'"
+                [items]="displayUpcomingBills()"
+                [showAddReminder]="true"
+                [showViewAll]="true"
+                [isLoading]="loading()"
+                [hasError]="loadError()"
+                (retry)="retryLoad()"
+                (addReminder)="openAddReminderModal()"
+                (viewAll)="navigateToUpcomingBills()"
+              ></app-cf-dashboard-list>
+            }
 
-  <section class="third-row">
-    <article class="dashboard-widget">
-      <app-cf-dashboard-list
-        [title]="'Recent Transactions'"
-        [items]="(recentTransactions$ | async) || []"
-        [isLoading]="(loading$ | async) ?? false"
-        [hasError]="(loadError$ | async) ?? false"
-        (retry)="retryLoad()"
-      ></app-cf-dashboard-list>
-    </article>
+            @case ('recentTransactions') {
+              <app-cf-dashboard-list
+                [title]="'Recent Transactions'"
+                [items]="recentTransactions()"
+                [isLoading]="loading()"
+                [hasError]="loadError()"
+                (retry)="retryLoad()"
+              ></app-cf-dashboard-list>
+            }
 
-    <article class="dashboard-widget">
-      <app-cf-dashboard-list
-        [title]="'Recent Income'"
-        [items]="(recentIncome$ | async) || []"
-        [isLoading]="(loading$ | async) ?? false"
-        [hasError]="(loadError$ | async) ?? false"
-        (retry)="retryLoad()"
-      ></app-cf-dashboard-list>
-    </article>
+            @case ('recentIncome') {
+              <app-cf-dashboard-list
+                [title]="'Recent Income'"
+                [items]="recentIncome()"
+                [isLoading]="loading()"
+                [hasError]="loadError()"
+                (retry)="retryLoad()"
+              ></app-cf-dashboard-list>
+            }
 
-    <article class="dashboard-widget">
-      <app-cf-dashboard-list
-        [title]="'Recent Expenses'"
-        [items]="(recentExpenses$ | async) || []"
-        [isLoading]="(loading$ | async) ?? false"
-        [hasError]="(loadError$ | async) ?? false"
-        (retry)="retryLoad()"
-      ></app-cf-dashboard-list>
-    </article>
+            @case ('recentExpenses') {
+              <app-cf-dashboard-list
+                [title]="'Recent Expenses'"
+                [items]="recentExpenses()"
+                [isLoading]="loading()"
+                [hasError]="loadError()"
+                (retry)="retryLoad()"
+              ></app-cf-dashboard-list>
+            }
 
-    <article class="dashboard-widget">
-      <app-cf-quick-actions
-        [title]="'Quick Actions'"
-        [actions]="(quickActions$ | async) || []"
-      ></app-cf-quick-actions>
-    </article>
-  </section>
+            @case ('budgetOverview') {
+              <app-cf-budget-overview
+                [categories]="budgetCategories()"
+                [isLoading]="loading()"
+                [hasError]="loadError()"
+                (retry)="retryLoad()"
+              ></app-cf-budget-overview>
+            }
 
-  <section class="bottom-row">
-    <article class="dashboard-widget cash-balance-card">
-      <app-cf-cash-balance
-        [title]="'Cash Balance'"
-        [totalBalance]="(cashBalance$ | async)?.totalBalance ?? 0"
-        [inAccounts]="(cashBalance$ | async)?.inAccounts ?? 0"
-        [pending]="(cashBalance$ | async)?.pending ?? 0"
-        [isLoading]="(loading$ | async) ?? false"
-        [hasError]="(loadError$ | async) ?? false"
-        (retry)="retryLoad()"
-      ></app-cf-cash-balance>
-    </article>
-  </section>
+            @case ('savingsGoal') {
+              @if (savingsGoal(); as savings) {
+                <app-cf-savings-goal
+                  [goalName]="savings.goalName"
+                  [savedAmount]="savings.savedAmount"
+                  [targetAmount]="savings.targetAmount"
+                  [dueDate]="savings.dueDate"
+                  [isLoading]="loading()"
+                  [hasError]="loadError()"
+                  (retry)="retryLoad()"
+                ></app-cf-savings-goal>
+              }
+            }
+
+            @case ('netWorth') {
+              @if (netWorth(); as net) {
+                <app-cf-net-worth
+                  [totalAssets]="net.totalAssets"
+                  [totalLiabilities]="net.totalLiabilities"
+                  [isLoading]="loading()"
+                  [hasError]="loadError()"
+                  (retry)="retryLoad()"
+                ></app-cf-net-worth>
+              }
+            }
+
+            @case ('incomeBySource') {
+              <app-cf-income-by-source
+                [sources]="incomeSources()"
+                [isLoading]="loading()"
+                [hasError]="loadError()"
+                (retry)="retryLoad()"
+              ></app-cf-income-by-source>
+            }
+
+            @case ('cashBalance') {
+              @if (cashBalance(); as cb) {
+                <app-cf-cash-balance
+                  [totalBalance]="cb.totalBalance"
+                  [inAccounts]="cb.inAccounts"
+                  [pending]="cb.pending"
+                  [isLoading]="loading()"
+                  [hasError]="loadError()"
+                  (retry)="retryLoad()"
+                ></app-cf-cash-balance>
+              }
+            }
+          }
+        </article>
+      }
+
+      <article class="dashboard-widget">
+        <app-cf-quick-actions></app-cf-quick-actions>
+      </article>
+    </section>
+
+    @if (selectedWidgetsList.length === 0) {
+      <section class="empty-dashboard">
+        <h3>No widgets selected</h3>
+        <p>Use Customize to add widgets to your dashboard.</p>
+      </section>
+    }
+  }
+
+  <app-add-reminder-modal
+    [isOpen]="isAddReminderModalOpen()"
+    (closeModal)="closeAddReminderModal()"
+    (saveReminder)="onSaveReminder($event)"
+  ></app-add-reminder-modal>
 </div>

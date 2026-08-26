@@ -1,0 +1,23 @@
+<aside class="error-banner" role="alert" aria-live="assertive">
+  <div class="error-banner-content">
+    <span class="error-icon-wrap" aria-hidden="true">
+      <fa-icon [icon]="errorIcon"></fa-icon>
+    </span>
+    <p class="error-banner-message">{{ message() }}</p>
+  </div>
+
+  <div class="error-banner-actions">
+    @if (showRetry()) {
+      <button class="retry-all-btn" type="button" (click)="onRetry()">
+        <fa-icon [icon]="retryIcon" class="btn-icon"></fa-icon>
+        <span>Retry All</span>
+      </button>
+    }
+
+    @if (showDismiss()) {
+      <button class="dismiss-btn" type="button" (click)="onDismiss()" aria-label="Dismiss error">
+        <fa-icon [icon]="closeIcon"></fa-icon>
+      </button>
+    }
+  </div>
+</aside>

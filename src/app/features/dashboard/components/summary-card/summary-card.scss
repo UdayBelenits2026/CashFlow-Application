@@ -1,0 +1,127 @@
+@use '../../../../../styles/variables' as *;
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-4;
+}
+.summary-card {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-4;
+  padding: $spacing-5;
+  border: $border-width-sm solid $color-border;
+  border-radius: 0.875rem;
+  background: $color-card;
+}
+.skeleton-block,
+.skeleton-line {
+  position: relative;
+  overflow: hidden;
+  background: $color-border-light;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+    animation: skeleton-shimmer 1.3s infinite;
+  }
+}
+.skeleton-content,
+.summary-content {
+  flex: 1;
+  min-width: 0;
+}
+.skeleton-line {
+  display: block;
+  height: 0.75rem;
+  border-radius: $radius-md;
+  margin-bottom: 0.625rem;
+  &.short {
+    width: 38%;
+  }
+  &.medium {
+    width: 34%;
+  }
+  &.wide {
+    width: 58%;
+    height: 1.5rem;
+  }
+}
+.amount-only-loading .skeleton-line.wide {
+  margin-top: 0.125rem;
+}
+.summary-icon {
+  width: $spacing-12;
+  height: $spacing-12;
+  min-width: $spacing-12;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: $font-size-2xl;
+}
+.income .summary-icon {
+  color: #16834a;
+  background: $color-success-bg;
+}
+.expenses .summary-icon {
+  color: $color-danger;
+  background: $color-danger-bg;
+}
+.cashFlow .summary-icon {
+  color: $color-info;
+  background: $color-info-bg;
+}
+.savings .summary-icon {
+  color: #7c3aed;
+  background: #f3edff;
+}
+p {
+  margin: 0 0 0.5rem;
+  color: $color-text-secondary;
+  font-size: $font-size-base;
+}
+h2 {
+  margin: 0 0 0.625rem;
+  color: $color-text-primary;
+}
+span {
+  font-size: 0.8125rem;
+  font-weight: $font-weight-semibold;
+  small {
+    margin-left: 0.375rem;
+    color: $color-text-muted;
+    font-weight: $font-weight-regular;
+  }
+}
+.error-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: $color-danger;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+}
+.up {
+  color: #16834a;
+}
+.down {
+  color: $color-danger;
+}
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+@include max-lg {
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@include max-xs {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}

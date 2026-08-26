@@ -103,8 +103,17 @@
               Forgot Password?
             </a>
           </div>
+          <!-- SESSION NOTICE -->
+          @if (notice$ | async; as notice) {
+          <div class="auth-notice" role="status">
+            <i class="fa-solid fa-circle-info notice-icon" aria-hidden="true"></i>
+            <span>
+              {{ notice }}
+            </span>
+          </div>
+          }
           <!-- LOGIN ERROR -->
-          @if (error$ | async; as error) {
+          @if (!isLocked() && (error$ | async); as error) {
           <div class="auth-error" role="alert">
             <i class="fa-solid fa-circle-exclamation error-icon" aria-hidden="true"></i>
             <span>
@@ -112,9 +121,25 @@
             </span>
           </div>
           }
+          <!-- ACCOUNT LOCKED -->
+          @if (accountLock(); as lock) {
+          <div class="auth-lock" role="alert" aria-live="assertive">
+            <i class="fa-solid fa-triangle-exclamation lock-icon" aria-hidden="true"></i>
+            <div class="lock-body">
+              <p class="lock-title">Account temporarily locked</p>
+              <p class="lock-text">
+                Your account has been temporarily locked due to too many failed login attempts.
+              </p>
+              <p class="lock-countdown">
+                Try again in
+                <span class="lock-timer">{{ formatCountdown(remainingLockSeconds$ | async) }}</span>
+              </p>
+            </div>
+          </div>
+          }
           <!-- SIGN IN BUTTON -->
-          <button type="submit" class="btn btn-primary submit-button" [disabled]="SignInform.invalid || (loading$ | async)">
-            @if (loading$ | async) {
+          <button type="submit" class="btn btn-primary submit-button" [disabled]="SignInform.invalid || loading() || isLocked()">
+            @if (loading()) {
             <span class="spinner"></span>
             <span>
               Signing In...

@@ -1,0 +1,162 @@
+@use '../../../../../styles/variables' as *;
+
+.budget-card {
+  background: $color-card;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  padding: $spacing-5 $spacing-6;
+  box-shadow: $shadow-sm;
+}
+
+.card-header {
+  margin-bottom: $spacing-5;
+}
+
+.card-title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0;
+}
+
+.card-subtitle {
+  font-size: $font-size-md;
+  color: $color-text-muted;
+  margin: $spacing-1 0 0;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.budget-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    text-align: left;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: $color-text-muted;
+    padding: $spacing-2 $spacing-3;
+    border-bottom: $border-width-sm solid $color-border;
+  }
+
+  td {
+    font-size: $font-size-base;
+    color: $color-text-primary;
+    padding: $spacing-3;
+    border-bottom: $border-width-sm solid $color-border-light;
+    vertical-align: middle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  th.text-right,
+  td.text-right { text-align: right; }
+
+  th.text-center,
+  td.text-center { text-align: center; }
+
+  th:nth-child(2), td:nth-child(2),
+  th:nth-child(3), td:nth-child(3) { width: 8rem; white-space: nowrap; }
+
+  th:nth-child(5), td:nth-child(5) { width: 9rem; }
+}
+
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+
+.cat-dot {
+  display: inline-block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  margin-right: $spacing-2;
+}
+
+.progress-col {
+  width: 12rem;
+}
+
+.progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.progress-track {
+  flex: 1;
+  height: 0.5rem;
+  background: $color-border-light;
+  border-radius: $radius-sm;
+  overflow: hidden;
+}
+
+.progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: $radius-sm;
+  background: $color-success;
+
+  &.warning { background: $color-warning; }
+  &.over { background: $color-danger; }
+}
+
+.progress-label {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  min-width: 2.75rem;
+  text-align: right;
+}
+
+.status-badge {
+  display: inline-block;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  padding: $spacing-1 $spacing-3;
+  border-radius: 999px;
+
+  &.on-track {
+    color: $color-success;
+    background: $color-success-bg;
+  }
+
+  &.warning {
+    color: $color-warning;
+    background: $color-warning-bg;
+  }
+
+  &.over {
+    color: $color-danger;
+    background: $color-danger-bg;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: $spacing-8 0;
+  color: $color-text-muted;
+
+  .empty-icon {
+    font-size: $font-size-4xl;
+    display: block;
+    margin-bottom: $spacing-2;
+  }
+}
+
+// RESPONSIVE
+@include respond-max($bp-840) {
+  .budget-card { padding: $spacing-4; }
+}
+
+@include respond-max($bp-480) {
+  .budget-table {
+    th, td { padding: $spacing-2; }
+  }
+}

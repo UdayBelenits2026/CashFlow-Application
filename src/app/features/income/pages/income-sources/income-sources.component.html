@@ -1,0 +1,234 @@
+<div class="income-sources-page">
+  @let allSources = sources();
+  @let incomeList = allIncomes();
+  @let filtered = filteredSources();
+
+  <!-- Header -->
+  <div class="top-bar">
+    <div class="title-wrap">
+      <h1 class="page-title">Income Sources</h1>
+      <p class="page-subtitle">Configure, monitor, and manage your employment, business, and passive revenue streams</p>
+    </div>
+
+    <div class="action-buttons">
+      <button type="button" class="btn-primary" (click)="openCreateSource()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        + Add New Source
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary strip -->
+  <div class="summary-strip">
+    <div class="summary-card">
+      <span class="summary-icon icon-sources">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+      </span>
+      <div class="summary-text">
+        <span class="summary-lbl">Total Sources</span>
+        <span class="summary-val">{{ allSources.length }}</span>
+        <span class="summary-sub">{{ getRecurringCount(allSources) }} recurring</span>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <span class="summary-icon icon-active">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </span>
+      <div class="summary-text">
+        <span class="summary-lbl">Active Sources</span>
+        <span class="summary-val">{{ getActiveCount(allSources) }}</span>
+        <span class="summary-sub">of {{ allSources.length }} total</span>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <span class="summary-icon icon-ytd">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+      </span>
+      <div class="summary-text">
+        <span class="summary-lbl">Total Received YTD</span>
+        <span class="summary-val">₹{{ getTotalYtd(allSources) | number:'1.0-0' }}</span>
+        <span class="summary-sub">across all sources</span>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <span class="summary-icon icon-expected">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+        </svg>
+      </span>
+      <div class="summary-text">
+        <span class="summary-lbl">Expected Baseline</span>
+        <span class="summary-val">₹{{ getExpectedTotal(allSources) | number:'1.0-0' }}</span>
+        <span class="summary-sub">per period</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters & Search -->
+  <div class="filter-bar">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search income sources by name or type..."
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+      />
+    </div>
+
+    <div class="status-tabs">
+      <button
+        type="button"
+        class="tab-btn"
+        [ngClass]="{ active: statusFilter() === 'ALL' }"
+        (click)="statusFilter.set('ALL')"
+      >
+        All ({{ allSources.length }})
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        [ngClass]="{ active: statusFilter() === 'ACTIVE' }"
+        (click)="statusFilter.set('ACTIVE')"
+      >
+        Active
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        [ngClass]="{ active: statusFilter() === 'INACTIVE' }"
+        (click)="statusFilter.set('INACTIVE')"
+      >
+        Inactive
+      </button>
+    </div>
+  </div>
+
+  <!-- Sources Grid -->
+  @if (filtered.length === 0) {
+    <div class="empty-card">
+      <p>No income sources found matching your criteria.</p>
+      <button type="button" class="btn-secondary" (click)="searchTerm.set(''); statusFilter.set('ALL')">
+        Reset Filters
+      </button>
+    </div>
+  } @else {
+    <div class="sources-grid">
+      @for (src of filtered; track src.id) {
+        <div class="source-card" (click)="openSourceDrawer(src)">
+          <span class="card-accent" [style.backgroundColor]="src.color || '#2563EB'"></span>
+
+          <div class="sc-header">
+            <span
+              class="sc-avatar"
+              [style.backgroundColor]="(src.color || '#2563EB') + '1A'"
+              [style.color]="src.color || '#2563EB'"
+            >
+              {{ (src.name || 'S').charAt(0).toUpperCase() }}
+            </span>
+            <div class="sc-heading">
+              <h3 class="sc-name">{{ src.name }}</h3>
+              <span class="sc-type">
+                {{ src.type }}@if (src.isRecurring) { <span class="sc-dot-sep">·</span> {{ src.frequency || 'Monthly' }} }
+              </span>
+            </div>
+            <span class="sc-status" [ngClass]="src.status === 'ACTIVE' ? 'active' : 'inactive'">
+              <span class="sc-status-dot"></span>{{ src.status }}
+            </span>
+          </div>
+
+          @if (src.description) {
+            <p class="sc-desc">{{ src.description }}</p>
+          }
+
+          <div class="sc-hero">
+            <span class="sc-hero-val">₹{{ (src.totalReceivedYtd || 0) | number:'1.2-2' }}</span>
+            <span class="sc-hero-lbl">Total received YTD</span>
+          </div>
+
+          <div class="sc-footer" (click)="$event.stopPropagation()">
+            <span class="sc-account">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>
+              </svg>
+              {{ src.accountName || 'Primary Account' }}
+            </span>
+            <div class="sc-actions">
+              <button
+                type="button"
+                class="sc-record"
+                title="Record income for this source"
+                (click)="onRecordFromSource(src)"
+              >
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Record
+              </button>
+              <button
+                type="button"
+                class="sc-edit"
+                title="Edit configuration"
+                (click)="openEditSource(src)"
+              >
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Screen 7 Drawer: Income Source Details -->
+  @if (selectedSourceForDrawer(); as drawerSource) {
+    <app-income-source-details-drawer
+      [source]="drawerSource"
+      [sourceIncomes]="getSourceIncomes(drawerSource.id, incomeList)"
+      (close)="selectedSourceForDrawer.set(null)"
+      (editSource)="openEditSource($event)"
+      (toggleStatus)="onToggleStatus($event)"
+      (recordIncomeNow)="onRecordFromSource($event)"
+    ></app-income-source-details-drawer>
+  }
+
+  <!-- Modals -->
+  @if (showSourceModal()) {
+    <app-income-source-modal
+      [source]="selectedSourceForEdit()"
+      [accounts]="accounts()"
+      (close)="showSourceModal.set(false); selectedSourceForEdit.set(null)"
+      (save)="onSaveSource($event)"
+      (update)="onUpdateSource($event)"
+    ></app-income-source-modal>
+  }
+
+  @if (showAddIncomeModal()) {
+    <app-add-income-modal
+      [sources]="allSources"
+      [accounts]="accounts()"
+      (close)="showAddIncomeModal.set(false); prefilledSourceForIncome.set(null)"
+      (save)="onSaveIncome($event)"
+    ></app-add-income-modal>
+  }
+</div>
