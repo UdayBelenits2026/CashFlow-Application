@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, of } from 'rxjs';
 
 import { AccountApiService } from '../../../accounts/data/account-api.service';
-import { maskAccountNumber } from '../../components/transaction-form/transaction-form.util';
+import { maskAccountNumber } from '../../utility/transaction-form-utils';
 import { TransactionsFacade } from '../../facades/transactions.facade';
 import { Transaction } from '../../models/models.transaction';
 

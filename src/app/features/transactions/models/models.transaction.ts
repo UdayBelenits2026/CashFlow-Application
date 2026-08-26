@@ -50,10 +50,28 @@ export interface TransactionSort {
   direction: SortDirection;
 }
 
-// Account option used by the account filter dropdown.
+// Account option for the filter dropdown (list) and account selects (form).
 export interface AccountOption {
   id: string;
   name: string;
+  label?: string;
+  status?: string;
+}
+
+// Raw value of the transaction reactive form, shared with the payload builder.
+export interface TransactionFormValue {
+  type: TransactionType;
+  date: string;
+  amount: number | null;
+  description: string;
+  category: string;
+  accountId: string;
+  fromAccountId: string;
+  toAccountId: string;
+  paymentMethod: PaymentMethod | '';
+  referenceNumber: string;
+  notes: string;
+  tags: string[];
 }
 
 // Pagination summary consumed by the list template.

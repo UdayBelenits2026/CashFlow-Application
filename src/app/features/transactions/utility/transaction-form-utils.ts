@@ -1,6 +1,6 @@
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
-import { CreateTransactionRequest, PaymentMethod, TransactionType } from '../../models/models.transaction';
+import { AccountOption, CreateTransactionRequest, PaymentMethod, Transaction, TransactionFormValue, TransactionSource, TransactionType } from '../models/models.transaction';
 
 // Selectable payment methods for expense/income transactions.
 export const PAYMENT_METHODS: PaymentMethod[] = [
@@ -31,14 +31,6 @@ export const INCOME_CATEGORIES = ['Income', 'Salary', 'Interest', 'Dividend', 'R
 
 // Fields controlled by the financial institution on bank-synced transactions.
 export const BANK_CONTROLLED_FIELDS = ['amount', 'description', 'date', 'accountId', 'referenceNumber'] as const;
-
-// Option displayed in the account dropdowns (masked account number).
-export interface AccountOption {
-  id: string;
-  name: string;
-  label: string;
-  status: string;
-}
 
 // Amount must be numeric, greater than zero, max two decimals.
 export function amountValidator(control: AbstractControl): ValidationErrors | null {
@@ -156,21 +148,6 @@ export function maskAccountNumber(accountNumber: string | undefined): string {
   return tail ? `**** ${tail}` : '****';
 }
 
-type TransactionFormValue = {
-  type: TransactionType;
-  date: string;
-  amount: number | null;
-  description: string;
-  category: string;
-  accountId: string;
-  fromAccountId: string;
-  toAccountId: string;
-  paymentMethod: PaymentMethod | '';
-  referenceNumber: string;
-  notes: string;
-  tags: string[];
-};
-
 // Builds a create/update payload, including only fields relevant to the type.
 export function buildTransactionPayload(value: TransactionFormValue, accounts: AccountOption[]): CreateTransactionRequest {
   const base = {
@@ -206,4 +183,83 @@ export function buildTransactionPayload(value: TransactionFormValue, accounts: A
     accountName: account?.name ?? '',
     paymentMethod: value.paymentMethod || ''
   };
+}
+
+// Today's date as an ISO yyyy-mm-dd string.
+export function getToday(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+// Category list for the selected transaction type.
+export function categoriesFor(type: TransactionType): string[] {
+  return type === 'Income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+}
+
+// Maps active accounts to dropdown options with a masked-number label.
+export function mapAccountsToOptions(
+  accounts: { id: string; accountName: string; accountNumber: string; status: string }[]
+): AccountOption[] {
+  return accounts
+    .filter((account) => (account.status || '').toLowerCase() === 'active')
+    .map((account) => ({
+      id: account.id,
+      name: account.accountName,
+      status: account.status,
+      label: `${account.accountName} (${maskAccountNumber(account.accountNumber)})`
+    }));
+}
+
+// Patch object used to populate the form when editing.
+export function transactionToFormPatch(transaction: Transaction): Partial<TransactionFormValue> {
+  return {
+    type: transaction.type,
+    date: transaction.date,
+    amount: transaction.amount,
+    description: transaction.description,
+    category: transaction.category ?? '',
+    accountId: transaction.accountId ?? '',
+    fromAccountId: transaction.fromAccountId ?? '',
+    toAccountId: transaction.toAccountId ?? '',
+    paymentMethod: transaction.paymentMethod ?? '',
+    referenceNumber: transaction.referenceNumber ?? '',
+    notes: transaction.notes ?? '',
+    tags: transaction.tags ?? []
+  };
+}
+
+// Adds a trimmed tag (max length/count + case-insensitive uniqueness).
+// Returns the new list, or null when the tag is rejected.
+export function addTagToList(tags: string[], value: string): string[] | null {
+  if (!value || value.length > 30 || tags.length >= 10) {
+    return null;
+  }
+  if (tags.some((tag) => tag.toLowerCase() === value.toLowerCase())) {
+    return null;
+  }
+  return [...tags, value];
+}
+
+// Disables institution-controlled fields on bank-synced records.
+export function lockBankControlledFields(form: FormGroup): void {
+  BANK_CONTROLLED_FIELDS.forEach((field) => form.get(field)?.disable({ emitEvent: false }));
+}
+
+// True when a field is institution-controlled and cannot be edited.
+export function isReadOnlyField(mode: 'add' | 'edit', source: TransactionSource | undefined, field: string): boolean {
+  return mode === 'edit' && source === 'Bank Sync' && (BANK_CONTROLLED_FIELDS as readonly string[]).includes(field);
+}
+
+// Builds the edit payload, omitting read-only (institution-controlled) fields.
+export function buildEditChanges(value: TransactionFormValue, accounts: AccountOption[], isBankSync: boolean): Partial<Transaction> {
+  const changes: Partial<Transaction> = buildTransactionPayload(value, accounts);
+  if (isBankSync) {
+    delete changes.amount;
+    delete changes.description;
+    delete changes.merchant;
+    delete changes.date;
+    delete changes.accountId;
+    delete changes.accountName;
+    delete changes.referenceNumber;
+  }
+  return changes;
 }

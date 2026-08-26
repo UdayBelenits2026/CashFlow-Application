@@ -7,19 +7,22 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AccountApiService } from '../../../accounts/data/account-api.service';
 import { DatePickerComponent } from '../../../../shared/ui/date-picker/date-picker';
 import { TransactionsFacade } from '../../facades/transactions.facade';
-import { PaymentMethod, Transaction, TransactionType } from '../../models/models.transaction';
+import { AccountOption, PaymentMethod, Transaction, TransactionType } from '../../models/models.transaction';
 import { UnsavedChangesAware } from './unsaved-changes.guard';
 import {
-  AccountOption,
-  BANK_CONTROLLED_FIELDS,
-  EXPENSE_CATEGORIES,
-  INCOME_CATEGORIES,
   PAYMENT_METHODS,
+  addTagToList,
   applyTypeValidators,
+  buildEditChanges,
   buildTransactionPayload,
+  categoriesFor,
   createTransactionForm,
-  maskAccountNumber
-} from './transaction-form.util';
+  getToday,
+  isReadOnlyField,
+  lockBankControlledFields,
+  mapAccountsToOptions,
+  transactionToFormPatch
+} from '../../utility/transaction-form-utils';
 
 // One reusable form for both Add (/transactions/add) and Edit (/transactions/edit/:id).
 @Component({
@@ -39,12 +42,12 @@ export class TransactionForm implements OnInit, UnsavedChangesAware {
 
   readonly paymentMethods = PAYMENT_METHODS;
   readonly bankTooltip = 'This value was provided by your financial institution and cannot be changed.';
-  readonly form: FormGroup = createTransactionForm(this.fb, this.today());
+  readonly form: FormGroup = createTransactionForm(this.fb, getToday());
 
   mode: 'add' | 'edit' = 'add';
   transactionId: string | null = null;
   accountOptions: AccountOption[] = [];
-  categoryOptions: string[] = EXPENSE_CATEGORIES;
+  categoryOptions: string[] = categoriesFor('Expense');
 
   loadingTransaction = false;
   loadError: string | null = null;
@@ -71,16 +74,7 @@ export class TransactionForm implements OnInit, UnsavedChangesAware {
     this.accountApi
       .getAccounts()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((accounts) => {
-        this.accountOptions = accounts
-          .filter((account) => (account.status || '').toLowerCase() === 'active')
-          .map((account) => ({
-            id: account.id,
-            name: account.accountName,
-            status: account.status,
-            label: `${account.accountName} (${maskAccountNumber(account.accountNumber)})`
-          }));
-      });
+      .subscribe((accounts) => (this.accountOptions = mapAccountsToOptions(accounts)));
 
     applyTypeValidators(this.form, 'Expense', '');
 
@@ -132,7 +126,7 @@ export class TransactionForm implements OnInit, UnsavedChangesAware {
   }
 
   private onTypeChange(type: TransactionType): void {
-    this.categoryOptions = type === 'Income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+    this.categoryOptions = categoriesFor(type);
     applyTypeValidators(this.form, type, this.form.get('paymentMethod')!.value ?? '');
 
     if (this.suppressTypeReset) {
@@ -147,11 +141,7 @@ export class TransactionForm implements OnInit, UnsavedChangesAware {
 
   // --- Bank-synced read-only handling ---
   isFieldReadOnly(field: string): boolean {
-    return (
-      this.mode === 'edit' &&
-      this.selected?.source === 'Bank Sync' &&
-      (BANK_CONTROLLED_FIELDS as readonly string[]).includes(field)
-    );
+    return isReadOnlyField(this.mode, this.selected?.source, field);
   }
 
   control(name: string) {
@@ -169,17 +159,12 @@ export class TransactionForm implements OnInit, UnsavedChangesAware {
   }
 
   addTag(): void {
-    const value = this.tagInput.trim();
+    const next = addTagToList(this.tags, this.tagInput.trim());
     this.tagInput = '';
-    if (!value) {
-      return;
+    if (next) {
+      this.form.get('tags')!.setValue(next);
+      this.form.markAsDirty();
     }
-    const tags = this.tags;
-    if (value.length > 30 || tags.length >= 10 || tags.some((tag) => tag.toLowerCase() === value.toLowerCase())) {
-      return;
-    }
-    this.form.get('tags')!.setValue([...tags, value]);
-    this.form.markAsDirty();
   }
 
   removeTag(tag: string): void {
@@ -206,15 +191,16 @@ export class TransactionForm implements OnInit, UnsavedChangesAware {
     const value = this.form.getRawValue();
 
     if (this.mode === 'add') {
-      if (!this.idempotencyKey) {
-        this.idempotencyKey = crypto.randomUUID();
-      }
+      this.idempotencyKey ??= crypto.randomUUID();
       this.facade.createTransaction(buildTransactionPayload(value, this.accountOptions), this.idempotencyKey);
       return;
     }
 
     if (this.transactionId) {
-      this.facade.updateTransaction(this.transactionId, this.buildEditChanges(value));
+      this.facade.updateTransaction(
+        this.transactionId,
+        buildEditChanges(value, this.accountOptions, this.selected?.source === 'Bank Sync')
+      );
     }
   }
 
@@ -275,46 +261,17 @@ export class TransactionForm implements OnInit, UnsavedChangesAware {
   private populateForm(transaction: Transaction): void {
     this.selected = transaction;
     this.suppressTypeReset = true;
-    this.form.patchValue({
-      type: transaction.type,
-      date: transaction.date,
-      amount: transaction.amount,
-      description: transaction.description,
-      category: transaction.category ?? '',
-      accountId: transaction.accountId ?? '',
-      fromAccountId: transaction.fromAccountId ?? '',
-      toAccountId: transaction.toAccountId ?? '',
-      paymentMethod: transaction.paymentMethod ?? '',
-      referenceNumber: transaction.referenceNumber ?? '',
-      notes: transaction.notes ?? '',
-      tags: transaction.tags ?? []
-    });
-    this.categoryOptions = transaction.type === 'Income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+    this.form.patchValue(transactionToFormPatch(transaction));
+    this.categoryOptions = categoriesFor(transaction.type);
     applyTypeValidators(this.form, transaction.type, transaction.paymentMethod ?? '');
     this.suppressTypeReset = false;
 
-    // Lock institution-controlled fields for bank-synced records.
     if (transaction.source === 'Bank Sync') {
-      BANK_CONTROLLED_FIELDS.forEach((field) => this.form.get(field)?.disable({ emitEvent: false }));
+      lockBankControlledFields(this.form);
     }
 
     this.form.markAsPristine();
     this.form.markAsUntouched();
-  }
-
-  // Builds the edit payload, omitting read-only (institution-controlled) fields.
-  private buildEditChanges(value: ReturnType<FormGroup['getRawValue']>): Partial<Transaction> {
-    const changes: Partial<Transaction> = buildTransactionPayload(value, this.accountOptions);
-    if (this.selected?.source === 'Bank Sync') {
-      delete changes.amount;
-      delete changes.description;
-      delete changes.merchant;
-      delete changes.date;
-      delete changes.accountId;
-      delete changes.accountName;
-      delete changes.referenceNumber;
-    }
-    return changes;
   }
 
   private onSaveSuccess(message: string): void {
@@ -327,7 +284,7 @@ export class TransactionForm implements OnInit, UnsavedChangesAware {
       this.pendingSaveNew = false;
       this.successMessage = message;
       const keepType = this.form.get('type')!.value;
-      this.form.reset({ type: keepType, date: this.today(), amount: null, paymentMethod: '', tags: [] });
+      this.form.reset({ type: keepType, date: getToday(), amount: null, paymentMethod: '', tags: [] });
       applyTypeValidators(this.form, keepType, '');
       this.form.markAsPristine();
       return;
@@ -335,9 +292,5 @@ export class TransactionForm implements OnInit, UnsavedChangesAware {
 
     this.saved = true;
     this.router.navigate(['/transactions']);
-  }
-
-  private today(): string {
-    return new Date().toISOString().slice(0, 10);
   }
 }
