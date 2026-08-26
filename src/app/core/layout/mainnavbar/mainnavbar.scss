@@ -333,6 +333,16 @@
     background: #f8fafc;
   }
 
+  &.active {
+    border-color: #c7d2fe;
+    background: #eff6ff;
+    color: #1554e8;
+
+    i {
+      color: #1554e8;
+    }
+  }
+
   &:focus-visible {
     outline: 0.125rem solid $color-primary-button;
     outline-offset: 0.125rem;

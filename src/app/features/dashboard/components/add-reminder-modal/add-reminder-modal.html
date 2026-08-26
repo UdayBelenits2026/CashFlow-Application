@@ -1,0 +1,101 @@
+@if (isOpen()) {
+  <div class="modal-overlay" (click)="onClose()">
+    <article
+      class="modal-card"
+      (click)="$event.stopPropagation()"
+      role="dialog"
+      aria-labelledby="modal-title"
+      aria-modal="true"
+    >
+      <header class="modal-header">
+        <div class="header-title">
+          <div class="header-icon">
+            <fa-icon [icon]="bellIcon"></fa-icon>
+          </div>
+          <div>
+            <h2 id="modal-title">Add Bill Reminder</h2>
+            <p>Set a reminder for your upcoming bill payment.</p>
+          </div>
+        </div>
+        <button type="button" class="close-btn" (click)="onClose()" aria-label="Close modal">
+          <fa-icon [icon]="closeIcon"></fa-icon>
+        </button>
+      </header>
+
+      <form (submit)="$event.preventDefault(); onSubmit()" class="modal-body">
+        @if (formError()) {
+          <div class="form-error">
+            {{ formError() }}
+          </div>
+        }
+
+        <div class="form-group">
+          <label for="bill-title">Bill Title / Description *</label>
+          <input
+            id="bill-title"
+            name="title"
+            type="text"
+            placeholder="e.g. Water Bill, Netflix"
+            [ngModel]="title()"
+            (ngModelChange)="title.set($event)"
+            (input)="title.set($any($event.target).value)"
+            required
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bill-amount">Amount (₹) *</label>
+            <input
+              id="bill-amount"
+              name="amount"
+              type="number"
+              min="0.01"
+              step="any"
+              placeholder="e.g. 150"
+              [ngModel]="amount()"
+              (ngModelChange)="amount.set($event)"
+              (input)="amount.set($any($event.target).valueAsNumber || null)"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="bill-due-date">Due Date *</label>
+            <input
+              id="bill-due-date"
+              name="dueDate"
+              type="date"
+              [min]="todayDateString"
+              [ngModel]="dueDate()"
+              (ngModelChange)="dueDate.set($event)"
+              (change)="dueDate.set($any($event.target).value)"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bill-icon">Bill Category / Icon</label>
+          <select
+            id="bill-icon"
+            name="icon"
+            [ngModel]="icon()"
+            (ngModelChange)="icon.set($event)"
+            (change)="icon.set($any($event.target).value)"
+          >
+            @for (opt of iconOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+
+        <footer class="modal-footer">
+          <button type="button" class="cancel-btn" (click)="onClose()">Cancel</button>
+          <button type="submit" class="submit-btn">+ Add Reminder</button>
+        </footer>
+      </form>
+    </article>
+  </div>
+}

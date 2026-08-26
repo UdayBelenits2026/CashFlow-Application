@@ -1,0 +1,47 @@
+@use '../../../../../styles/variables' as *;
+@use '../../../../../styles/buttons' as *;
+
+.quick-actions {
+  padding: 1.125rem;
+  border: $border-width-sm solid $color-border;
+  border-radius: 0.875rem;
+  background: $color-card;
+}
+h3 {
+  margin: 0 0 $spacing-4;
+  color: $color-text-primary;
+  font-size: $font-size-lg;
+}
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-3;
+}
+.action-item {
+  min-height: 5.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5625rem;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-lg;
+  background: $color-card;
+  cursor: pointer;
+  &:hover {
+    background: $color-background;
+  }
+}
+.action-icon {
+  width: 2.625rem;
+  height: 2.625rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: $color-info;
+  background: $color-info-bg;
+}
+span {
+  font-size: $font-size-base;
+  color: $color-text-secondary;
+}

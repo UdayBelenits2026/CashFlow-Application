@@ -1,10 +1,11 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LayoutService } from '../services/layout';
 import { DatePickerComponent, DateRange } from '../../../shared/ui/date-picker/date-picker';
 import { AuthFacade } from '../../auth/facades/auth.facade';
+import { DashboardFacade } from '../../../features/dashboard/facades/dashboard.facade';
 
 @Component({
   selector: 'app-cf-mainnavbar',
@@ -13,8 +14,9 @@ import { AuthFacade } from '../../auth/facades/auth.facade';
   templateUrl: './mainnavbar.html',
   styleUrl: './mainnavbar.scss',
 })
-export class Mainnavbar {
+export class Mainnavbar implements OnInit {
   readonly layoutService = inject(LayoutService);
+  private readonly dashboardFacade = inject(DashboardFacade);
   private readonly router = inject(Router);
   private readonly authFacade = inject(AuthFacade);
   private readonly destroyRef = inject(DestroyRef);
@@ -33,10 +35,43 @@ export class Mainnavbar {
       .subscribe((event) => {
         this.updateTitle(event.urlAfterRedirects || event.url);
       });
+
+    effect(() => {
+      const filters = this.dashboardFacade.activeFilters();
+      if (filters?.fromDate && filters?.toDate) {
+        const [y1, m1, d1] = filters.fromDate.split('-').map(Number);
+        const [y2, m2, d2] = filters.toDate.split('-').map(Number);
+
+        if (y1 && m1 && d1 && y2 && m2 && d2) {
+          const start = new Date(y1, m1 - 1, d1);
+          const end = new Date(y2, m2 - 1, d2);
+
+          if (
+            !this.selectedDate?.start ||
+            !this.selectedDate?.end ||
+            this.selectedDate.start.getTime() !== start.getTime() ||
+            this.selectedDate.end.getTime() !== end.getTime()
+          ) {
+            this.selectedDate = { start, end };
+          }
+        }
+      }
+    });
+  }
+
+  ngOnInit(): void {
+    if (this.selectedDate.start && this.selectedDate.end) {
+      this.onDateChange(this.selectedDate);
+    }
+  }
+
+  get isCustomizeActive(): boolean {
+    return this.router.url.includes('/dashboard/customize');
   }
 
   private updateTitle(url: string): void {
     const path = url.split('?')[0].split('#')[0];
+
     switch (true) {
       case path.startsWith('/spending'):
         this.pageTitle.set('Spending');
@@ -86,7 +121,19 @@ export class Mainnavbar {
 
   onDateChange(range: DateRange): void {
     this.selectedDate = range;
-    console.log('Selected date range:', range);
+
+    if (range.start && range.end) {
+      const fromDate = this.formatDate(range.start);
+      const toDate = this.formatDate(range.end);
+      this.dashboardFacade.updateDateRange(fromDate, toDate);
+    }
+  }
+
+  private formatDate(date: Date): string {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
   }
 
   onSearch(event: Event): void {
@@ -95,8 +142,8 @@ export class Mainnavbar {
     console.log('Search:', searchValue);
   }
 
-  openFilter(): void {
-    void this.router.navigate(['/dashboard/filter']);
+  toggleFilter(): void {
+    this.layoutService.toggleFilter();
   }
 
   openCustomize(): void {

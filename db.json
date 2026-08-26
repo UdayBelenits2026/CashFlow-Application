@@ -1,0 +1,436 @@
+{
+  "dashboard": {
+    "summaryCards": [
+      {
+        "id": "income",
+        "selectedMonthAmount": 7000,
+        "previousMonthAmount": 6027
+      },
+      {
+        "id": "expenses",
+        "selectedMonthAmount": 2650,
+        "previousMonthAmount": 2828
+      },
+      {
+        "id": "cashFlow",
+        "selectedMonthAmount": 4130,
+        "previousMonthAmount": 3476
+      },
+      {
+        "id": "savings",
+        "selectedMonthAmount": 12850,
+        "previousMonthAmount": 11746
+      }
+    ],
+    "upcomingBills": [
+      {
+        "id": "1",
+        "title": "Electricity Bill",
+        "date": "Jun 5, 2026",
+        "amount": 120,
+        "icon": "fa-bolt",
+        "type": "bill"
+      },
+      {
+        "id": "2",
+        "title": "Internet Bill",
+        "date": "Jun 7, 2026",
+        "amount": 60,
+        "icon": "fa-wifi",
+        "type": "bill"
+      },
+      {
+        "id": "3",
+        "title": "Credit Card",
+        "date": "Jun 15, 2026",
+        "amount": 250,
+        "icon": "fa-credit-card",
+        "type": "bill"
+      },
+      {
+        "id": "4",
+        "title": "Insurance Premium",
+        "date": "Jun 20, 2026",
+        "amount": 150,
+        "icon": "fa-shield-halved",
+        "type": "bill"
+      }
+    ],
+    "recentTransactions": [
+      {
+        "id": "1",
+        "title": "Starbucks Coffee",
+        "date": "May 29, 2026",
+        "amount": -5.45,
+        "icon": "fa-mug-hot",
+        "type": "expense"
+      },
+      {
+        "id": "2",
+        "title": "Amazon.com",
+        "date": "May 29, 2026",
+        "amount": -49.99,
+        "icon": "fa-a",
+        "type": "expense"
+      },
+      {
+        "id": "3",
+        "title": "Uber Ride",
+        "date": "May 28, 2026",
+        "amount": -18.32,
+        "icon": "fa-car",
+        "type": "expense"
+      },
+      {
+        "id": "4",
+        "title": "Netflix Subscription",
+        "date": "May 27, 2026",
+        "amount": -15.49,
+        "icon": "fa-film",
+        "type": "expense"
+      },
+      {
+        "id": "5",
+        "title": "Walmart",
+        "date": "May 27, 2026",
+        "amount": -85.65,
+        "icon": "fa-cart-shopping",
+        "type": "expense"
+      }
+    ],
+    "recentIncome": [
+      {
+        "id": "1",
+        "title": "Salary - May",
+        "date": "May 31, 2026",
+        "amount": 4600,
+        "icon": "fa-sack-dollar",
+        "type": "income"
+      },
+      {
+        "id": "2",
+        "title": "Freelance Project",
+        "date": "May 25, 2026",
+        "amount": 450,
+        "icon": "fa-laptop-code",
+        "type": "income"
+      },
+      {
+        "id": "3",
+        "title": "Stock Dividend",
+        "date": "May 22, 2026",
+        "amount": 280,
+        "icon": "fa-chart-column",
+        "type": "income"
+      },
+      {
+        "id": "4",
+        "title": "Interest Received",
+        "date": "May 20, 2026",
+        "amount": 125,
+        "icon": "fa-building-columns",
+        "type": "income"
+      },
+      {
+        "id": "5",
+        "title": "Refund Received",
+        "date": "May 18, 2026",
+        "amount": 75,
+        "icon": "fa-arrow-right-arrow-left",
+        "type": "income"
+      }
+    ],
+    "recentExpenses": [
+      {
+        "id": "1",
+        "title": "Swiggy Order",
+        "date": "May 29, 2026",
+        "amount": -25.49,
+        "icon": "fa-utensils",
+        "type": "expense"
+      },
+      {
+        "id": "2",
+        "title": "Fuel",
+        "date": "May 28, 2026",
+        "amount": -60,
+        "icon": "fa-gas-pump",
+        "type": "expense"
+      },
+      {
+        "id": "3",
+        "title": "Phone Recharge",
+        "date": "May 27, 2026",
+        "amount": -19,
+        "icon": "fa-mobile-screen",
+        "type": "expense"
+      },
+      {
+        "id": "4",
+        "title": "Groceries",
+        "date": "May 25, 2026",
+        "amount": -64.3,
+        "icon": "fa-cart-shopping",
+        "type": "expense"
+      },
+      {
+        "id": "5",
+        "title": "Pharmacy",
+        "date": "May 24, 2026",
+        "amount": -22.11,
+        "icon": "fa-kit-medical",
+        "type": "expense"
+      }
+    ],
+    "widgetConfig": [
+      {
+        "id": "cashFlowTrend",
+        "selected": true,
+        "layout": "medium",
+        "order": 0
+      },
+      {
+        "id": "spendingByCategory",
+        "selected": true,
+        "layout": "medium",
+        "order": 1
+      },
+      {
+        "id": "upcomingBills",
+        "selected": true,
+        "layout": "medium",
+        "order": 2
+      },
+      {
+        "id": "recentTransactions",
+        "selected": true,
+        "layout": "medium",
+        "order": 3
+      },
+      {
+        "id": "recentIncome",
+        "selected": true,
+        "layout": "medium",
+        "order": 4
+      },
+      {
+        "id": "recentExpenses",
+        "selected": true,
+        "layout": "medium",
+        "order": 5
+      },
+      {
+        "id": "budgetOverview",
+        "selected": true,
+        "layout": "medium",
+        "order": 6
+      },
+      {
+        "id": "savingsGoal",
+        "selected": true,
+        "layout": "medium",
+        "order": 7
+      },
+      {
+        "id": "netWorth",
+        "selected": true,
+        "layout": "medium",
+        "order": 8
+      },
+      {
+        "id": "incomeBySource",
+        "selected": true,
+        "layout": "medium",
+        "order": 9
+      },
+      {
+        "id": "cashBalance",
+        "selected": true,
+        "layout": "medium",
+        "order": 10
+      }
+    ],
+    "onboardingSteps": [
+      {
+        "id": "complete-profile",
+        "completed": true
+      }
+    ],
+    "onboardingActions": [
+      {
+        "id": "connect-account",
+        "title": "Connect Bank Account",
+        "description": "Securely connect your bank accounts to automatically import transactions.",
+        "icon": "bank",
+        "tone": "blue"
+      },
+      {
+        "id": "add-income",
+        "title": "Add First Income",
+        "description": "Record your first income source to see your cash flow take shape.",
+        "icon": "wallet",
+        "tone": "green"
+      },
+      {
+        "id": "add-expense",
+        "title": "Add First Expense",
+        "description": "Track your first expense to understand where your money goes.",
+        "icon": "receipt",
+        "tone": "red"
+      },
+      {
+        "id": "create-budget",
+        "title": "Create Your Budget",
+        "description": "Set spending limits and stay on track with your financial goals.",
+        "icon": "chart",
+        "tone": "purple"
+      }
+    ],
+    "isNewUser": false,
+    "cashBalance": {
+      "totalBalance": 8450,
+      "inAccounts": 8760,
+      "pending": -310
+    },
+    "budgetCategories": [
+      {
+        "category": "Food & Dining",
+        "spent": 660,
+        "limit": 1000,
+        "color": "#16a34a",
+        "id": "EpASHRdDbHQ"
+      },
+      {
+        "category": "Transportation",
+        "spent": 528,
+        "limit": 800,
+        "color": "#f59e0b",
+        "id": "wZEfDiAImg8"
+      },
+      {
+        "category": "Utilities",
+        "spent": 396,
+        "limit": 600,
+        "color": "#2563eb",
+        "id": "V_sNt6YvFuU"
+      }
+    ],
+    "savingsGoal": {
+      "goalName": "Emergency Fund",
+      "savedAmount": 12850,
+      "targetAmount": 20000,
+      "dueDate": "Dec 2026"
+    },
+    "incomeSources": [
+      {
+        "source": "Primary Salary",
+        "amount": 4600,
+        "color": "#2563eb",
+        "id": "NkI6g6pFuzs"
+      },
+      {
+        "source": "Freelance",
+        "amount": 450,
+        "color": "#0ea5e9",
+        "id": "vJ5gPHkzvnA"
+      },
+      {
+        "source": "Investments",
+        "amount": 405,
+        "color": "#14b8a6",
+        "id": "N8yVs3w1AKI"
+      }
+    ],
+    "netWorth": {
+      "totalAssets": 95400,
+      "totalLiabilities": 32100
+    },
+    "cashFlowTrendChart": {
+      "labels": [
+        "May 1",
+        "May 8",
+        "May 15",
+        "May 22",
+        "May 31"
+      ],
+      "datasets": [
+        {
+          "label": "Income",
+          "data": [
+            5200,
+            5800,
+            5600,
+            6200,
+            6780
+          ],
+          "borderColor": "#22c55e",
+          "backgroundColor": "rgba(34, 197, 94, .1)",
+          "pointBackgroundColor": "#22c55e",
+          "fill": true
+        },
+        {
+          "label": "Expenses",
+          "data": [
+            2800,
+            2400,
+            2900,
+            2500,
+            2650
+          ],
+          "borderColor": "#ef4444",
+          "backgroundColor": "rgba(239, 68, 68, .1)",
+          "pointBackgroundColor": "#ef4444",
+          "fill": true
+        },
+        {
+          "label": "Net Cash Flow",
+          "data": [
+            2400,
+            3400,
+            2700,
+            3700,
+            4130
+          ],
+          "borderColor": "#2563eb",
+          "backgroundColor": "rgba(37, 99, 235, .1)",
+          "pointBackgroundColor": "#2563eb",
+          "fill": true
+        }
+      ]
+    },
+    "spendingByCategoryChart": {
+      "labels": [
+        "Housing",
+        "Food & Dining",
+        "Transportation",
+        "Utilities",
+        "Entertainment",
+        "Others"
+      ],
+      "datasets": [
+        {
+          "data": [
+            795,
+            530,
+            398,
+            265,
+            212,
+            185
+          ],
+          "backgroundColor": [
+            "#2563eb",
+            "#22c55e",
+            "#f97316",
+            "#7c3aed",
+            "#ef4444",
+            "#94a3b8"
+          ],
+          "borderWidth": 0,
+          "hoverOffset": 4
+        }
+      ],
+      "total": 2650
+    }
+  },
+  "$schema": "./node_modules/json-server/schema.json"
+}

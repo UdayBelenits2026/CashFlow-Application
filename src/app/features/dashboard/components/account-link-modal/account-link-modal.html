@@ -1,0 +1,268 @@
+@if (isOpen()) {
+  <div class="modal-backdrop" (click)="onClose()">
+    <div
+      class="modal-container"
+      (click)="$event.stopPropagation()"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      <header class="modal-header">
+        <div class="header-text">
+          <h2 id="modal-title">Link Your First Account</h2>
+          <p class="subtitle">
+            Connect your bank account securely to import transactions and track your finances.
+          </p>
+        </div>
+        <button type="button" class="close-button" aria-label="Close modal" (click)="onClose()">
+          <fa-icon [icon]="closeIcon"></fa-icon>
+        </button>
+      </header>
+
+      <nav class="tabs-nav" aria-label="Account types">
+        <button
+          type="button"
+          class="tab-button"
+          [class.active]="activeTab() === 'bank'"
+          (click)="setTab('bank')"
+        >
+          Bank Account
+        </button>
+        <button
+          type="button"
+          class="tab-button"
+          [class.active]="activeTab() === 'credit-card'"
+          (click)="setTab('credit-card')"
+        >
+          Credit Card
+        </button>
+      </nav>
+
+      <div class="modal-body">
+        @if (activeTab() === 'bank') {
+          <form class="account-form" (ngSubmit)="onSubmit()" novalidate>
+            <div class="form-group" [class.has-error]="isSubmitted() && errors().bankName">
+              <label for="bankName">Bank name</label>
+              <div class="select-wrapper">
+                <select
+                  id="bankName"
+                  [ngModel]="bankName()"
+                  (ngModelChange)="bankName.set($event); onFieldChange()"
+                  name="bankName"
+                  [class.error-input]="isSubmitted() && errors().bankName"
+                >
+                  @for (option of bankOptions; track option.value) {
+                    <option [value]="option.value" [disabled]="!option.value">
+                      {{ option.label }}
+                    </option>
+                  }
+                </select>
+                <fa-icon [icon]="chevronIcon" class="select-chevron"></fa-icon>
+              </div>
+              @if (isSubmitted() && errors().bankName) {
+                <span class="error-message">{{ errors().bankName }}</span>
+              }
+            </div>
+
+            <div class="form-group" [class.has-error]="isSubmitted() && errors().accountType">
+              <label for="accountType">Account type</label>
+              <div class="select-wrapper">
+                <select
+                  id="accountType"
+                  [ngModel]="accountType()"
+                  (ngModelChange)="accountType.set($event); onFieldChange()"
+                  name="accountType"
+                  [class.error-input]="isSubmitted() && errors().accountType"
+                >
+                  @for (option of accountTypeOptions; track option.value) {
+                    <option [value]="option.value" [disabled]="!option.value">
+                      {{ option.label }}
+                    </option>
+                  }
+                </select>
+                <fa-icon [icon]="chevronIcon" class="select-chevron"></fa-icon>
+              </div>
+              @if (isSubmitted() && errors().accountType) {
+                <span class="error-message">{{ errors().accountType }}</span>
+              }
+            </div>
+
+            <div class="grid-2-col">
+              <div class="form-group" [class.has-error]="isSubmitted() && errors().routingNumber">
+                <label for="routingNumber">Routing number</label>
+                <input
+                  type="text"
+                  id="routingNumber"
+                  [ngModel]="routingNumber()"
+                  (ngModelChange)="routingNumber.set($event); onFieldChange()"
+                  name="routingNumber"
+                  placeholder="123456789"
+                  maxlength="9"
+                  [class.error-input]="isSubmitted() && errors().routingNumber"
+                />
+                @if (isSubmitted() && errors().routingNumber) {
+                  <span class="error-message">{{ errors().routingNumber }}</span>
+                }
+              </div>
+
+              <div class="form-group" [class.has-error]="isSubmitted() && errors().accountNumber">
+                <label for="accountNumber">Account number</label>
+                <input
+                  type="text"
+                  id="accountNumber"
+                  [ngModel]="accountNumber()"
+                  (ngModelChange)="accountNumber.set($event); onFieldChange()"
+                  name="accountNumber"
+                  placeholder="1234567890"
+                  maxlength="17"
+                  [class.error-input]="isSubmitted() && errors().accountNumber"
+                />
+                @if (isSubmitted() && errors().accountNumber) {
+                  <span class="error-message">{{ errors().accountNumber }}</span>
+                }
+              </div>
+            </div>
+
+            <div
+              class="form-group"
+              [class.has-error]="isSubmitted() && (errors().nickname || bankNickname().length > 30)"
+            >
+              <div class="label-row">
+                <label for="bankNickname">Account nickname (optional)</label>
+                <span class="char-counter" [class.counter-error]="bankNickname().length > 30">
+                  {{ bankNickname().length }} / 30
+                </span>
+              </div>
+              <input
+                type="text"
+                id="bankNickname"
+                [ngModel]="bankNickname()"
+                (ngModelChange)="bankNickname.set($event); onFieldChange()"
+                name="bankNickname"
+                placeholder="My Primary Checking Account"
+                [class.error-input]="
+                  isSubmitted() && (errors().nickname || bankNickname().length > 30)
+                "
+              />
+              @if (isSubmitted() && errors().nickname) {
+                <span class="error-message">{{ errors().nickname }}</span>
+              }
+            </div>
+          </form>
+        } @else {
+          <form class="account-form" (ngSubmit)="onSubmit()" novalidate>
+            <div class="form-group" [class.has-error]="isSubmitted() && errors().cardIssuer">
+              <label for="cardIssuer">Card issuer / Bank</label>
+              <div class="select-wrapper">
+                <select
+                  id="cardIssuer"
+                  [ngModel]="cardIssuer()"
+                  (ngModelChange)="cardIssuer.set($event); onFieldChange()"
+                  name="cardIssuer"
+                  [class.error-input]="isSubmitted() && errors().cardIssuer"
+                >
+                  @for (option of cardIssuerOptions; track option.value) {
+                    <option [value]="option.value" [disabled]="!option.value">
+                      {{ option.label }}
+                    </option>
+                  }
+                </select>
+                <fa-icon [icon]="chevronIcon" class="select-chevron"></fa-icon>
+              </div>
+              @if (isSubmitted() && errors().cardIssuer) {
+                <span class="error-message">{{ errors().cardIssuer }}</span>
+              }
+            </div>
+
+            <div class="form-group" [class.has-error]="isSubmitted() && errors().cardType">
+              <label for="cardType">Card type</label>
+              <div class="select-wrapper">
+                <select
+                  id="cardType"
+                  [ngModel]="cardType()"
+                  (ngModelChange)="cardType.set($event); onFieldChange()"
+                  name="cardType"
+                  [class.error-input]="isSubmitted() && errors().cardType"
+                >
+                  @for (option of cardTypeOptions; track option.value) {
+                    <option [value]="option.value" [disabled]="!option.value">
+                      {{ option.label }}
+                    </option>
+                  }
+                </select>
+                <fa-icon [icon]="chevronIcon" class="select-chevron"></fa-icon>
+              </div>
+              @if (isSubmitted() && errors().cardType) {
+                <span class="error-message">{{ errors().cardType }}</span>
+              }
+            </div>
+
+            <div class="form-group" [class.has-error]="isSubmitted() && errors().last4Digits">
+              <label for="last4Digits">Last 4 digits of card</label>
+              <input
+                type="text"
+                id="last4Digits"
+                [ngModel]="last4Digits()"
+                (ngModelChange)="last4Digits.set($event); onFieldChange()"
+                name="last4Digits"
+                placeholder="4321"
+                maxlength="4"
+                [class.error-input]="isSubmitted() && errors().last4Digits"
+              />
+              @if (isSubmitted() && errors().last4Digits) {
+                <span class="error-message">{{ errors().last4Digits }}</span>
+              }
+            </div>
+
+            <div
+              class="form-group"
+              [class.has-error]="isSubmitted() && (errors().nickname || cardNickname().length > 30)"
+            >
+              <div class="label-row">
+                <label for="cardNickname">Account nickname (optional)</label>
+                <span class="char-counter" [class.counter-error]="cardNickname().length > 30">
+                  {{ cardNickname().length }} / 30
+                </span>
+              </div>
+              <input
+                type="text"
+                id="cardNickname"
+                [ngModel]="cardNickname()"
+                (ngModelChange)="cardNickname.set($event); onFieldChange()"
+                name="cardNickname"
+                placeholder="My Rewards Credit Card"
+                [class.error-input]="
+                  isSubmitted() && (errors().nickname || cardNickname().length > 30)
+                "
+              />
+              @if (isSubmitted() && errors().nickname) {
+                <span class="error-message">{{ errors().nickname }}</span>
+              }
+            </div>
+          </form>
+        }
+
+        <div class="security-banner">
+          <div class="security-icon-box">
+            <fa-icon [icon]="lockIcon"></fa-icon>
+          </div>
+          <div class="security-text">
+            <h3>Your data is secure</h3>
+            <p>We use bank-level encryption to keep your information safe and private.</p>
+          </div>
+        </div>
+      </div>
+
+      <footer class="modal-footer">
+        <div class="actions-row">
+          <button type="button" class="cancel-button" (click)="onClose()">Cancel</button>
+          <button type="button" class="submit-button" (click)="onSubmit()">Connect Account</button>
+        </div>
+        <p class="privacy-note">
+          <fa-icon [icon]="lockIcon"></fa-icon>
+          We never store your login credentials.
+        </p>
+      </footer>
+    </div>
+  </div>
+}

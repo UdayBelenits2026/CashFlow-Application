@@ -52,11 +52,14 @@
             @case ('upcomingBills') {
               <app-cf-dashboard-list
                 [title]="'Upcoming Bills'"
-                [items]="upcomingBills()"
+                [items]="displayUpcomingBills()"
                 [showAddReminder]="true"
+                [showViewAll]="true"
                 [isLoading]="loading()"
                 [hasError]="loadError()"
                 (retry)="retryLoad()"
+                (addReminder)="openAddReminderModal()"
+                (viewAll)="navigateToUpcomingBills()"
               ></app-cf-dashboard-list>
             }
 
@@ -151,7 +154,7 @@
       }
 
       <article class="dashboard-widget">
-        <app-cf-quick-actions [actions]="quickActions()"></app-cf-quick-actions>
+        <app-cf-quick-actions></app-cf-quick-actions>
       </article>
     </section>
 
@@ -162,4 +165,10 @@
       </section>
     }
   }
+
+  <app-add-reminder-modal
+    [isOpen]="isAddReminderModalOpen()"
+    (closeModal)="closeAddReminderModal()"
+    (saveReminder)="onSaveReminder($event)"
+  ></app-add-reminder-modal>
 </div>

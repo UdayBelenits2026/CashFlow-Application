@@ -11,7 +11,7 @@ export type {
   DashboardWidgetId,
   DashboardWidgetLayout,
 };
-
+// List of all dashboard widget definitions and metadata
 export const DASHBOARD_WIDGET_DEFINITIONS: DashboardWidgetDefinition[] = [
   {
     id: 'cashFlowTrend',
@@ -80,7 +80,7 @@ export const DASHBOARD_WIDGET_DEFINITIONS: DashboardWidgetDefinition[] = [
     icon: 'fa-building-columns',
   },
 ];
-
+// Default display, layout, and ordering configuration for widgets
 export const DASHBOARD_WIDGET_DEFAULT_CONFIG: DashboardWidgetConfig[] = [
   { id: 'cashFlowTrend', selected: true, layout: 'wide', order: 0 },
   { id: 'spendingByCategory', selected: true, layout: 'wide', order: 1 },
@@ -94,11 +94,11 @@ export const DASHBOARD_WIDGET_DEFAULT_CONFIG: DashboardWidgetConfig[] = [
   { id: 'incomeBySource', selected: true, layout: 'wide', order: 9 },
   { id: 'cashBalance', selected: true, layout: 'medium', order: 10 },
 ];
-
+// Returns shallow copy of widget configurations
 export function cloneWidgetConfig(config: DashboardWidgetConfig[]): DashboardWidgetConfig[] {
   return config.map((item) => ({ ...item }));
 }
-
+// Sorts widget configurations by order index
 export function sortWidgetConfig(config: DashboardWidgetConfig[]): DashboardWidgetConfig[] {
   return [...config].sort((a, b) => a.order - b.order);
 }

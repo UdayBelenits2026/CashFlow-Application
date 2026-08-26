@@ -2,7 +2,7 @@ import {
   cloneWidgetConfig,
   DASHBOARD_WIDGET_DEFAULT_CONFIG,
 } from '../utility/dashboard-widget-config';
-
+// Dashboard widget identifier types
 export type DashboardWidgetId =
   | 'cashFlowTrend'
   | 'spendingByCategory'
@@ -15,26 +15,23 @@ export type DashboardWidgetId =
   | 'netWorth'
   | 'incomeBySource'
   | 'cashBalance';
-
 export type DashboardWidgetLayout = 'medium' | 'wide';
-
+// Dashboard widget configuration interfaces
 export interface DashboardWidgetDefinition {
   id: DashboardWidgetId;
   title: string;
   description: string;
   icon: string;
 }
-
 export interface DashboardWidgetConfig {
   id: DashboardWidgetId;
   selected: boolean;
   layout: DashboardWidgetLayout;
   order: number;
 }
-
 export type CustomizeTab = 'available' | 'layout';
 export type PreviewMode = 'desktop' | 'tablet';
-
+// Filter state model for dashboard transactions
 export interface DashboardFilterState {
   dateRange: string;
   fromDate: string;
@@ -52,41 +49,75 @@ export interface DashboardFilterState {
   transactionStatus: string;
   recurring: string;
   budget: string;
-  applyToAllWidgets: boolean;
 }
-
+// Summary card models and metadata mapping
 export interface SummaryCard {
   id: 'income' | 'expenses' | 'cashFlow' | 'savings';
   title: string;
   amount: number;
+  selectedMonthAmount: number;
+  previousMonthAmount: number;
   percentage: number;
   trend: 'up' | 'down';
   comparison: string;
   icon: string;
 }
+export type SummaryCardResponse = SummaryCard;
+export const SUMMARY_CARD_METADATA: Record<SummaryCard['id'], { title: string; icon: string }> = {
+  income: { title: 'Total Income', icon: 'fa-wallet' },
+  expenses: { title: 'Total Expenses', icon: 'fa-money-bill-transfer' },
+  cashFlow: { title: 'Net Cash Flow', icon: 'fa-chart-line' },
+  savings: { title: 'Total Savings', icon: 'fa-piggy-bank' },
+};
+// Maps summary card API response data to full UI model
+export function mapSummaryCardResponse(rawCards: any[] | undefined | null): SummaryCard[] {
+  if (!rawCards) return [];
+  return rawCards.map((card): SummaryCard => {
+    const cardId = card.id as SummaryCard['id'];
+    const meta = SUMMARY_CARD_METADATA[cardId] ?? { title: '', icon: 'fa-wallet' };
+    const selected = card.selectedMonthAmount ?? card.amount ?? 0;
+    const previous = card.previousMonthAmount ?? 0;
+    let percentage = card.percentage ?? 0;
+    if (previous !== 0) {
+      percentage = Math.round(Math.abs(((selected - previous) / previous) * 100) * 10) / 10;
+    }
+    const trend: 'up' | 'down' = card.trend ?? (selected >= previous ? 'up' : 'down');
+    return {
+      id: cardId,
+      title: card.title || meta.title,
+      icon: card.icon || meta.icon,
+      selectedMonthAmount: selected,
+      previousMonthAmount: previous,
+      amount: selected,
+      percentage,
+      trend,
+      comparison: 'vs last month',
+    };
+  });
+}
+// Dashboard items and onboarding interfaces
+export * from './account-link.model';
+export * from './profile-setup.model';
 
 export interface DashboardItem {
-  id: number;
+  id: number | string;
   title: string;
   date: string;
   amount: number;
   icon: string;
   type: 'income' | 'expense' | 'bill';
 }
-
 export interface QuickAction {
   id: string;
   title: string;
   icon: string;
 }
-
 export interface OnboardingStep {
   id: string;
   title: string;
   actionId: string;
   completed: boolean;
 }
-
 export interface OnboardingAction {
   id: string;
   title: string;
@@ -94,42 +125,35 @@ export interface OnboardingAction {
   icon: string;
   tone: 'blue' | 'green' | 'red' | 'purple';
 }
-
 export interface CashBalanceData {
   totalBalance: number;
   inAccounts: number;
   pending: number;
 }
-
 export interface BudgetCategoryData {
   category: string;
   spent: number;
   limit: number;
   color: string;
 }
-
 export type BudgetCategoryProgress = BudgetCategoryData;
-
 export interface SavingsGoalData {
   goalName: string;
   savedAmount: number;
   targetAmount: number;
   dueDate: string;
 }
-
 export interface IncomeSourceData {
   source: string;
   amount: number;
   color: string;
 }
-
 export type IncomeSourceItem = IncomeSourceData;
-
 export interface NetWorthData {
   totalAssets: number;
   totalLiabilities: number;
 }
-
+// Chart dataset and configuration interfaces
 export interface ChartDataset {
   label?: string;
   data: number[];
@@ -140,18 +164,16 @@ export interface ChartDataset {
   borderWidth?: number;
   hoverOffset?: number;
 }
-
 export interface LineChartData {
   labels: string[];
   datasets: ChartDataset[];
 }
-
 export interface DoughnutChartData {
   labels: string[];
   datasets: ChartDataset[];
   total: number;
 }
-
+// API response and NgrX state interfaces
 export interface DashboardApiResponse {
   summaryCards: SummaryCard[];
   upcomingBills: DashboardItem[];
@@ -159,7 +181,7 @@ export interface DashboardApiResponse {
   recentIncome: DashboardItem[];
   recentExpenses: DashboardItem[];
   widgetConfig: DashboardWidgetConfig[];
-  quickActions: QuickAction[];
+  quickActions?: QuickAction[];
   onboardingSteps: OnboardingStep[];
   onboardingActions: OnboardingAction[];
   isNewUser: boolean;
@@ -171,7 +193,6 @@ export interface DashboardApiResponse {
   cashFlowTrendChart?: LineChartData;
   spendingByCategoryChart?: DoughnutChartData;
 }
-
 export interface DashboardState {
   summaryCards: SummaryCard[];
   upcomingBills: DashboardItem[];
@@ -193,81 +214,17 @@ export interface DashboardState {
   selectedAction: string | null;
   loading: boolean;
   loadError: boolean;
+  activeFilters?: Partial<DashboardFilterState>;
 }
-
+// Initial state for dashboard feature store
 export const initialDashboardState: DashboardState = {
-  summaryCards: [
-    {
-      id: 'income',
-      title: 'Total Income',
-      amount: 6780,
-      percentage: 12.5,
-      trend: 'up',
-      comparison: 'vs last month',
-      icon: 'fa-wallet',
-    },
-    {
-      id: 'expenses',
-      title: 'Total Expenses',
-      amount: 2650,
-      percentage: 6.3,
-      trend: 'down',
-      comparison: 'vs last month',
-      icon: 'fa-money-bill-transfer',
-    },
-    {
-      id: 'cashFlow',
-      title: 'Net Cash Flow',
-      amount: 4130,
-      percentage: 18.8,
-      trend: 'up',
-      comparison: 'vs last month',
-      icon: 'fa-chart-line',
-    },
-    {
-      id: 'savings',
-      title: 'Total Savings',
-      amount: 12850,
-      percentage: 9.4,
-      trend: 'up',
-      comparison: 'vs last month',
-      icon: 'fa-piggy-bank',
-    },
-  ],
-  upcomingBills: [
-    {
-      id: 1,
-      title: 'Electricity Bill',
-      date: 'Jun 5, 2026',
-      amount: 120,
-      icon: 'fa-bolt',
-      type: 'bill',
-    },
-    {
-      id: 2,
-      title: 'Internet Bill',
-      date: 'Jun 7, 2026',
-      amount: 60,
-      icon: 'fa-wifi',
-      type: 'bill',
-    },
-    {
-      id: 3,
-      title: 'Credit Card',
-      date: 'Jun 15, 2026',
-      amount: 250,
-      icon: 'fa-credit-card',
-      type: 'bill',
-    },
-    {
-      id: 4,
-      title: 'Insurance Premium',
-      date: 'Jun 20, 2026',
-      amount: 150,
-      icon: 'fa-shield-halved',
-      type: 'bill',
-    },
-  ],
+  summaryCards: mapSummaryCardResponse([
+    { id: 'income', selectedMonthAmount: 6780, previousMonthAmount: 6027 },
+    { id: 'expenses', selectedMonthAmount: 2650, previousMonthAmount: 2828 },
+    { id: 'cashFlow', selectedMonthAmount: 4130, previousMonthAmount: 3476 },
+    { id: 'savings', selectedMonthAmount: 12850, previousMonthAmount: 11746 },
+  ]),
+  upcomingBills: [],
   recentTransactions: [
     {
       id: 1,
@@ -405,6 +362,12 @@ export const initialDashboardState: DashboardState = {
   ],
   onboardingSteps: [
     {
+      id: 'complete-profile',
+      title: 'Complete your profile setup',
+      actionId: 'complete-profile',
+      completed: false,
+    },
+    {
       id: 'connect-account',
       title: 'Connect your first bank account',
       actionId: 'connect-account',
@@ -530,4 +493,7 @@ export const initialDashboardState: DashboardState = {
   selectedAction: null,
   loading: true,
   loadError: false,
+  activeFilters: {
+    dateRange: 'this-month',
+  },
 };

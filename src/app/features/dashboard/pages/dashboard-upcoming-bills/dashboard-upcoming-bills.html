@@ -1,0 +1,205 @@
+<div class="upcoming-bills-page">
+  <header class="page-header">
+    <div class="header-left">
+      <button type="button" class="back-btn" (click)="goBack()" aria-label="Go back to dashboard">
+        <fa-icon [icon]="backIcon"></fa-icon>
+      </button>
+
+      <div>
+        <h1>Upcoming Bills</h1>
+        <p>Manage, track, edit, and delete all your upcoming bill reminders.</p>
+      </div>
+    </div>
+
+    <button type="button" class="add-btn" (click)="openAddModal()">
+      <fa-icon [icon]="plusIcon"></fa-icon>
+      Add Bill Reminder
+    </button>
+  </header>
+
+  <section class="toolbar">
+    <div class="search-box">
+      <fa-icon [icon]="searchIcon" class="search-icon"></fa-icon>
+      <input
+        type="text"
+        placeholder="Search bills by title..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+
+    <div class="bill-count">
+      Total: <strong>{{ sortedAndFilteredBills().length }}</strong> bill(s)
+    </div>
+  </section>
+
+  <main class="bills-container">
+    @if (loading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading upcoming bills...</p>
+      </div>
+    } @else if (sortedAndFilteredBills().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <fa-icon [icon]="calendarIcon"></fa-icon>
+        </div>
+        <h3>No upcoming bills found</h3>
+        <p>Add a new reminder to stay on top of your bill payments.</p>
+        <button type="button" class="add-btn inline" (click)="openAddModal()">
+          + Add Reminder
+        </button>
+      </div>
+    } @else {
+      <div class="bills-grid">
+        @for (bill of sortedAndFilteredBills(); track bill.id) {
+          <article class="bill-card">
+            <div class="card-icon" [class]="bill.icon">
+              <fa-icon [icon]="getIcon(bill.icon)"></fa-icon>
+            </div>
+
+            <div class="card-body">
+              <div class="title-row">
+                <h3>{{ bill.title }}</h3>
+                <span class="amount">₹{{ bill.amount | number: '1.2-2' }}</span>
+              </div>
+
+              <div class="details-row">
+                <span class="due-date">
+                  <fa-icon [icon]="calendarIcon"></fa-icon>
+                  Due {{ bill.date }}
+                </span>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <button
+                type="button"
+                class="action-btn edit"
+                (click)="startEdit(bill)"
+                title="Edit bill"
+              >
+                <fa-icon [icon]="editIconBtn"></fa-icon>
+              </button>
+
+              <button
+                type="button"
+                class="action-btn delete"
+                (click)="confirmDelete(bill)"
+                title="Delete bill"
+              >
+                <fa-icon [icon]="trashIconBtn"></fa-icon>
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </main>
+
+  <app-add-reminder-modal
+    [isOpen]="isAddModalOpen()"
+    (closeModal)="closeAddModal()"
+    (saveReminder)="onSaveReminder($event)"
+  ></app-add-reminder-modal>
+
+  @if (editingBill()) {
+    <div class="modal-overlay" (click)="cancelEdit()">
+      <article class="modal-card" (click)="$event.stopPropagation()">
+        <header class="modal-header">
+          <h2>Edit Upcoming Bill</h2>
+          <button type="button" class="close-btn" (click)="cancelEdit()">&times;</button>
+        </header>
+
+        <form (submit)="$event.preventDefault(); saveEdit()" class="modal-body">
+          @if (editError()) {
+            <div class="form-error">{{ editError() }}</div>
+          }
+
+          <div class="form-group">
+            <label for="edit-title">Bill Title / Description *</label>
+            <input
+              id="edit-title"
+              name="editTitle"
+              type="text"
+              [ngModel]="editTitle()"
+              (ngModelChange)="editTitle.set($event)"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-amount">Amount (₹) *</label>
+              <input
+                id="edit-amount"
+                name="editAmount"
+                type="number"
+                min="0.01"
+                step="any"
+                [ngModel]="editAmount()"
+                (ngModelChange)="editAmount.set($event)"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="edit-due-date">Due Date *</label>
+              <input
+                id="edit-due-date"
+                name="editDueDate"
+                type="date"
+                [min]="todayDateString"
+                [ngModel]="editDueDate()"
+                (ngModelChange)="editDueDate.set($event)"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-icon">Category / Icon</label>
+            <select
+              id="edit-icon"
+              name="editIcon"
+              [ngModel]="editIcon()"
+              (ngModelChange)="editIcon.set($event)"
+            >
+              @for (opt of iconOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+
+          <footer class="modal-footer">
+            <button type="button" class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+            <button type="submit" class="submit-btn">Save Changes</button>
+          </footer>
+        </form>
+      </article>
+    </div>
+  }
+
+  @if (billToDelete(); as targetBill) {
+    <div class="modal-overlay" (click)="cancelDelete()">
+      <article class="modal-card small" (click)="$event.stopPropagation()">
+        <header class="modal-header">
+          <h2>Delete Bill Reminder</h2>
+          <button type="button" class="close-btn" (click)="cancelDelete()">&times;</button>
+        </header>
+
+        <div class="modal-body">
+          <p>
+            Are you sure you want to delete <strong>{{ targetBill.title }}</strong
+            >? This action cannot be undone.
+          </p>
+        </div>
+
+        <footer class="modal-footer">
+          <button type="button" class="cancel-btn" (click)="cancelDelete()">Cancel</button>
+          <button type="button" class="delete-confirm-btn" (click)="deleteBill()">Delete</button>
+        </footer>
+      </article>
+    </div>
+  }
+</div>

@@ -14,12 +14,11 @@ export class DashboardRouteEntry {
 
   constructor() {
     this.facade.loadDashboard();
-
+    // Redirects user to new user onboarding or home dashboard based on state
     effect(() => {
       const state = this.facade.dashboardState();
       if (!state.loading) {
         const shouldRouteToNewUser = !state.loadError && state.isNewUser === true;
-
         void this.router.navigate([shouldRouteToNewUser ? '/dashboard/new' : '/dashboard/home'], {
           replaceUrl: true,
         });

@@ -1,0 +1,117 @@
+@if (isOpen()) {
+  <div class="modal-backdrop" (click)="onClose()">
+    <div
+      class="modal-container"
+      (click)="$event.stopPropagation()"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="profile-modal-title"
+    >
+      <header class="modal-header">
+        <div class="header-text">
+          <h2 id="profile-modal-title">Complete Your Profile</h2>
+          <p class="subtitle">
+            Set up your personal details and financial preferences to personalize your CashFlow
+            experience.
+          </p>
+        </div>
+        <button type="button" class="close-button" aria-label="Close modal" (click)="onClose()">
+          <fa-icon [icon]="closeIcon"></fa-icon>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <form class="profile-form" (ngSubmit)="onSubmit()" novalidate>
+          <div class="form-group" [class.has-error]="isSubmitted() && errors().fullName">
+            <label for="fullName">Full name</label>
+            <input
+              type="text"
+              id="fullName"
+              [ngModel]="fullName()"
+              (ngModelChange)="fullName.set($event); onFieldChange()"
+              name="fullName"
+              placeholder="e.g. Neelima Sharma"
+              [class.error-input]="isSubmitted() && errors().fullName"
+            />
+            @if (isSubmitted() && errors().fullName) {
+              <span class="error-message">{{ errors().fullName }}</span>
+            }
+          </div>
+
+          <div class="form-group" [class.has-error]="isSubmitted() && errors().email">
+            <label for="email">Email address</label>
+            <input
+              type="email"
+              id="email"
+              [ngModel]="email()"
+              (ngModelChange)="email.set($event); onFieldChange()"
+              name="email"
+              placeholder="neelima@example.com"
+              [class.error-input]="isSubmitted() && errors().email"
+            />
+            @if (isSubmitted() && errors().email) {
+              <span class="error-message">{{ errors().email }}</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="monthlyIncomeGoal">Target monthly income (optional)</label>
+            <input
+              type="number"
+              id="monthlyIncomeGoal"
+              [ngModel]="monthlyIncomeGoal()"
+              (ngModelChange)="monthlyIncomeGoal.set($event); onFieldChange()"
+              name="monthlyIncomeGoal"
+              placeholder="e.g. 50000"
+              min="0"
+            />
+          </div>
+
+          <div class="form-group" [class.has-error]="isSubmitted() && errors().financialGoal">
+            <label for="financialGoal">Primary financial goal</label>
+            <div class="select-wrapper">
+              <select
+                id="financialGoal"
+                [ngModel]="financialGoal()"
+                (ngModelChange)="financialGoal.set($event); onFieldChange()"
+                name="financialGoal"
+                [class.error-input]="isSubmitted() && errors().financialGoal"
+              >
+                @for (option of financialGoalOptions; track option.value) {
+                  <option [value]="option.value" [disabled]="!option.value">
+                    {{ option.label }}
+                  </option>
+                }
+              </select>
+              <fa-icon [icon]="chevronIcon" class="select-chevron"></fa-icon>
+            </div>
+            @if (isSubmitted() && errors().financialGoal) {
+              <span class="error-message">{{ errors().financialGoal }}</span>
+            }
+          </div>
+        </form>
+
+        <div class="security-banner">
+          <div class="security-icon-box">
+            <fa-icon [icon]="shieldIcon"></fa-icon>
+          </div>
+          <div class="security-text">
+            <h3>Your privacy is protected</h3>
+            <p>We keep your personal information secure and encrypted.</p>
+          </div>
+        </div>
+      </div>
+
+      <footer class="modal-footer">
+        <div class="actions-row">
+          <button type="button" class="cancel-button" (click)="onClose()">Cancel</button>
+          <button type="button" class="submit-button" (click)="onSubmit()">Save Profile</button>
+        </div>
+        <p class="privacy-note">
+          <fa-icon [icon]="shieldIcon"></fa-icon>
+          You can update these preferences anytime in Settings.
+        </p>
+      </footer>
+    </div>
+  </div>
+}
