@@ -41,7 +41,7 @@
       "bankName": "Chase Bank",
       "currency": "USD",
       "openDate": "2024-03-20",
-      "status": "Active",
+      "status": "Inactive",
       "overdraftLimit": 0,
       "description": "Primary credit card for everyday purchases."
     },

@@ -1,11 +1,13 @@
-<section class="chart-card">
-  <header class="chart-header">
-    <div class="header-text">
-      <div class="title-row">
-        <h3 class="chart-title">{{ title() }}</h3>
+<section class="chart-card" [class.embedded]="embedded()" [class.compact]="compact()">
+  @if (showTitle()) {
+    <header class="chart-header">
+      <div class="header-text">
+        <div class="title-row">
+          <h3 class="chart-title">{{ title() }}</h3>
+        </div>
       </div>
-    </div>
-  </header>
+    </header>
+  }
 
   <div class="chart-container doughnut-container">
 
@@ -13,10 +15,38 @@
     <div
       class="doughnut-content-wrap"
       [class.dimmed]="isLoading() || hasError() || isEmpty()"
+      [class.is-vertical]="isVertical()"
     >
       <div class="doughnut-plot-wrap">
         <canvas #chartCanvas></canvas>
       </div>
+
+      @if (showLegend() && !isEmpty()) {
+        <ul class="doughnut-legend">
+          @for (item of legendItems(); track item.index) {
+            <li class="legend-item">
+              <button
+                type="button"
+                class="legend-toggle"
+                [class.is-hidden]="item.hidden"
+                [attr.aria-pressed]="!item.hidden"
+                [attr.aria-label]="
+                  (item.hidden ? 'Show ' : 'Hide ') + item.label
+                "
+                (click)="toggleCategory(item.index)"
+              >
+                <span
+                  class="legend-dot"
+                  [style.background-color]="item.color"
+                  aria-hidden="true"
+                ></span>
+                <span class="legend-label" [title]="item.label">{{ item.label }}</span>
+                <span class="legend-percent">{{ item.percentage }}%</span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
     </div>
 
     <!-- Loading state -->

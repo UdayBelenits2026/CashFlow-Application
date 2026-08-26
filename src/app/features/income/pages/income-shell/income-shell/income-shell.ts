@@ -4,17 +4,17 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { timer } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
-import { IncomeFacade } from './facades/income.facade';
-import { IncomeErrorStateComponent } from './components/income-error-state/income-error-state.component';
+import { IncomeFacade } from '../../../facades/income.facade';
+import { IncomeErrorStateComponent } from '../../../components/income-error-state/income-error-state.component';
 
 @Component({
   selector: 'app-income',
   standalone: true,
   imports: [CommonModule, RouterOutlet, IncomeErrorStateComponent],
-  templateUrl: './income.component.html',
-  styleUrl: './income.component.scss'
+  templateUrl: './income-shell.html',
+  styleUrl: './income-shell.scss'
 })
-export class IncomeComponent {
+export class IncomeShell {
   private readonly facade: IncomeFacade = inject(IncomeFacade);
   readonly error: Signal<string | null> = toSignal(this.facade.error$, { initialValue: null });
   readonly successMessage: Signal<string | null> = toSignal(this.facade.successMessage$, { initialValue: null });

@@ -3,12 +3,12 @@ import { provideState } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { incomeFeatureKey, incomeReducer } from './store/income.reducer';
 import { IncomeEffects } from './store/income.effects';
-import { IncomeComponent } from './income.component';
+import { IncomeShell } from './pages/income-shell/income-shell/income-shell';
 
 export const INCOME_ROUTES: Routes = [
   {
     path: '',
-    component: IncomeComponent,
+    component: IncomeShell,
     providers: [
       provideState(incomeFeatureKey, incomeReducer),
       provideEffects(IncomeEffects)

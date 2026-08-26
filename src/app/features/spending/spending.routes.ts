@@ -3,12 +3,12 @@ import { provideState } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { spendingFeatureKey, spendingReducer } from './store/spending.reducer';
 import { SpendingEffects } from './store/spending.effects';
-import { SpendingComponent } from './spending.component';
+import { SpendingShell } from './pages/spending-shell/spending-shell/spending-shell';
 
 export const SPENDING_ROUTES: Routes = [
   {
     path: '',
-    component: SpendingComponent,
+    component: SpendingShell,
     providers: [
       provideState(spendingFeatureKey, spendingReducer),
       provideEffects(SpendingEffects)

@@ -16,7 +16,7 @@ export const navigationList: SideNavItem[] = [
   {
     label: 'Dashboard',
     icon: 'fa-solid fa-house',
-    route: '/dashboard',
+    route: '/dashboard/home',
   },
   {
     label: 'Transactions',
