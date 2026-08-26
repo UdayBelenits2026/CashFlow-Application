@@ -1,0 +1,143 @@
+<!-- File purpose: Renders UI markup for app\features\accounts\pages\account-list\account-list.html. -->
+<div class="account-list">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Accounts Overview</h1>
+      <p>Manage and monitor all your accounts</p>
+    </div>
+
+    <button class="add-account-button" type="button" (click)="openAddAccount()">
+      <span>+</span>
+      Add Account
+    </button>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-section">
+
+    <div class="summary-card">
+      <div class="summary-card-head">
+        <span class="summary-label">Total Balance</span>
+        <span class="summary-icon summary-icon--primary" aria-hidden="true">
+          <i class="fa-solid fa-wallet"></i>
+        </span>
+      </div>
+
+      <span class="summary-value">
+        {{ (totalBalance$ | async) | currency:'INR' }}
+      </span>
+
+      <span class="summary-description">
+        Across all accounts
+      </span>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-card-head">
+        <span class="summary-label">Total Accounts</span>
+        <span class="summary-icon summary-icon--success" aria-hidden="true">
+          <i class="fa-solid fa-building-columns"></i>
+        </span>
+      </div>
+
+      <span class="summary-value">
+        {{ accountCount$ | async }}
+      </span>
+
+      <span class="summary-description">
+        Active Accounts
+      </span>
+    </div>
+
+  </div>
+
+  <!-- Accounts by type -->
+  <div class="account-type-section">
+
+    <div class="account-type-card">
+      <div class="card-heading">
+        <div>
+          <h2>Accounts by Type</h2>
+          <p class="section-subtitle">Balance distribution across your account types</p>
+        </div>
+        <button class="add-account-button" type="button" (click)="openCategories()">Categories</button>
+      </div>
+
+      @if (loading$ | async) {
+        <p class="account-type-state">Loading account type balances...</p>
+      } @else if (accountTypeChart$ | async; as accountTypeChart) {
+        <div class="account-type-content">
+          <div class="account-type-chart">
+            <app-cf-doughnut-chart
+              [total]="accountTypeChart.total"
+              [labels]="accountTypeChart.labels"
+              [datasets]="accountTypeChart.datasets"
+              [showLegend]="false"
+              [showTitle]="false"
+              [embedded]="true">
+            </app-cf-doughnut-chart>
+          </div>
+
+          <div class="account-type-list">
+            @for (item of accountTypeChart.balances; track item.accountType) {
+              <div class="account-type-item">
+                <span class="account-type-label">
+                  <i class="account-type-dot" [style.background]="item.color"></i>
+                  {{ item.label }}
+                </span>
+                <span class="account-type-value">
+                  {{ item.balance | currency:'INR' }}
+                  <span class="account-type-percent">({{ item.percentage }}%)</span>
+                </span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+  </div>
+
+  <!-- All accounts -->
+  <div class="accounts-section">
+
+    <div class="accounts-grid">
+
+      <div class="card-heading">
+        <div>
+          <h2>All Accounts</h2>
+          <p class="section-subtitle">Every account you manage in one place</p>
+        </div>
+      </div>
+
+      @if (loading$ | async) {
+        <p>Loading accounts...</p>
+      }
+
+      @if (accounts$ | async; as accounts) {
+        @for (account of (showAllAccounts ? accounts : accounts.slice(0, 6)); track account.id) {
+          <app-account-card
+            [account]="account"
+            (accountSelected)="viewAccount($event)">
+          </app-account-card>
+        }
+      }
+      @if (error$ | async; as error) {
+        <p>Error: {{ error }}</p>
+       }
+
+    </div>
+
+    @if (accounts$ | async; as accounts) {
+      @if (accounts.length > 6 && !showAllAccounts) {
+        <button class="view-all-accounts" type="button" (click)="showAllAccountsList()">
+          View All Accounts
+        </button>
+      }
+    }
+
+  </div>
+
+</div>

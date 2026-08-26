@@ -1,0 +1,346 @@
+<main class="transactions-page">
+  @if (vm$ | async; as vm) {
+    <!-- Page header -->
+    <header class="page-header">
+      <div class="header-content">
+        <h1>Transactions</h1>
+        <p>View and manage all your account transactions</p>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="secondary-button" (click)="uploadStatement()">
+          <i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Upload Statement
+        </button>
+        <button type="button" class="primary-button" (click)="addTransaction()">
+          <span>+</span> Add Transaction
+        </button>
+      </div>
+    </header>
+
+    <!-- Feedback banner -->
+    @if (vm.successMessage) {
+      <p class="feedback success">
+        {{ vm.successMessage }}
+        <button type="button" class="feedback-close" aria-label="Dismiss" (click)="dismissFeedback()">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      </p>
+    }
+
+    <!-- Filter bar -->
+    <section class="filter-bar">
+      <label class="filter-field search-field">
+        <span>Search</span>
+        <div class="search-input">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <input
+            type="search"
+            [formControl]="searchControl"
+            placeholder="Search description, merchant, category, amount..."
+            autocomplete="off" />
+        </div>
+      </label>
+
+      <label class="filter-field">
+        <span>Date Range</span>
+        <app-date-picker [selectedDate]="vm.dateRange" (selectedDateChange)="onDateRangeChange($event)"></app-date-picker>
+      </label>
+
+      <label class="filter-field">
+        <span>Account</span>
+        <select [value]="vm.filters.accountId" (change)="onAccountChange($any($event.target).value)">
+          <option value="">All Accounts</option>
+          @for (account of vm.accountOptions; track account.id) {
+            <option [value]="account.id">{{ account.name }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="filter-field">
+        <span>Category</span>
+        <select [value]="vm.filters.category" (change)="onCategoryChange($any($event.target).value)">
+          <option value="">All Categories</option>
+          @for (category of vm.categoryOptions; track category) {
+            <option [value]="category">{{ category }}</option>
+          }
+        </select>
+      </label>
+
+      <button
+        type="button"
+        class="filters-button"
+        [class.active]="!!vm.filters.type || vm.filters.minAmount !== null || vm.filters.maxAmount !== null"
+        (click)="openFilterPanel(vm.filters)">
+        <i class="fa-solid fa-sliders" aria-hidden="true"></i> More Filters
+      </button>
+    </section>
+
+    <!-- Table / states -->
+    <section class="table-card">
+      @if (vm.loading) {
+        <p class="state-message">Loading transactions...</p>
+      } @else if (vm.error) {
+        <p class="state-message error">Unable to load transactions. Please try again later.</p>
+      } @else if (vm.transactions.length === 0) {
+        <div class="empty-state">
+          <i class="fa-solid fa-receipt" aria-hidden="true"></i>
+          <h2>No transactions found</h2>
+          @if (vm.hasActiveQuery) {
+            <p>No transactions match your current search or filters.</p>
+            <button type="button" class="primary-button" (click)="clearFilters()">
+              <i class="fa-solid fa-filter-circle-xmark" aria-hidden="true"></i> Clear Filters
+            </button>
+          } @else {
+            <p>Get started by adding a transaction or uploading a statement.</p>
+            <div class="empty-actions">
+              <button type="button" class="primary-button" (click)="addTransaction()"><span>+</span> Add Transaction</button>
+              <button type="button" class="secondary-button" (click)="uploadStatement()">
+                <i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Upload Statement
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="table-scroll">
+          <table class="transactions-table">
+            <thead>
+              <tr>
+                <th class="sortable" (click)="onSort('date', vm.sort)">
+                  Date
+                  @if (vm.sort.field === 'date') {
+                    <i class="fa-solid" [class.fa-arrow-up-short-wide]="vm.sort.direction === 'asc'" [class.fa-arrow-down-wide-short]="vm.sort.direction === 'desc'" aria-hidden="true"></i>
+                  }
+                </th>
+                <th class="sortable" (click)="onSort('description', vm.sort)">
+                  Description
+                  @if (vm.sort.field === 'description') {
+                    <i class="fa-solid" [class.fa-arrow-up-short-wide]="vm.sort.direction === 'asc'" [class.fa-arrow-down-wide-short]="vm.sort.direction === 'desc'" aria-hidden="true"></i>
+                  }
+                </th>
+                <th class="sortable" (click)="onSort('category', vm.sort)">
+                  Category
+                  @if (vm.sort.field === 'category') {
+                    <i class="fa-solid" [class.fa-arrow-up-short-wide]="vm.sort.direction === 'asc'" [class.fa-arrow-down-wide-short]="vm.sort.direction === 'desc'" aria-hidden="true"></i>
+                  }
+                </th>
+                <th class="sortable" (click)="onSort('accountName', vm.sort)">
+                  Account
+                  @if (vm.sort.field === 'accountName') {
+                    <i class="fa-solid" [class.fa-arrow-up-short-wide]="vm.sort.direction === 'asc'" [class.fa-arrow-down-wide-short]="vm.sort.direction === 'desc'" aria-hidden="true"></i>
+                  }
+                </th>
+                <th>Type</th>
+                <th class="align-right sortable" (click)="onSort('amount', vm.sort)">
+                  Amount
+                  @if (vm.sort.field === 'amount') {
+                    <i class="fa-solid" [class.fa-arrow-up-short-wide]="vm.sort.direction === 'asc'" [class.fa-arrow-down-wide-short]="vm.sort.direction === 'desc'" aria-hidden="true"></i>
+                  }
+                </th>
+                <th class="align-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (txn of vm.transactions; track txn.id) {
+                <tr>
+                  <td>{{ txn.date | date: 'MMM d, y' }}</td>
+                  <td class="description">
+                    <span class="description-main">{{ txn.description }}</span>
+                    @if (txn.merchant) {
+                      <span class="description-sub">{{ txn.merchant }}</span>
+                    }
+                  </td>
+                  <td>{{ txn.category }}</td>
+                  <td class="account-cell">
+                    <span class="account-name">{{ txn.accountName }}</span>
+                    <span class="account-mask">{{ maskAccount(txn.accountId) }}</span>
+                  </td>
+                  <td>
+                    <span
+                      class="type-badge"
+                      [class.income]="txn.type === 'Income'"
+                      [class.expense]="txn.type === 'Expense'"
+                      [class.transfer]="txn.type === 'Transfer'">
+                      {{ txn.type }}
+                    </span>
+                  </td>
+                  <td
+                    class="align-right amount"
+                    [class.income]="txn.type === 'Income'"
+                    [class.expense]="txn.type === 'Expense'"
+                    [class.transfer]="txn.type === 'Transfer'">
+                    @if (txn.type === 'Income') {
+                      +{{ txn.amount | currency: 'INR' }}
+                    } @else if (txn.type === 'Expense') {
+                      ({{ txn.amount | currency: 'INR' }})
+                    } @else {
+                      {{ txn.amount | currency: 'INR' }}
+                    }
+                  </td>
+                  <td class="align-center actions-cell">
+                    <button type="button" class="menu-trigger" aria-label="Transaction actions" (click)="toggleMenu(txn.id)">
+                      <i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
+                    </button>
+                    @if (openMenuId === txn.id) {
+                      <div class="actions-dropdown" role="menu">
+                        <button type="button" role="menuitem" (click)="viewDetails(txn.id)">
+                          <i class="fa-solid fa-eye" aria-hidden="true"></i> View Details
+                        </button>
+                        <button type="button" role="menuitem" (click)="editTransaction(txn.id)">
+                          <i class="fa-solid fa-pen" aria-hidden="true"></i> Edit
+                        </button>
+                        <button type="button" role="menuitem" (click)="duplicateTransaction(txn)">
+                          <i class="fa-solid fa-copy" aria-hidden="true"></i> Duplicate
+                        </button>
+                        <button type="button" role="menuitem" (click)="openCategoryModal(txn)">
+                          <i class="fa-solid fa-tag" aria-hidden="true"></i> Change Category
+                        </button>
+                        <button type="button" role="menuitem" disabled title="No attachment available">
+                          <i class="fa-solid fa-paperclip" aria-hidden="true"></i> Download Attachment
+                        </button>
+                        <button type="button" class="delete-action" role="menuitem" (click)="askDelete(txn.id)">
+                          <i class="fa-solid fa-trash" aria-hidden="true"></i> Delete
+                        </button>
+                      </div>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <footer class="pagination">
+          <div class="pagination-left">
+            <span class="pagination-summary">
+              Showing {{ vm.pageInfo.from }} to {{ vm.pageInfo.to }} of {{ vm.pageInfo.total }} records
+            </span>
+            <label class="page-size">
+              <span>Rows</span>
+              <select [value]="vm.pageInfo.pageSize" (change)="onPageSizeChange($any($event.target).value)">
+                @for (size of pageSizes; track size) {
+                  <option [value]="size">{{ size }}</option>
+                }
+              </select>
+            </label>
+          </div>
+          <div class="pagination-controls">
+            <button
+              type="button"
+              class="page-button"
+              [disabled]="vm.pageInfo.page <= 1"
+              (click)="goToPage(vm.pageInfo.page - 1)"
+              aria-label="Previous page">
+              <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+            </button>
+            @for (page of vm.pageInfo.pages; track page) {
+              <button
+                type="button"
+                class="page-button"
+                [class.active]="page === vm.pageInfo.page"
+                (click)="goToPage(page)">
+                {{ page }}
+              </button>
+            }
+            <button
+              type="button"
+              class="page-button"
+              [disabled]="vm.pageInfo.page >= vm.pageInfo.totalPages"
+              (click)="goToPage(vm.pageInfo.page + 1)"
+              aria-label="Next page">
+              <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        </footer>
+      }
+    </section>
+
+    <!-- More filters panel -->
+    @if (isFilterPanelOpen) {
+      <div class="modal-backdrop" (click)="closeFilterPanel()">
+        <div class="modal" (click)="$event.stopPropagation()">
+          <header class="modal-head">
+            <h2>More Filters</h2>
+            <button type="button" class="icon-button" aria-label="Close" (click)="closeFilterPanel()">
+              <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+            </button>
+          </header>
+
+          <label>
+            Transaction Type
+            <select [(ngModel)]="draftType" [ngModelOptions]="{ standalone: true }">
+              <option value="">All Types</option>
+              <option value="Income">Income</option>
+              <option value="Expense">Expense</option>
+              <option value="Transfer">Transfer</option>
+            </select>
+          </label>
+
+          <div class="amount-range">
+            <label>
+              Min Amount
+              <input type="number" min="0" step="0.01" [(ngModel)]="draftMinAmount" [ngModelOptions]="{ standalone: true }" />
+            </label>
+            <label>
+              Max Amount
+              <input type="number" min="0" step="0.01" [(ngModel)]="draftMaxAmount" [ngModelOptions]="{ standalone: true }" />
+            </label>
+          </div>
+
+          <footer class="modal-actions">
+            <button type="button" class="secondary-button" (click)="clearFilters()">Clear All</button>
+            <button type="button" class="secondary-button" (click)="closeFilterPanel()">Close</button>
+            <button type="button" class="primary-button" (click)="applyFilters()">Apply Filters</button>
+          </footer>
+        </div>
+      </div>
+    }
+
+    <!-- Change category modal -->
+    @if (categoryModalId) {
+      <div class="modal-backdrop" (click)="closeCategoryModal()">
+        <div class="modal" (click)="$event.stopPropagation()">
+          <header class="modal-head">
+            <h2>Change Category</h2>
+            <button type="button" class="icon-button" aria-label="Close" (click)="closeCategoryModal()">
+              <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+            </button>
+          </header>
+
+          <label>
+            Category
+            <select [(ngModel)]="categoryModalValue" [ngModelOptions]="{ standalone: true }">
+              @for (category of vm.categoryOptions; track category) {
+                <option [value]="category">{{ category }}</option>
+              }
+            </select>
+          </label>
+
+          <footer class="modal-actions">
+            <button type="button" class="secondary-button" (click)="closeCategoryModal()">Cancel</button>
+            <button type="button" class="primary-button" (click)="saveCategory()">Save</button>
+          </footer>
+        </div>
+      </div>
+    }
+
+    <!-- Delete confirmation -->
+    @if (confirmDeleteId) {
+      <div class="modal-backdrop" (click)="cancelDelete()">
+        <div class="modal" (click)="$event.stopPropagation()">
+          <header class="modal-head">
+            <h2>Delete Transaction</h2>
+            <button type="button" class="icon-button" aria-label="Close" (click)="cancelDelete()">
+              <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+            </button>
+          </header>
+          <p class="modal-body">Are you sure you want to delete this transaction? This action cannot be undone.</p>
+          <footer class="modal-actions">
+            <button type="button" class="secondary-button" (click)="cancelDelete()">Cancel</button>
+            <button type="button" class="danger-button" (click)="confirmDelete()">Delete</button>
+          </footer>
+        </div>
+      </div>
+    }
+  }
+</main>
+

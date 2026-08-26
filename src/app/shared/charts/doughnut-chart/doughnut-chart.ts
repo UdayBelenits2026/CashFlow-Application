@@ -50,6 +50,10 @@ export class DoughnutChart implements AfterViewInit, OnDestroy {
     input<ChartConfiguration<'doughnut'>['data']['datasets']>([]);
 
   readonly labels = input<string[]>([]);
+  // Opt-in flags: hide the built-in legend/header or drop the card chrome for compact embedding.
+  readonly showLegend = input<boolean>(true);
+  readonly showTitle = input<boolean>(true);
+  readonly embedded = input<boolean>(false);
 
   readonly isLoading = input<boolean>(false);
 

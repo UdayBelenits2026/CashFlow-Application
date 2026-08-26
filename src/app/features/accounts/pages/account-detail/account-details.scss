@@ -1,0 +1,607 @@
+@use '../../../../../styles/variables' as *;
+
+// Main page layout container.
+.account-details-page {
+  width: 100%;
+  max-width: 75rem;
+  margin: 0 auto;
+  padding: $spacing-5;
+  color: $color-text-primary;
+}
+
+// Shared alignment pattern for top-level section headers.
+.page-header,
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// Account title and subtitle block.
+.page-header {
+  margin-bottom: $spacing-4;
+
+  h1 {
+    margin: 0;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+  }
+
+  p {
+    margin: $spacing-1 0 0;
+    color: $color-text-muted;
+    font-size: $font-size-md;
+  }
+}
+
+// Account title with a type avatar.
+.page-heading {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+}
+
+.account-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  flex-shrink: 0;
+  border-radius: $radius-lg;
+  background: $color-info-bg;
+  color: $color-primary-button;
+  font-size: $font-size-xl;
+}
+
+// Action controls in the header.
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+}
+
+// Informational note shown for balance history placeholder.
+.notice-message {
+  margin: 0 0 $spacing-3;
+  padding: $spacing-2 $spacing-3;
+  border: $border-width-sm solid $color-info;
+  border-radius: $radius-md;
+  background: $color-info-bg;
+  color: $color-info;
+  font-size: $font-size-md;
+}
+
+// Actions dropdown and status badge styles.
+.actions-menu {
+  position: relative;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-2;
+  padding: $spacing-1 $spacing-2;
+  border-radius: $radius-sm;
+  background: $color-success-bg;
+  color: $color-success;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+
+  &.inactive {
+    background: $color-border-light;
+    color: $color-text-muted;
+
+    .status-dot {
+      background: $color-text-muted;
+    }
+  }
+}
+
+.status-dot {
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-radius: 50%;
+  background: $color-success;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.actions-button {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  padding: $spacing-2 $spacing-3;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-md;
+  background: $color-card;
+  color: $color-text-primary;
+  font-size: $font-size-md;
+
+  .fa-chevron-down {
+    font-size: $font-size-sm;
+  }
+}
+
+.actions-dropdown {
+  position: absolute;
+  top: calc(100% + 0.375rem);
+  right: 0;
+  z-index: $z-index-dropdown;
+  width: 10.9375rem;
+  padding: $spacing-1 0;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-md;
+  background: $color-card;
+  box-shadow: $shadow-md;
+
+  button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: $spacing-2;
+    padding: $spacing-2 $spacing-3;
+    background: transparent;
+    color: $color-text-primary;
+    text-align: left;
+    font-size: $font-size-md;
+
+    &:hover {
+      background: $color-background;
+    }
+  }
+
+  .action-icon {
+    width: 1rem;
+    color: $color-text-muted;
+    text-align: center;
+  }
+
+  .delete-action {
+    color: $color-danger;
+    border-top: $border-width-sm solid $color-border-light;
+
+    .action-icon {
+      color: $color-danger;
+    }
+  }
+}
+
+// Primary balance summary card.
+.balance-card {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  min-height: 8rem;
+  padding: $spacing-5;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: $radius-lg;
+  background: linear-gradient(120deg, $color-primary-button, $color-info);
+  color: $color-white;
+  box-shadow: $shadow-md;
+
+  .balance-amount {
+    display: block;
+    margin: $spacing-2 0;
+    font-size: $font-size-5xl;
+    font-weight: $font-weight-bold;
+    line-height: $line-height-tight;
+  }
+
+  small,
+  .balance-label,
+  .available-label,
+  .available-value {
+    display: block;
+  }
+
+  .balance-label,
+  .available-label,
+  small {
+    font-size: $font-size-md;
+  }
+
+  .available-label {
+    margin-top: $spacing-3;
+    color: rgba($color-white, 0.85);
+  }
+
+  .available-value {
+    margin: $spacing-1 0;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+  }
+
+  small {
+    color: rgba($color-white, 0.85);
+  }
+}
+
+.refresh-button {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-1;
+  z-index: $z-index-base;
+  padding: $spacing-2 $spacing-3;
+  border-radius: $radius-sm;
+  background: rgba($color-white, 0.18);
+  color: $color-white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: rgba($color-white, 0.28);
+  }
+}
+
+.account-type-icon {
+  position: absolute;
+  right: $spacing-5;
+  bottom: $spacing-4;
+  color: rgba($color-white, 0.9);
+  font-size: 3rem;
+}
+
+// Supplementary sections below the balance card.
+.information-section,
+.transactions-section {
+  margin-top: $spacing-4;
+}
+
+.transactions-section {
+  margin-bottom: $spacing-2;
+}
+
+h2 {
+  margin: 0 0 $spacing-3;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+}
+
+// Card header: title + sub-heading placed at the top inside a card.
+.card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $spacing-3;
+  padding: $spacing-4 $spacing-4 $spacing-3;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+// Secondary sub-heading shown below each section title.
+.section-subtitle {
+  margin: $spacing-1 0 0;
+  color: $color-text-muted;
+  font-size: $font-size-md;
+}
+
+// Small secondary tag/badge used beside headings and labels.
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: $spacing-1 $spacing-2;
+  border-radius: $radius-sm;
+  background: $color-info-bg;
+  color: $color-info;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  line-height: 1;
+}
+
+.badge-on-dark {
+  margin-left: $spacing-2;
+  background: rgba($color-white, 0.22);
+  color: $color-white;
+}
+
+.information-card,
+.transactions-card {
+  overflow: hidden;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-md;
+  background: $color-card;
+  transition: box-shadow $transition-fast, border-color $transition-fast;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+}
+
+// Account information as a responsive grid of label/value cells.
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-3;
+  padding: $spacing-4;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+  padding: $spacing-3;
+  border: $border-width-sm solid $color-border-light;
+  border-radius: $radius-md;
+  background: $color-background;
+
+  span {
+    color: $color-text-muted;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  strong {
+    color: $color-text-primary;
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.transaction-row {
+  display: grid;
+  grid-template-columns: 6.25rem 1fr auto;
+  gap: $spacing-3;
+  align-items: center;
+  padding: $spacing-3 $spacing-4;
+  border-bottom: $border-width-sm solid $color-border-light;
+  font-size: $font-size-sm;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $color-background;
+  }
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  strong {
+    color: $color-danger;
+    font-weight: $font-weight-semibold;
+  }
+
+  strong.credit {
+    color: $color-success;
+  }
+}
+
+.transaction-date {
+  color: $color-text-muted;
+}
+
+.transaction-description {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.transaction-category {
+  color: $color-text-muted;
+  font-size: $font-size-xs;
+  font-style: normal;
+}
+
+.view-all {
+  margin-bottom: $spacing-2;
+  padding: 0;
+  background: transparent;
+  color: $color-primary-button;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+}
+
+.state-message {
+  margin: 0;
+  padding: $spacing-3;
+  color: $color-text-muted;
+}
+
+.error {
+  color: $color-danger;
+}
+
+// Responsive behavior for smaller screens.
+@media (max-width: 37.5rem) {
+  .account-details-page {
+    padding: $spacing-4;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    gap: $spacing-3;
+    flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .transaction-row {
+    grid-template-columns: 1fr auto;
+
+    .transaction-description {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Delete confirmation modal.
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: $z-index-modal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-4;
+  background: rgba($color-primary, 0.45);
+}
+
+.modal {
+  width: 100%;
+  max-width: 26rem;
+  padding: $spacing-5;
+  border-radius: $radius-lg;
+  background: $color-card;
+  box-shadow: $shadow-lg;
+  box-sizing: border-box;
+
+  .modal-head h2 {
+    margin: 0 0 $spacing-3;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+  }
+
+  .modal-body {
+    margin: 0 0 $spacing-4;
+    color: $color-text-secondary;
+  }
+
+  .modal-error {
+    margin: 0 0 $spacing-3;
+    color: $color-danger;
+    font-size: $font-size-sm;
+  }
+}
+
+.delete-modal {
+  text-align: center;
+
+  .modal-head h2 {
+    text-align: left;
+  }
+
+  .delete-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    margin: $spacing-2 auto $spacing-4;
+    border-radius: 50%;
+    background: $color-danger-bg;
+    color: $color-danger;
+    font-size: $font-size-xl;
+  }
+
+  .delete-title {
+    margin: 0 0 $spacing-2;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+  }
+
+  .delete-subtitle {
+    margin: 0 0 $spacing-4;
+    color: $color-text-secondary;
+  }
+
+  .delete-summary {
+    margin: 0 0 $spacing-4;
+    padding: $spacing-3 $spacing-4;
+    border-radius: $radius-md;
+    background: $color-background;
+    text-align: left;
+
+    .summary-row {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-1;
+
+      & + .summary-row {
+        margin-top: $spacing-3;
+      }
+
+      span {
+        font-size: $font-size-sm;
+        color: $color-text-muted;
+      }
+
+      strong {
+        font-size: $font-size-base;
+        font-weight: $font-weight-semibold;
+        color: $color-text-primary;
+      }
+    }
+  }
+
+  .delete-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-2;
+    margin: 0 0 $spacing-4;
+    padding: $spacing-3;
+    border: $border-width-sm solid rgba($color-danger, 0.25);
+    border-radius: $radius-md;
+    background: $color-danger-bg;
+    color: $color-danger;
+    font-size: $font-size-sm;
+    text-align: left;
+
+    i {
+      margin-top: 0.125rem;
+    }
+  }
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-3;
+}
+
+.secondary-button {
+  padding: $spacing-2 $spacing-4;
+  border: $border-width-sm solid $color-border;
+  border-radius: $radius-md;
+  background: $color-card;
+  color: $color-text-secondary;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.danger-button {
+  padding: $spacing-2 $spacing-4;
+  border: none;
+  border-radius: $radius-md;
+  background: $color-danger;
+  color: $color-white;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: rgba($color-danger, 0.88);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}

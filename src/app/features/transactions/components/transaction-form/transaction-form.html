@@ -1,0 +1,229 @@
+<main class="transaction-form-page">
+  <header class="page-header">
+    <div class="header-content">
+      <h1>{{ pageTitle }}</h1>
+      <p>{{ mode === 'edit' ? 'Update the details and save your changes.' : 'Enter the details to record a new transaction.' }}</p>
+    </div>
+    <button type="button" class="secondary-button" (click)="onCancel()">
+      <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Transactions
+    </button>
+  </header>
+
+  @if (loadingTransaction) {
+    <p class="state-message">Loading transaction...</p>
+  } @else if (loadError) {
+    <div class="empty-state">
+      <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+      <h2>Transaction not found</h2>
+      <p>{{ loadError }}</p>
+      <button type="button" class="primary-button" (click)="onCancel()">Back to Transactions</button>
+    </div>
+  } @else {
+    @if (submissionError) {
+      <p class="feedback error">{{ submissionError }}</p>
+    }
+    @if (successMessage) {
+      <p class="feedback success">{{ successMessage }}</p>
+    }
+
+    <form class="form-card" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <label class="field">
+        <span>Transaction Type <em>*</em></span>
+        <select formControlName="type">
+          <option value="Expense">Expense</option>
+          <option value="Income">Income</option>
+          <option value="Transfer">Transfer</option>
+        </select>
+      </label>
+
+      <div class="field-row">
+        <label class="field">
+          <span>
+            Date <em>*</em>
+            @if (isFieldReadOnly('date')) { <i class="fa-solid fa-lock lock" [title]="bankTooltip"></i> }
+          </span>
+          <app-date-picker mode="single" formControlName="date" [attr.title]="isFieldReadOnly('date') ? bankTooltip : null"></app-date-picker>
+          @if (isInvalid('date')) {
+            <small>
+              @if (control('date').errors?.['required']) { Date is required. }
+              @else if (control('date').errors?.['invalidDate']) { Enter a valid date. }
+              @else if (control('date').errors?.['futureDate']) { Future dates are not allowed for posted transactions. }
+            </small>
+          }
+        </label>
+
+        <label class="field">
+          <span>
+            Amount <em>*</em>
+            @if (isFieldReadOnly('amount')) { <i class="fa-solid fa-lock lock" [title]="bankTooltip"></i> }
+          </span>
+          <input type="number" step="0.01" min="0" formControlName="amount" placeholder="0.00"
+            [class.readonly]="isFieldReadOnly('amount')" [attr.title]="isFieldReadOnly('amount') ? bankTooltip : null" />
+          @if (isInvalid('amount')) {
+            <small>
+              @if (control('amount').errors?.['required']) { Amount is required. }
+              @else if (control('amount').errors?.['amountMin']) { Enter an amount greater than ₹0.00. }
+              @else if (control('amount').errors?.['amountDecimals']) { Use no more than two decimal places. }
+            </small>
+          }
+        </label>
+      </div>
+
+      <label class="field">
+        <span>
+          Merchant / Description <em>*</em>
+          @if (isFieldReadOnly('description')) { <i class="fa-solid fa-lock lock" [title]="bankTooltip"></i> }
+        </span>
+        <input type="text" formControlName="description" maxlength="150" autocomplete="off"
+          [class.readonly]="isFieldReadOnly('description')" [attr.title]="isFieldReadOnly('description') ? bankTooltip : null" />
+        @if (isInvalid('description')) {
+          <small>
+            @if (control('description').errors?.['required']) { Merchant / Description is required. }
+            @else if (control('description').errors?.['minTrimmed']) { Enter at least 2 characters. }
+            @else if (control('description').errors?.['maxTrimmed']) { Description cannot exceed 150 characters. }
+          </small>
+        }
+      </label>
+
+      @if (selectedType === 'Transfer') {
+        <div class="field-row">
+          <label class="field">
+            <span>
+              From Account <em>*</em>
+              @if (isFieldReadOnly('accountId')) { <i class="fa-solid fa-lock lock" [title]="bankTooltip"></i> }
+            </span>
+            <select formControlName="fromAccountId" [class.readonly]="isFieldReadOnly('accountId')">
+              <option value="">Select account</option>
+              @for (account of accountOptions; track account.id) {
+                <option [value]="account.id">{{ account.label }}</option>
+              }
+            </select>
+            @if (isInvalid('fromAccountId')) { <small>From account is required.</small> }
+          </label>
+
+          <label class="field">
+            <span>To Account <em>*</em></span>
+            <select formControlName="toAccountId">
+              <option value="">Select account</option>
+              @for (account of accountOptions; track account.id) {
+                <option [value]="account.id">{{ account.label }}</option>
+              }
+            </select>
+            @if (isInvalid('toAccountId')) { <small>To account is required.</small> }
+          </label>
+        </div>
+        @if (form.errors?.['sameAccount'] && (control('toAccountId').touched || control('toAccountId').dirty)) {
+          <p class="feedback error inline">From and To accounts must be different.</p>
+        }
+      } @else {
+        <div class="field-row">
+          <label class="field">
+            <span>{{ selectedType === 'Income' ? 'Income Category' : 'Category' }} <em>*</em></span>
+            <select formControlName="category">
+              <option value="">Select category</option>
+              @for (category of categoryOptions; track category) {
+                <option [value]="category">{{ category }}</option>
+              }
+            </select>
+            @if (isInvalid('category')) { <small>Category is required.</small> }
+          </label>
+
+          <label class="field">
+            <span>
+              {{ selectedType === 'Income' ? 'Destination Account' : 'Account' }} <em>*</em>
+              @if (isFieldReadOnly('accountId')) { <i class="fa-solid fa-lock lock" [title]="bankTooltip"></i> }
+            </span>
+            <select formControlName="accountId" [class.readonly]="isFieldReadOnly('accountId')">
+              <option value="">Select account</option>
+              @for (account of accountOptions; track account.id) {
+                <option [value]="account.id">{{ account.label }}</option>
+              }
+            </select>
+            @if (isInvalid('accountId')) { <small>Account is required.</small> }
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label class="field">
+            <span>Payment Method @if (selectedType === 'Expense') { <em>*</em> }</span>
+            <select formControlName="paymentMethod">
+              <option value="">Select payment method</option>
+              @for (method of paymentMethods; track method) {
+                <option [value]="method">{{ method }}</option>
+              }
+            </select>
+            @if (isInvalid('paymentMethod')) { <small>Payment method is required.</small> }
+          </label>
+
+          <label class="field">
+            <span>
+              Reference / Check #
+              @if (isFieldReadOnly('referenceNumber')) { <i class="fa-solid fa-lock lock" [title]="bankTooltip"></i> }
+            </span>
+            <input type="text" formControlName="referenceNumber" maxlength="50" autocomplete="off"
+              [class.readonly]="isFieldReadOnly('referenceNumber')"
+              [attr.title]="isFieldReadOnly('referenceNumber') ? bankTooltip : null" />
+            @if (isInvalid('referenceNumber')) {
+              <small>
+                @if (control('referenceNumber').errors?.['required']) { Check number is required when payment method is Check. }
+                @else if (control('referenceNumber').errors?.['maxlength']) { Reference number cannot exceed 50 characters. }
+              </small>
+            }
+          </label>
+        </div>
+      }
+
+      <div class="field">
+        <span>Tags</span>
+        <div class="tag-input">
+          <input type="text" [(ngModel)]="tagInput" [ngModelOptions]="{ standalone: true }"
+            placeholder="Add a tag and press Enter" maxlength="30"
+            (keydown.enter)="addTag(); $event.preventDefault()" />
+          <button type="button" class="secondary-button" (click)="addTag()">Add</button>
+        </div>
+        @if (tags.length) {
+          <div class="tag-list">
+            @for (tag of tags; track tag) {
+              <span class="tag-chip">{{ tag }}
+                <button type="button" aria-label="Remove tag" (click)="removeTag(tag)"><i class="fa-solid fa-xmark"></i></button>
+              </span>
+            }
+          </div>
+        }
+      </div>
+
+      <label class="field">
+        <span>Notes</span>
+        <textarea formControlName="notes" rows="3" maxlength="500"></textarea>
+      </label>
+
+      <div class="field">
+        <span>Attachments</span>
+        <p class="hint">Attachment upload is not available yet.</p>
+      </div>
+
+      <footer class="form-actions">
+        <button type="button" class="secondary-button" (click)="onCancel()">Cancel</button>
+        @if (mode === 'add') {
+          <button type="button" class="secondary-button" [disabled]="saving" (click)="onSaveAndNew()">Save &amp; New</button>
+        }
+        <button type="submit" class="primary-button" [disabled]="saving">
+          {{ saving ? 'Saving...' : primaryLabel }}
+        </button>
+      </footer>
+    </form>
+  }
+
+  @if (showLeaveModal) {
+    <div class="modal-backdrop">
+      <div class="modal">
+        <header class="modal-head"><h2>Unsaved changes</h2></header>
+        <p class="modal-body">You have unsaved changes. Are you sure you want to leave without saving?</p>
+        <footer class="modal-actions">
+          <button type="button" class="secondary-button" (click)="stayOnPage()">Stay on Page</button>
+          <button type="button" class="danger-button" (click)="leaveWithoutSaving()">Leave Without Saving</button>
+        </footer>
+      </div>
+    </div>
+  }
+</main>
