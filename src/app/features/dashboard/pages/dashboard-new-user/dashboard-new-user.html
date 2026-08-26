@@ -16,12 +16,13 @@
         <h1>Welcome to CashFlow, Neelima! <span aria-hidden="true">&#127881;</span></h1>
         <p>Let's get you set up in a few simple steps so you can take control of your finances.</p>
         <ul>
+          <li><fa-icon [icon]="checkIcon"></fa-icon> Complete your profile setup</li>
           <li><fa-icon [icon]="checkIcon"></fa-icon> Connect your accounts</li>
           <li><fa-icon [icon]="checkIcon"></fa-icon> Add income and expenses</li>
           <li><fa-icon [icon]="checkIcon"></fa-icon> Create a budget</li>
           <li><fa-icon [icon]="checkIcon"></fa-icon> Track your progress</li>
         </ul>
-        <button class="primary-button" type="button" (click)="start('connect-account')">
+        <button class="primary-button" type="button" (click)="start('complete-profile')">
           Let's Get Started
         </button>
       </div>
@@ -100,7 +101,7 @@
     <article class="checklist-card">
       <header>
         <h2>Getting Started</h2>
-        <span class="progress-pill">0% complete</span>
+        <span class="progress-pill">{{ completionPercentage() }}% complete</span>
       </header>
       <div class="checklist">
         @for (step of onboardingSteps(); track step.id) {
@@ -183,4 +184,17 @@
       </p>
     </article>
   </section>
+
+  <!-- Modals for Account Link and Profile Setup -->
+  <app-account-link-modal
+    [isOpen]="isAccountLinkModalOpen()"
+    (closeModal)="isAccountLinkModalOpen.set(false)"
+    (connectAccount)="onAccountConnected($event)"
+  ></app-account-link-modal>
+
+  <app-profile-setup-modal
+    [isOpen]="isProfileModalOpen()"
+    (closeModal)="isProfileModalOpen.set(false)"
+    (saveProfile)="onProfileSaved($event)"
+  ></app-profile-setup-modal>
 </div>

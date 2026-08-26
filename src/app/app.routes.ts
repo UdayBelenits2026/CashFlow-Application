@@ -12,53 +12,8 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     loadComponent: () => import('./core/layout/main-layout/main-layout').then((m) => m.MainLayout),
-    children: [
-      {
-        path: '',
-        loadComponent: () =>
-          import('./features/dashboard/pages/dashboard-home/dashboard-home').then(
-            (m) => m.DashboardHome,
-          ),
-        children: [
-          {
-            path: '',
-            pathMatch: 'full',
-            loadComponent: () =>
-              import('./features/dashboard/pages/dashboard-route-entry/dashboard-route-entry').then(
-                (m) => m.DashboardRouteEntry,
-              ),
-          },
-          {
-            path: 'new',
-            loadComponent: () =>
-              import('./features/dashboard/pages/dashboard-new-user/dashboard-new-user').then(
-                (m) => m.DashboardNewUser,
-              ),
-          },
-          {
-            path: 'home',
-            loadComponent: () =>
-              import('./features/dashboard/pages/dashboard-existing-user/dashboard-existing-user').then(
-                (m) => m.DashboardExistingUser,
-              ),
-          },
-          {
-            path: 'customize',
-            loadComponent: () =>
-              import('./features/dashboard/pages/dashboard-customize/dashboard-customize').then(
-                (m) => m.DashboardCustomize,
-              ),
-          },
-          {
-            path: 'upcoming-bills',
-            loadComponent: () =>
-              import('./features/dashboard/pages/dashboard-upcoming-bills/dashboard-upcoming-bills').then(
-                (m) => m.DashboardUpcomingBills,
-              ),
-          },
-        ],
-      },
-    ],
+    loadChildren: () =>
+      import('./features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
   },
   // {
   //   path: '**',

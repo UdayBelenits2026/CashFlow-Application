@@ -1,19 +1,24 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, of, switchMap } from 'rxjs';
-import { DashboardApiService } from '../data/dashboard-api.service';
+import { Store } from '@ngrx/store';
+import { catchError, map, of, switchMap, withLatestFrom } from 'rxjs';
+import { DashboardApiService } from '../services/dashboard-api.service';
 import * as DashboardActions from './dashboard.actions';
+import { selectActiveFilters } from './dashboard.selectors';
 
 @Injectable()
 export class DashboardEffects {
   private readonly actions$ = inject(Actions);
+  private readonly store = inject(Store);
   private readonly dashboardApiService = inject(DashboardApiService);
-  // Effect to load full dashboard data from API
+  // Effect to load full dashboard data from API with active filters
   loadDashboard$ = createEffect(() =>
     this.actions$.pipe(
       ofType(DashboardActions.loadDashboard),
-      switchMap(() =>
-        this.dashboardApiService.getDashboard().pipe(
+      withLatestFrom(this.store.select(selectActiveFilters)),
+      switchMap(([action, activeFilters]) => {
+        const mergedFilters = { ...(activeFilters || {}), ...(action.filters || {}) };
+        return this.dashboardApiService.getDashboard(mergedFilters).pipe(
           map((data) => DashboardActions.loadDashboardSuccess({ data })),
           catchError((error: { message?: string }) =>
             of(
@@ -22,8 +27,15 @@ export class DashboardEffects {
               }),
             ),
           ),
-        ),
-      ),
+        );
+      }),
+    ),
+  );
+  // Effect to reload dashboard whenever setDashboardFilters is dispatched
+  setDashboardFilters$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(DashboardActions.setDashboardFilters),
+      map(({ filters }) => DashboardActions.loadDashboard({ filters })),
     ),
   );
   // Effect to save updated widget configuration to API

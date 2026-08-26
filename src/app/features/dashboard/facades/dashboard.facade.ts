@@ -1,8 +1,15 @@
 import { Injectable, Signal, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Store } from '@ngrx/store';
+import { DashboardApiService } from '../services/dashboard-api.service';
 import { initialDashboardState } from '../data/dashboard.data';
-import { DashboardItem, DashboardState } from '../models/dashboard.models';
+import {
+  AccountLinkPayload,
+  DashboardFilterState,
+  DashboardItem,
+  DashboardState,
+  ProfileSetupForm,
+} from '../models/dashboard.models';
 import * as DashboardActions from '../store/dashboard.actions';
 import * as DashboardSelectors from '../store/dashboard.selectors';
 import { DashboardWidgetConfig } from '../utility/dashboard-widget-config';
@@ -12,6 +19,7 @@ import { DashboardWidgetConfig } from '../utility/dashboard-widget-config';
 })
 export class DashboardFacade {
   private readonly store = inject<Store<DashboardState>>(Store, { optional: true });
+  private readonly apiService = inject(DashboardApiService);
   // Helper to create signals from store selectors with fallback values
   private select<T>(selector: (state: any) => T, fallback: T): Signal<T> {
     if (this.store) {
@@ -104,9 +112,25 @@ export class DashboardFacade {
     DashboardSelectors.selectIsNewUser,
     initialDashboardState.isNewUser,
   );
-  // Dispatches action to load full dashboard data
-  loadDashboard(): void {
-    this.store?.dispatch(DashboardActions.loadDashboard());
+  readonly activeFilters = this.select(
+    DashboardSelectors.selectActiveFilters,
+    initialDashboardState.activeFilters,
+  );
+  // Dispatches action to load full dashboard data with optional filters
+  loadDashboard(filters?: Partial<DashboardFilterState>): void {
+    this.store?.dispatch(DashboardActions.loadDashboard({ filters }));
+  }
+  // Dispatches action to set/apply dashboard filter parameters
+  applyFilters(filters: Partial<DashboardFilterState>): void {
+    this.store?.dispatch(DashboardActions.setDashboardFilters({ filters }));
+  }
+  // Helper method to update dashboard date range filter from top navigation bar
+  updateDateRange(fromDate: string, toDate: string): void {
+    this.store?.dispatch(
+      DashboardActions.setDashboardFilters({
+        filters: { fromDate, toDate, dateRange: 'custom' },
+      }),
+    );
   }
   // Dispatches action for failed dashboard data load
   failDashboardLoad(error?: string): void {
@@ -151,5 +175,21 @@ export class DashboardFacade {
   // Dispatches action to start onboarding step
   startOnboarding(actionId: string): void {
     this.store?.dispatch(DashboardActions.selectQuickAction({ actionId }));
+  }
+
+  // Connects account using API service and updates onboarding state
+  connectAccount(payload: AccountLinkPayload): void {
+    this.apiService.connectAccount(payload).subscribe({
+      next: () => this.startOnboarding('connect-account'),
+      error: () => this.startOnboarding('connect-account'),
+    });
+  }
+
+  // Saves user profile using API service and updates onboarding state
+  saveProfile(payload: ProfileSetupForm): void {
+    this.apiService.saveProfile(payload).subscribe({
+      next: () => this.startOnboarding('complete-profile'),
+      error: () => this.startOnboarding('complete-profile'),
+    });
   }
 }

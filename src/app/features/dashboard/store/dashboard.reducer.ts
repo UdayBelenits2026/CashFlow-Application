@@ -5,10 +5,15 @@ import * as DashboardActions from './dashboard.actions';
 // Feature reducer handling all dashboard state transitions
 export const dashboardReducer = createReducer<DashboardState>(
   initialDashboardState,
-  on(DashboardActions.loadDashboard, (state) => ({
+  on(DashboardActions.loadDashboard, (state, { filters }) => ({
     ...state,
     loading: true,
     loadError: false,
+    activeFilters: filters ? { ...state.activeFilters, ...filters } : state.activeFilters,
+  })),
+  on(DashboardActions.setDashboardFilters, (state, { filters }) => ({
+    ...state,
+    activeFilters: { ...state.activeFilters, ...filters },
   })),
   on(DashboardActions.loadDashboardSuccess, (state, { data }) => ({
     ...state,

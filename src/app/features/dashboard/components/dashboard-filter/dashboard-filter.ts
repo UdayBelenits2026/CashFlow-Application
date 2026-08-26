@@ -1,17 +1,34 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   faFilter,
   faXmark,
-  faCircleInfo,
   faBookmark,
   faEllipsisVertical,
   faMagnifyingGlass,
   faCalendarDays,
+  faPlus,
+  faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { DashboardFilterState } from '../../models/dashboard.models';
+import { DashboardFacade } from '../../facades/dashboard.facade';
+
+export interface SavedFilter {
+  id: string;
+  name: string;
+  filterState: DashboardFilterState;
+}
 
 @Component({
   selector: 'app-cf-dashboard-filter',
@@ -22,6 +39,8 @@ import { DashboardFilterState } from '../../models/dashboard.models';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardFilterComponent {
+  private readonly facade = inject(DashboardFacade);
+
   // Inputs and outputs for filter modal visibility and actions
   readonly isOpen = input<boolean>(false);
   readonly closeModal = output<void>();
@@ -30,11 +49,12 @@ export class DashboardFilterComponent {
   // FontAwesome icon definitions
   readonly filterIcon = faFilter;
   readonly closeIcon = faXmark;
-  readonly infoIcon = faCircleInfo;
   readonly bookmarkIcon = faBookmark;
   readonly ellipsisIcon = faEllipsisVertical;
   readonly searchIcon = faMagnifyingGlass;
   readonly calendarIcon = faCalendarDays;
+  readonly plusIcon = faPlus;
+  readonly trashIcon = faTrashCan;
 
   // Options for filter selection dropdowns
   readonly dateRanges = [
@@ -130,28 +150,106 @@ export class DashboardFilterComponent {
     { label: 'Monthly Expenses', value: 'monthly-expenses' },
   ];
 
-  // Reactive state signal for dashboard filter parameters
-  readonly filter = signal<DashboardFilterState>({
-    dateRange: 'this-month',
-    fromDate: '2026-05-01',
-    toDate: '2026-05-29',
-    quickSelect: '',
-    account: '',
-    incomeExpense: '',
-    category: '',
-    merchant: '',
-    minAmount: null,
-    maxAmount: null,
-    transactionType: '',
-    tag: '',
-    paymentMethod: '',
-    transactionStatus: '',
-    recurring: '',
-    budget: '',
-    applyToAllWidgets: true,
-  });
+  // Helper to calculate start and end dates based on selected date range
+  private getDateRangeValues(range: string): { fromDate: string; toDate: string } {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const date = now.getDate();
 
-  readonly savedFilters = signal(['This Month - All Accounts', 'Business Expenses', 'Income Only']);
+    const formatDate = (d: Date): string => {
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    };
+
+    switch (range) {
+      case 'today': {
+        const todayStr = formatDate(now);
+        return { fromDate: todayStr, toDate: todayStr };
+      }
+      case 'this-week': {
+        const dayOfWeek = now.getDay();
+        const start = new Date(year, month, date - dayOfWeek);
+        const end = new Date(year, month, date + (6 - dayOfWeek));
+        return { fromDate: formatDate(start), toDate: formatDate(end) };
+      }
+      case 'last-week': {
+        const dayOfWeek = now.getDay();
+        const start = new Date(year, month, date - dayOfWeek - 7);
+        const end = new Date(year, month, date + (6 - dayOfWeek) - 7);
+        return { fromDate: formatDate(start), toDate: formatDate(end) };
+      }
+      case 'this-month': {
+        const start = new Date(year, month, 1);
+        const end = new Date(year, month + 1, 0);
+        return { fromDate: formatDate(start), toDate: formatDate(end) };
+      }
+      case 'last-month': {
+        const start = new Date(year, month - 1, 1);
+        const end = new Date(year, month, 0);
+        return { fromDate: formatDate(start), toDate: formatDate(end) };
+      }
+      case 'this-quarter': {
+        const quarter = Math.floor(month / 3);
+        const start = new Date(year, quarter * 3, 1);
+        const end = new Date(year, (quarter + 1) * 3, 0);
+        return { fromDate: formatDate(start), toDate: formatDate(end) };
+      }
+      case 'last-quarter': {
+        const quarter = Math.floor(month / 3);
+        const start = new Date(year, (quarter - 1) * 3, 1);
+        const end = new Date(year, quarter * 3, 0);
+        return { fromDate: formatDate(start), toDate: formatDate(end) };
+      }
+      case 'this-year': {
+        const start = new Date(year, 0, 1);
+        const end = new Date(year, 11, 31);
+        return { fromDate: formatDate(start), toDate: formatDate(end) };
+      }
+      case 'last-year': {
+        const start = new Date(year - 1, 0, 1);
+        const end = new Date(year - 1, 11, 31);
+        return { fromDate: formatDate(start), toDate: formatDate(end) };
+      }
+      default:
+        return { fromDate: '', toDate: '' };
+    }
+  }
+
+  private createInitialFilterState(): DashboardFilterState {
+    const { fromDate, toDate } = this.getDateRangeValues('this-month');
+    return {
+      dateRange: 'custom',
+      fromDate,
+      toDate,
+      quickSelect: '',
+      account: '',
+      incomeExpense: '',
+      category: '',
+      merchant: '',
+      minAmount: null,
+      maxAmount: null,
+      transactionType: '',
+      tag: '',
+      paymentMethod: '',
+      transactionStatus: '',
+      recurring: '',
+      budget: '',
+    };
+  }
+
+  // Reactive state signal for dashboard filter parameters
+  readonly filter = signal<DashboardFilterState>(this.createInitialFilterState());
+
+  readonly savedFilters = signal<SavedFilter[]>(this.loadSavedFilters());
+  readonly isSavingFilter = signal(false);
+  readonly newFilterName = signal('');
+  readonly isManagingFilters = signal(false);
+  readonly activeSavedFilterId = signal<string | null>(null);
+
+  readonly submitted = signal(false);
 
   // Validation computed signals
   readonly isDateInvalid = computed(() => {
@@ -166,53 +264,168 @@ export class DashboardFilterComponent {
     return Boolean(min !== null && max !== null && min > max);
   });
 
-  // Updates specific filter property value in signal state
-  updateFilter<K extends keyof DashboardFilterState>(key: K, value: DashboardFilterState[K]): void {
-    this.filter.update((currentFilter) => ({
-      ...currentFilter,
-      [key]: value,
-    }));
+  readonly showDateError = computed(() => this.submitted() && this.isDateInvalid());
+  readonly showAmountError = computed(() => this.submitted() && this.isAmountInvalid());
+
+  private loadSavedFilters(): SavedFilter[] {
+    try {
+      const stored = localStorage.getItem('cashflow.saved_filters.v1');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch {
+      // Fallback to defaults if parsing fails
+    }
+
+    return [
+      {
+        id: 'sf-1',
+        name: 'This Month - All Accounts',
+        filterState: { ...this.createInitialFilterState(), dateRange: 'this-month' },
+      },
+      {
+        id: 'sf-2',
+        name: 'Business Expenses',
+        filterState: {
+          ...this.createInitialFilterState(),
+          dateRange: 'this-month',
+          incomeExpense: 'expense',
+          tag: 'business',
+        },
+      },
+      {
+        id: 'sf-3',
+        name: 'Income Only',
+        filterState: {
+          ...this.createInitialFilterState(),
+          dateRange: 'this-month',
+          incomeExpense: 'income',
+        },
+      },
+    ];
   }
 
-  // Toggles apply to all widgets flag
-  toggleApplyToAll(): void {
-    this.filter.update((currentFilter) => ({
-      ...currentFilter,
-      applyToAllWidgets: !currentFilter.applyToAllWidgets,
-    }));
+  private persistSavedFilters(list: SavedFilter[]): void {
+    try {
+      localStorage.setItem('cashflow.saved_filters.v1', JSON.stringify(list));
+    } catch {
+      // Ignore storage errors
+    }
+    this.savedFilters.set(list);
+  }
+
+  applySavedFilter(saved: SavedFilter): void {
+    let filterState = { ...saved.filterState };
+    if (filterState.dateRange && filterState.dateRange !== 'custom') {
+      const { fromDate, toDate } = this.getDateRangeValues(filterState.dateRange);
+      filterState = { ...filterState, fromDate, toDate };
+    }
+    this.filter.set(filterState);
+    this.activeSavedFilterId.set(saved.id);
+  }
+
+  toggleSaveFilterInput(): void {
+    this.isSavingFilter.update((v) => !v);
+    this.newFilterName.set('');
+  }
+
+  saveCurrentFilter(): void {
+    const name = this.newFilterName().trim();
+    if (!name) return;
+
+    const newSaved: SavedFilter = {
+      id: 'sf-' + Date.now(),
+      name,
+      filterState: { ...this.filter() },
+    };
+
+    const updated = [...this.savedFilters(), newSaved];
+    this.persistSavedFilters(updated);
+    this.activeSavedFilterId.set(newSaved.id);
+    this.isSavingFilter.set(false);
+    this.newFilterName.set('');
+  }
+
+  toggleManageFilters(): void {
+    this.isManagingFilters.update((v) => !v);
+  }
+
+  deleteSavedFilter(id: string, event?: Event): void {
+    event?.stopPropagation();
+    const updated = this.savedFilters().filter((sf) => sf.id !== id);
+    this.persistSavedFilters(updated);
+    if (this.activeSavedFilterId() === id) {
+      this.activeSavedFilterId.set(null);
+    }
+  }
+
+  // Updates specific filter property value in signal state
+  updateFilter<K extends keyof DashboardFilterState>(key: K, value: DashboardFilterState[K]): void {
+    this.activeSavedFilterId.set(null);
+    if (key === 'dateRange' && typeof value === 'string') {
+      if (value === 'custom') {
+        this.filter.update((currentFilter) => ({
+          ...currentFilter,
+          dateRange: value,
+        }));
+      } else {
+        const { fromDate, toDate } = this.getDateRangeValues(value);
+        this.filter.update((currentFilter) => ({
+          ...currentFilter,
+          dateRange: value,
+          fromDate,
+          toDate,
+        }));
+      }
+    } else {
+      this.filter.update((currentFilter) => ({
+        ...currentFilter,
+        [key]: value,
+      }));
+    }
   }
 
   // Resets all filter signals to initial state
   resetFilters(): void {
-    this.filter.set({
-      dateRange: 'this-month',
-      fromDate: '',
-      toDate: '',
-      quickSelect: '',
-      account: '',
-      incomeExpense: '',
-      category: '',
-      merchant: '',
-      minAmount: null,
-      maxAmount: null,
-      transactionType: '',
-      tag: '',
-      paymentMethod: '',
-      transactionStatus: '',
-      recurring: '',
-      budget: '',
-      applyToAllWidgets: true,
+    this.submitted.set(false);
+    this.activeSavedFilterId.set(null);
+    this.filter.set(this.createInitialFilterState());
+  }
+
+  constructor() {
+    effect(() => {
+      if (this.isOpen()) {
+        this.submitted.set(false);
+        const active = this.facade.activeFilters();
+        if (active) {
+          this.filter.update((curr) => ({
+            ...curr,
+            ...active,
+          }));
+        }
+      }
     });
   }
 
-  // Emits selected filters and closes modal
+  // Emits selected filters and closes modal if validation passes
   applyFilters(): void {
+    this.submitted.set(true);
+
+    if (this.isDateInvalid() || this.isAmountInvalid()) {
+      return;
+    }
+
+    this.facade.applyFilters(this.filter());
     this.applyFilter.emit(this.filter());
     this.onClose();
   }
 
   // Emits close modal event
   onClose(): void {
+    this.submitted.set(false);
     this.closeModal.emit();
   }
 }

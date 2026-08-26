@@ -9,5 +9,6 @@
   <app-cf-dashboard-filter
     [isOpen]="layoutService.isFilterOpen()"
     (closeModal)="layoutService.closeFilter()"
+    (applyFilter)="onApplyFilter($event)"
   ></app-cf-dashboard-filter>
 </div>

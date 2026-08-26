@@ -25,7 +25,7 @@
               (change)="updateFilter('dateRange', $any($event.target).value)"
             >
               @for (option of dateRanges; track option.value) {
-                <option [value]="option.value">
+                <option [value]="option.value" [selected]="filter().dateRange === option.value">
                   {{ option.label }}
                 </option>
               }
@@ -37,8 +37,9 @@
             <input
               id="fromDate"
               type="date"
-              [class.input-error]="isDateInvalid()"
+              [class.input-error]="showDateError()"
               [value]="filter().fromDate"
+              [disabled]="filter().dateRange !== 'custom'"
               (change)="updateFilter('fromDate', $any($event.target).value)"
             />
           </div>
@@ -48,14 +49,15 @@
             <input
               id="toDate"
               type="date"
-              [class.input-error]="isDateInvalid()"
+              [class.input-error]="showDateError()"
               [value]="filter().toDate"
+              [disabled]="filter().dateRange !== 'custom'"
               (change)="updateFilter('toDate', $any($event.target).value)"
             />
           </div>
         </div>
 
-        @if (isDateInvalid()) {
+        @if (showDateError()) {
           <div class="validation-error">From date cannot be later than To date.</div>
         }
 
@@ -111,8 +113,8 @@
         <div class="field amount-range-field">
           <label>Amount Range</label>
           <div class="amount-inputs">
-            <div class="input-with-prefix" [class.input-error]="isAmountInvalid()">
-              <span class="currency-prefix">$</span>
+            <div class="input-with-prefix" [class.input-error]="showAmountError()">
+              <span class="currency-prefix">₹</span>
               <input
                 type="number"
                 placeholder="2,000.00"
@@ -121,8 +123,8 @@
               />
             </div>
             <span class="to-label">to</span>
-            <div class="input-with-prefix" [class.input-error]="isAmountInvalid()">
-              <span class="currency-prefix">$</span>
+            <div class="input-with-prefix" [class.input-error]="showAmountError()">
+              <span class="currency-prefix">₹</span>
               <input
                 type="number"
                 placeholder="1,000.00"
@@ -131,7 +133,7 @@
               />
             </div>
           </div>
-          @if (isAmountInvalid()) {
+          @if (showAmountError()) {
             <div class="validation-error">Minimum amount must be less than maximum amount.</div>
           }
         </div>
@@ -249,23 +251,7 @@
           </div>
         </div>
 
-        <!-- Row 7: Apply to All Widgets Banner -->
-        <div class="apply-all-card" (click)="toggleApplyToAll()">
-          <div class="apply-all-content">
-            <div class="info-icon-badge">
-              <fa-icon [icon]="infoIcon"></fa-icon>
-            </div>
-            <div class="apply-all-text">
-              <strong>Apply to all widgets</strong>
-              <p>Filters will be applied to all dashboard widgets.</p>
-            </div>
-          </div>
-          <span class="toggle" [class.active]="filter().applyToAllWidgets">
-            <span class="toggle-thumb"></span>
-          </span>
-        </div>
-
-        <!-- Row 8: Action Buttons (Reset / Apply Filters) -->
+        <!-- Row 7: Action Buttons (Reset / Apply Filters) -->
         <div class="action-buttons">
           <button type="button" class="reset-button" (click)="resetFilters()">Reset</button>
           <button type="button" class="apply-button" (click)="applyFilters()">Apply Filters</button>
@@ -278,15 +264,70 @@
               <fa-icon [icon]="bookmarkIcon" class="bookmark-icon"></fa-icon>
               <strong>Saved Filters</strong>
             </div>
-            <button type="button" class="manage-button">Manage Saved Filters &rsaquo;</button>
+            <div class="header-action-group">
+              <button
+                type="button"
+                class="save-filter-btn"
+                (click)="toggleSaveFilterInput()"
+                title="Save current filter configuration"
+              >
+                <fa-icon [icon]="plusIcon"></fa-icon>
+                <span>Save Current Filter</span>
+              </button>
+              <button type="button" class="manage-button" (click)="toggleManageFilters()">
+                {{ isManagingFilters() ? 'Done' : 'Manage' }}
+              </button>
+            </div>
           </div>
 
+          @if (isSavingFilter()) {
+            <div class="save-filter-card">
+              <input
+                type="text"
+                placeholder="Enter filter name (e.g. Q3 Expenses)..."
+                [value]="newFilterName()"
+                (input)="newFilterName.set($any($event.target).value)"
+                (keyup.enter)="saveCurrentFilter()"
+              />
+              <div class="save-card-actions">
+                <button
+                  type="button"
+                  class="save-confirm-btn"
+                  [disabled]="!newFilterName().trim()"
+                  (click)="saveCurrentFilter()"
+                >
+                  Save
+                </button>
+                <button type="button" class="save-cancel-btn" (click)="toggleSaveFilterInput()">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          }
+
           <div class="saved-filter-list">
-            @for (item of savedFilters(); track item) {
-              <button type="button" class="saved-filter-chip">
-                <span>{{ item }}</span>
-                <fa-icon [icon]="ellipsisIcon" class="chip-more-icon"></fa-icon>
-              </button>
+            @for (item of savedFilters(); track item.id) {
+              <div
+                class="saved-filter-chip"
+                [class.active]="activeSavedFilterId() === item.id"
+                (click)="applySavedFilter(item)"
+              >
+                <span>{{ item.name }}</span>
+                @if (isManagingFilters()) {
+                  <button
+                    type="button"
+                    class="chip-delete-btn"
+                    title="Delete saved filter"
+                    (click)="deleteSavedFilter(item.id, $event)"
+                  >
+                    <fa-icon [icon]="trashIcon"></fa-icon>
+                  </button>
+                } @else {
+                  <fa-icon [icon]="ellipsisIcon" class="chip-more-icon"></fa-icon>
+                }
+              </div>
+            } @empty {
+              <p class="no-saved-filters-text">No saved filters available.</p>
             }
           </div>
         </section>

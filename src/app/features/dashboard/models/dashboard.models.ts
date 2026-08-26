@@ -49,7 +49,6 @@ export interface DashboardFilterState {
   transactionStatus: string;
   recurring: string;
   budget: string;
-  applyToAllWidgets: boolean;
 }
 // Summary card models and metadata mapping
 export interface SummaryCard {
@@ -97,6 +96,9 @@ export function mapSummaryCardResponse(rawCards: any[] | undefined | null): Summ
   });
 }
 // Dashboard items and onboarding interfaces
+export * from './account-link.model';
+export * from './profile-setup.model';
+
 export interface DashboardItem {
   id: number | string;
   title: string;
@@ -212,6 +214,7 @@ export interface DashboardState {
   selectedAction: string | null;
   loading: boolean;
   loadError: boolean;
+  activeFilters?: Partial<DashboardFilterState>;
 }
 // Initial state for dashboard feature store
 export const initialDashboardState: DashboardState = {
@@ -359,6 +362,12 @@ export const initialDashboardState: DashboardState = {
   ],
   onboardingSteps: [
     {
+      id: 'complete-profile',
+      title: 'Complete your profile setup',
+      actionId: 'complete-profile',
+      completed: false,
+    },
+    {
       id: 'connect-account',
       title: 'Connect your first bank account',
       actionId: 'connect-account',
@@ -484,4 +493,7 @@ export const initialDashboardState: DashboardState = {
   selectedAction: null,
   loading: true,
   loadError: false,
+  activeFilters: {
+    dateRange: 'this-month',
+  },
 };

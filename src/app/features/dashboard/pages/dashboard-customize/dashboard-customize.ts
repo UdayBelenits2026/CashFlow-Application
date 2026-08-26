@@ -4,7 +4,7 @@ import { Component, OnInit, computed, effect, inject, signal, untracked } from '
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DashboardFacade } from '../../facades/dashboard.facade';
-import { DashboardCustomizationService } from '../../data/dashboard-customization.service';
+import { DashboardCustomizationService } from '../../services/dashboard-customization.service';
 import {
   CustomizeTab,
   DashboardWidgetConfig,

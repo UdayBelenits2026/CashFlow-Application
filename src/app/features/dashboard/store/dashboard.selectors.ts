@@ -98,3 +98,8 @@ export const selectDashboardLoadError = createSelector(
   selectDashboardState,
   (state) => state.loadError,
 );
+// Selects active dashboard filters
+export const selectActiveFilters = createSelector(
+  selectDashboardState,
+  (state) => state?.activeFilters,
+);

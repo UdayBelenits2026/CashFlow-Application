@@ -1,8 +1,19 @@
 import { createAction, props } from '@ngrx/store';
-import { DashboardApiResponse, DashboardItem } from '../models/dashboard.models';
+import {
+  DashboardApiResponse,
+  DashboardFilterState,
+  DashboardItem,
+} from '../models/dashboard.models';
 import { DashboardWidgetConfig } from '../utility/dashboard-widget-config';
 // Action definitions for dashboard loading and user actions
-export const loadDashboard = createAction('[Dashboard] Load Dashboard');
+export const loadDashboard = createAction(
+  '[Dashboard] Load Dashboard',
+  props<{ filters?: Partial<DashboardFilterState> }>(),
+);
+export const setDashboardFilters = createAction(
+  '[Dashboard] Set Filters',
+  props<{ filters: Partial<DashboardFilterState> }>(),
+);
 export const loadDashboardSuccess = createAction(
   '[Dashboard] Load Dashboard Success',
   props<{ data: DashboardApiResponse }>(),
