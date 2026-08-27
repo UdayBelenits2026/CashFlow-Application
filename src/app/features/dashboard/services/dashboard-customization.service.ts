@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { WIDGET_LAYOUT } from '../models/dashboard.models';
 import {
   cloneWidgetConfig,
   DASHBOARD_WIDGET_DEFAULT_CONFIG,
@@ -24,7 +25,7 @@ export class DashboardCustomizationService {
         byId.set(item.id, {
           id: item.id,
           selected: Boolean(item.selected),
-          layout: item.layout === 'wide' ? 'wide' : 'medium',
+          layout: item.layout === WIDGET_LAYOUT.wide ? WIDGET_LAYOUT.wide : WIDGET_LAYOUT.medium,
           order: Number.isFinite(item.order) ? item.order : 0,
         });
       }

@@ -20,6 +20,7 @@ import { LineChart } from '../../../../shared/charts/line-chart/line-chart';
 import { DoughnutChart } from '../../../../shared/charts/doughnut-chart/doughnut-chart';
 import { ErrorBannerComponent } from '../../../../shared/ui/error-banner/error-banner';
 import { DashboardWidgetConfig, sortWidgetConfig } from '../../utility/dashboard-widget-config';
+import { CHART_WIDGET_IDS, DashboardWidgetId } from '../../models/dashboard.models';
 import { AddReminderModalComponent } from '../../components/add-reminder-modal/add-reminder-modal';
 
 @Component({
@@ -105,6 +106,6 @@ export class DashboardExistingUser implements OnInit {
   }
   // Checks if widget is a chart component
   isChartWidget(widgetId: string): boolean {
-    return widgetId === 'cashFlowTrend' || widgetId === 'spendingByCategory';
+    return CHART_WIDGET_IDS.includes(widgetId as DashboardWidgetId);
   }
 }

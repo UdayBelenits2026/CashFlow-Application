@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SummaryCard } from '../../models/dashboard.models';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faWallet,
   faMoneyBillTransfer,
@@ -36,7 +37,7 @@ export class SummaryCardComponent {
   readonly hasError = input<boolean>(false);
   readonly isLoading = input<boolean>(false);
   // FontAwesome icon lookup table for summary card types
-  readonly icons: Record<string, any> = {
+  readonly icons: Record<string, IconDefinition> = {
     'fa-wallet': faWallet,
     'fa-money-bill-transfer': faMoneyBillTransfer,
     'fa-chart-line': faChartLine,

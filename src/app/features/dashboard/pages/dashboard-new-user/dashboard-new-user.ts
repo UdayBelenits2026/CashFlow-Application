@@ -11,10 +11,16 @@ import {
   faUser,
   faWallet,
 } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { DashboardFacade } from '../../facades/dashboard.facade';
 import { SummaryCardComponent } from '../../components/summary-card/summary-card';
 import { LineChart } from '../../../../shared/charts/line-chart/line-chart';
-import { SummaryCard, AccountLinkPayload, ProfileSetupForm } from '../../models/dashboard.models';
+import {
+  SummaryCard,
+  AccountLinkPayload,
+  ProfileSetupForm,
+  ONBOARDING_ACTION_ID,
+} from '../../models/dashboard.models';
 import { AccountLinkModalComponent } from '../../components/account-link-modal/account-link-modal';
 import { ProfileSetupModalComponent } from '../../components/profile-setup-modal/profile-setup-modal';
 
@@ -105,7 +111,7 @@ export class DashboardNewUser {
     },
   ];
   // FontAwesome icon references
-  readonly icons: Record<string, any> = {
+  readonly icons: Record<string, IconDefinition> = {
     user: faUser,
     bank: faBuildingColumns,
     wallet: faWallet,
@@ -119,9 +125,12 @@ export class DashboardNewUser {
 
   // Starts selected onboarding step or opens relevant modal
   start(actionId: string): void {
-    if (actionId === 'connect-account' || actionId === 'connect-bank') {
+    if (
+      actionId === ONBOARDING_ACTION_ID.connectAccount ||
+      actionId === ONBOARDING_ACTION_ID.connectBank
+    ) {
       this.isAccountLinkModalOpen.set(true);
-    } else if (actionId === 'complete-profile') {
+    } else if (actionId === ONBOARDING_ACTION_ID.completeProfile) {
       this.isProfileModalOpen.set(true);
     } else {
       this.facade.startOnboarding(actionId);

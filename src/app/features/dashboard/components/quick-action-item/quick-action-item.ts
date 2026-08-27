@@ -9,6 +9,7 @@ import {
   faArrowRightArrowLeft,
   faChartColumn,
 } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { QuickAction } from '../../models/dashboard.models';
 
 @Component({
@@ -23,7 +24,7 @@ export class QuickActionItem {
   // Input action item object
   readonly action = input<QuickAction>({ id: '', title: '', icon: 'fa-arrow-trend-up' });
   // FontAwesome icon map for quick action items
-  readonly icons: Record<string, any> = {
+  readonly icons: Record<string, IconDefinition> = {
     'fa-arrow-trend-up': faArrowTrendUp,
     'fa-arrow-trend-down': faArrowTrendDown,
     'fa-cloud-arrow-up': faCloudArrowUp,

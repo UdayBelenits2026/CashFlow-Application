@@ -1,0 +1,130 @@
+import { DashboardItem } from '../models/dashboard-item.model';
+// Mock recent transactions used as initial dashboard state
+export const MOCK_RECENT_TRANSACTIONS: DashboardItem[] = [
+  {
+    id: 1,
+    title: 'Starbucks Coffee',
+    date: 'May 29, 2026',
+    amount: -5.45,
+    icon: 'fa-mug-hot',
+    type: 'expense',
+  },
+  {
+    id: 2,
+    title: 'Amazon.com',
+    date: 'May 29, 2026',
+    amount: -49.99,
+    icon: 'fa-a',
+    type: 'expense',
+  },
+  {
+    id: 3,
+    title: 'Uber Ride',
+    date: 'May 28, 2026',
+    amount: -18.32,
+    icon: 'fa-car',
+    type: 'expense',
+  },
+  {
+    id: 4,
+    title: 'Netflix Subscription',
+    date: 'May 27, 2026',
+    amount: -15.49,
+    icon: 'fa-film',
+    type: 'expense',
+  },
+  {
+    id: 5,
+    title: 'Walmart',
+    date: 'May 27, 2026',
+    amount: -85.65,
+    icon: 'fa-cart-shopping',
+    type: 'expense',
+  },
+];
+// Mock recent income used as initial dashboard state
+export const MOCK_RECENT_INCOME: DashboardItem[] = [
+  {
+    id: 1,
+    title: 'Salary - May',
+    date: 'May 31, 2026',
+    amount: 4600,
+    icon: 'fa-sack-dollar',
+    type: 'income',
+  },
+  {
+    id: 2,
+    title: 'Freelance Project',
+    date: 'May 25, 2026',
+    amount: 450,
+    icon: 'fa-laptop-code',
+    type: 'income',
+  },
+  {
+    id: 3,
+    title: 'Stock Dividend',
+    date: 'May 22, 2026',
+    amount: 280,
+    icon: 'fa-chart-column',
+    type: 'income',
+  },
+  {
+    id: 4,
+    title: 'Interest Received',
+    date: 'May 20, 2026',
+    amount: 125,
+    icon: 'fa-building-columns',
+    type: 'income',
+  },
+  {
+    id: 5,
+    title: 'Refund Received',
+    date: 'May 18, 2026',
+    amount: 75,
+    icon: 'fa-arrow-right-arrow-left',
+    type: 'income',
+  },
+];
+// Mock recent expenses used as initial dashboard state
+export const MOCK_RECENT_EXPENSES: DashboardItem[] = [
+  {
+    id: 1,
+    title: 'Swiggy Order',
+    date: 'May 29, 2026',
+    amount: -25.49,
+    icon: 'fa-utensils',
+    type: 'expense',
+  },
+  {
+    id: 2,
+    title: 'Fuel',
+    date: 'May 28, 2026',
+    amount: -60,
+    icon: 'fa-gas-pump',
+    type: 'expense',
+  },
+  {
+    id: 3,
+    title: 'Phone Recharge',
+    date: 'May 27, 2026',
+    amount: -19,
+    icon: 'fa-mobile-screen',
+    type: 'expense',
+  },
+  {
+    id: 4,
+    title: 'Groceries',
+    date: 'May 25, 2026',
+    amount: -64.3,
+    icon: 'fa-cart-shopping',
+    type: 'expense',
+  },
+  {
+    id: 5,
+    title: 'Pharmacy',
+    date: 'May 24, 2026',
+    amount: -22.11,
+    icon: 'fa-kit-medical',
+    type: 'expense',
+  },
+];
