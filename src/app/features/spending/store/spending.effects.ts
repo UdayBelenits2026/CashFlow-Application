@@ -35,10 +35,11 @@ export class SpendingEffects {
           catchError((err) =>
             of(
               SpendingActions.loadSpendingDashboardFailure({
-                error: err?.message || 'Unable to load spending data. Please try again later.'
+                error: err?.message || 'Unable to connect to the Spending backend service.'
               })
             )
           )
+
         )
       )
     )

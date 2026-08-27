@@ -9,3 +9,6 @@ export const environment = {
   incomeApiBaseUrl: 'https://YOUR-PRODUCTION-BACKEND/api/v1/income',
   spendingDevUserId: '',
 };
+
+
+

@@ -61,7 +61,7 @@ export const updateIncomeFailure = createAction(
 
 export const deleteIncome = createAction(
   '[Income] Delete Income',
-  props<{ id: string }>()
+  props<{ id: string; accountId: string }>()
 );
 
 export const deleteIncomeSuccess = createAction(

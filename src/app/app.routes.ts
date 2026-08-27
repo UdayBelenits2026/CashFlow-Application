@@ -30,8 +30,8 @@ export const routes: Routes = [
       import('./core/layout/main-layout/main-layout').then(
         (m) => m.MainLayout,
       ),
-    // canActivate: [authGuard],
-    // canActivateChild: [authGuard],
+    canActivate: [authGuard],
+    canActivateChild: [authGuard],
     children: [
       {
         path: 'dashboard',

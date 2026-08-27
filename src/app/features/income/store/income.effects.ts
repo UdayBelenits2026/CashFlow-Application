@@ -9,6 +9,7 @@ import { selectRecurringIncomes } from './income.selectors';
 import { calculateNextRecurringDate } from '../utility/income.calculations';
 import { Income } from '../models/income.model';
 import { RecurringIncome } from '../models/recurring-income.model';
+import { IncomeSource } from '../models/income-source.model';
 
 @Injectable()
 export class IncomeEffects {
@@ -81,8 +82,8 @@ export class IncomeEffects {
   deleteIncome$ = createEffect(() =>
     this.actions$.pipe(
       ofType(IncomeActions.deleteIncome),
-      mergeMap(({ id }) =>
-        this.incomeApi.deleteIncome(id).pipe(
+      mergeMap(({ id, accountId }) =>
+        this.incomeApi.deleteIncome(accountId, id).pipe(
           map(() => IncomeActions.deleteIncomeSuccess({ id })),
           catchError((error) =>
             of(
@@ -120,6 +121,49 @@ export class IncomeEffects {
       })
     )
   );
+
+  // Tracks sources already backfilled this session to avoid duplicate schedules from rapid reloads.
+  private readonly backfilledSourceIds = new Set<string>();
+
+  // Ensures every active recurring source has a schedule so it appears on the Recurring page,
+  // backfilling sources created before this flow or whose schedule did not persist.
+  backfillRecurringSchedules$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(IncomeActions.loadIncomeDashboardSuccess),
+      mergeMap(({ sources, recurringIncomes }) => {
+        const scheduledSourceIds = new Set(recurringIncomes.map((r) => r.incomeSourceId));
+        const missing = sources.filter(
+          (s) =>
+            s.isRecurring &&
+            s.status === 'ACTIVE' &&
+            !scheduledSourceIds.has(s.id) &&
+            !this.backfilledSourceIds.has(s.id)
+        );
+        missing.forEach((s) => this.backfilledSourceIds.add(s.id));
+        return missing.map((source) =>
+          IncomeActions.addRecurringIncome({ item: this.buildRecurringFromSource(source) })
+        );
+      })
+    )
+  );
+
+  private buildRecurringFromSource(source: IncomeSource): Partial<RecurringIncome> {
+    const startDate = new Date().toISOString().split('T')[0];
+    const frequency = source.frequency || 'MONTHLY';
+    return {
+      incomeSourceId: source.id,
+      sourceName: source.name,
+      sourceType: source.type,
+      sourceColor: source.color,
+      accountId: source.accountId || '',
+      accountName: source.accountName || '',
+      expectedAmount: source.expectedAmount || 0,
+      frequency,
+      startDate,
+      nextIncomeDate: calculateNextRecurringDate(startDate, frequency),
+      status: 'ACTIVE'
+    };
+  }
 
   updateIncomeSource$ = createEffect(() =>
     this.actions$.pipe(

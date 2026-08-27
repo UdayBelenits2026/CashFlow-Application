@@ -5,7 +5,7 @@
   inset: 0;
   background: rgba(15, 23, 42, 0.4);
   backdrop-filter: blur(2px);
-  z-index: 1040;
+  z-index: $z-index-modal;
   display: flex;
   justify-content: flex-end;
 }
@@ -58,14 +58,23 @@
 }
 
 .btn-close {
-  background: transparent;
-  border: none;
-  color: $color-text-muted;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  background: $color-background;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  color: $color-text-secondary;
   cursor: pointer;
-  padding: $spacing-1;
+  transition: all $transition-fast;
 
   &:hover {
-    color: $color-text-primary;
+    background: #FEE2E2;
+    border-color: #FECACA;
+    color: #DC2626;
   }
 }
 

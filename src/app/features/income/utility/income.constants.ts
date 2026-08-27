@@ -35,8 +35,20 @@ export const INCOME_TYPE_OPTIONS: IncomeTypeOption[] = [
   { type: 'Rental', label: 'Rental Income', color: '#6366F1', icon: 'house-chimney', defaultTaxable: true },
   { type: 'Investment', label: 'Capital Gains / Investment', color: '#EC4899', icon: 'arrow-trend-up', defaultTaxable: true },
   { type: 'Dividend', label: 'Dividend Payouts', color: '#F59E0B', icon: 'chart-pie', defaultTaxable: false },
-  { type: 'Interest', label: 'Savings Interest', color: '#06B6D4', icon: 'piggy-bank', defaultTaxable: true },
-  { type: 'Gift', label: 'Gift / Grant', color: '#14B8A6', icon: 'gift', defaultTaxable: false },
-  { type: 'Refund', label: 'Refund / Reimbursement', color: '#84CC16', icon: 'rotate-left', defaultTaxable: false },
+  { type: 'Pension', label: 'Pension', color: '#06B6D4', icon: 'piggy-bank', defaultTaxable: true },
+  { type: 'Royalty', label: 'Royalty', color: '#14B8A6', icon: 'gift', defaultTaxable: true },
   { type: 'Other', label: 'Other Miscellaneous', color: '#64748B', icon: 'wallet', defaultTaxable: false }
+];
+
+export const PAYMENT_METHOD_OPTIONS: { value: string; label: string }[] = [
+  { value: 'CASH', label: 'Cash' },
+  { value: 'DEBIT_CARD', label: 'Debit Card' },
+  { value: 'CREDIT_CARD', label: 'Credit Card' },
+  { value: 'UPI', label: 'UPI' },
+  { value: 'BANK_TRANSFER', label: 'Bank Transfer' },
+  { value: 'NET_BANKING', label: 'Net Banking' },
+  { value: 'WALLET', label: 'Wallet' },
+  { value: 'CHEQUE', label: 'Cheque' },
+  { value: 'ACH', label: 'ACH' },
+  { value: 'OTHER', label: 'Other' }
 ];

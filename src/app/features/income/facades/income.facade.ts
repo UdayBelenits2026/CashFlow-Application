@@ -90,8 +90,8 @@ export class IncomeFacade {
     this.store.dispatch(IncomeActions.updateIncome({ id, income }));
   }
 
-  deleteIncome(id: string): void {
-    this.store.dispatch(IncomeActions.deleteIncome({ id }));
+  deleteIncome(id: string, accountId: string): void {
+    this.store.dispatch(IncomeActions.deleteIncome({ id, accountId }));
   }
 
   addSource(source: Partial<IncomeSource>): void {

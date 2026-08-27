@@ -149,7 +149,7 @@ export class FullIncomeDashboardComponent implements OnInit {
   onConfirmDelete(): void {
     const inc = this.activeIncome();
     if (inc) {
-      this.incomeFacade.deleteIncome(inc.id);
+      this.incomeFacade.deleteIncome(inc.id, inc.accountId);
       this.showDeleteDialog.set(false);
       this.activeIncome.set(null);
     }
