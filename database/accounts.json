@@ -430,10 +430,6 @@
     {
       "id": "5",
       "name": "Loan"
-    },
-    {
-      "id": "6",
-      "name": "Others"
     }
   ],
   "accountSubTypes": [
@@ -506,16 +502,6 @@
       "id": "14",
       "accountType": "Loan",
       "name": "Vehicle"
-    },
-    {
-      "accountType": "Others",
-      "name": "Crypto Wallet",
-      "id": "sPPUfLu0KWY"
-    },
-    {
-      "accountType": "Others",
-      "name": "Education",
-      "id": "2tfU_j2Z3Vk"
     }
   ],
   "banks": [

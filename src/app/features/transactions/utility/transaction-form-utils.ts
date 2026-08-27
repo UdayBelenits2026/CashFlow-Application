@@ -1,8 +1,20 @@
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
-import { AccountOption, CreateTransactionRequest, PaymentMethod, Transaction, TransactionFormValue, TransactionSource, TransactionType } from '../models/models.transaction';
+import {
+  PaymentMethod,
+  TransactionFormModel,
+  TransactionFormValue,
+  TransactionType,
+  UpdateFormModel
+} from '../models/models.transaction';
+import {
+  CreateTransactionRequest,
+  EditTransactionData,
+  UpdateTransactionRequest
+} from '../models/transaction-api.model';
+import { mapFormToUpdateRequest, mapTransactionFormToRequest } from './transaction.mapper';
 
-// Selectable payment methods for expense/income transactions.
+// Selectable payment methods for expense transactions.
 export const PAYMENT_METHODS: PaymentMethod[] = [
   'Debit Card',
   'Credit Card',
@@ -14,23 +26,8 @@ export const PAYMENT_METHODS: PaymentMethod[] = [
   'Other'
 ];
 
-// Category options depend on the transaction type.
-export const EXPENSE_CATEGORIES = [
-  'Shopping',
-  'Food & Dining',
-  'Groceries',
-  'Utilities',
-  'Transportation',
-  'Business Expense',
-  'Entertainment',
-  'Healthcare',
-  'Other'
-];
-
-export const INCOME_CATEGORIES = ['Income', 'Salary', 'Interest', 'Dividend', 'Refund', 'Other'];
-
-// Fields controlled by the financial institution on bank-synced transactions.
-export const BANK_CONTROLLED_FIELDS = ['amount', 'description', 'date', 'accountId', 'referenceNumber'] as const;
+// Maps backend readOnlyFieldNames to form control names where they differ.
+const FIELD_NAME_MAP: Record<string, string> = { transactionDate: 'date' };
 
 // Amount must be numeric, greater than zero, max two decimals.
 export function amountValidator(control: AbstractControl): ValidationErrors | null {
@@ -81,52 +78,74 @@ export function descriptionValidator(control: AbstractControl): ValidationErrors
   return null;
 }
 
-// Transfer accounts must differ.
+// Transfer accounts must differ (Transfer is UI-only).
 export const differentAccountsValidator: ValidatorFn = (group: AbstractControl): ValidationErrors | null => {
   const from = group.get('fromAccountId')?.value;
   const to = group.get('toAccountId')?.value;
   return from && to && from === to ? { sameAccount: true } : null;
 };
 
-// Builds the single reactive form shared by add and edit.
+// Builds the single reactive form shared by add and edit. Dropdowns hold numeric IDs.
 export function createTransactionForm(fb: FormBuilder, today: string): FormGroup {
   return fb.group({
     type: ['Expense' as TransactionType, [Validators.required]],
     date: [today, [Validators.required, dateValidator]],
     amount: [null as number | null, [Validators.required, amountValidator]],
     description: ['', [Validators.required, descriptionValidator]],
-    category: [''],
-    accountId: [''],
-    fromAccountId: [''],
-    toAccountId: [''],
-    paymentMethod: ['' as PaymentMethod | ''],
+    categoryId: [null as number | null],
+    accountId: [null as number | null],
+    merchantId: [null as number | null],
+    incomeSourceId: [null as number | null],
+    paymentMethod: [''],
     referenceNumber: ['', [Validators.maxLength(50)]],
     notes: ['', [Validators.maxLength(500)]],
-    tags: fb.control<string[]>([])
+    attachmentUrl: [''],
+    tagIds: fb.control<number[]>([]),
+    fromAccountId: [null as number | null],
+    toAccountId: [null as number | null]
   });
 }
 
-// Switches validators on/off based on the selected type + payment method.
-export function applyTypeValidators(form: FormGroup, type: TransactionType, paymentMethod: string): void {
-  const category = form.get('category')!;
+// Switches required validators on/off based on mode + type + payment method.
+export function applyTypeValidators(
+  form: FormGroup,
+  mode: 'add' | 'edit',
+  type: TransactionType,
+  paymentMethod: string
+): void {
+  const amount = form.get('amount')!;
+  const categoryId = form.get('categoryId')!;
   const accountId = form.get('accountId')!;
+  const merchantId = form.get('merchantId')!;
+  const incomeSourceId = form.get('incomeSourceId')!;
+  const paymentMethodControl = form.get('paymentMethod')!;
+  const referenceNumber = form.get('referenceNumber')!;
   const fromAccountId = form.get('fromAccountId')!;
   const toAccountId = form.get('toAccountId')!;
-  const paymentMethodControl = form.get('paymentMethod')!;
-  const reference = form.get('referenceNumber')!;
 
-  [category, accountId, fromAccountId, toAccountId, paymentMethodControl].forEach((control) => control.clearValidators());
+  [amount, categoryId, accountId, merchantId, incomeSourceId, paymentMethodControl, fromAccountId, toAccountId].forEach(
+    (control) => control.clearValidators()
+  );
   form.clearValidators();
 
-  if (type === 'Transfer') {
+  if (mode === 'edit') {
+    // PUT contract fields: date, accountId, description, categoryId, paymentMethod (amount/merchant/type are not editable).
+    accountId.setValidators([Validators.required]);
+    categoryId.setValidators([Validators.required]);
+  } else if (type === 'Transfer') {
+    amount.setValidators([Validators.required, amountValidator]);
     fromAccountId.setValidators([Validators.required]);
     toAccountId.setValidators([Validators.required]);
     form.setValidators([differentAccountsValidator]);
   } else {
-    category.setValidators([Validators.required]);
+    amount.setValidators([Validators.required, amountValidator]);
+    categoryId.setValidators([Validators.required]);
     accountId.setValidators([Validators.required]);
     if (type === 'Expense') {
+      merchantId.setValidators([Validators.required]);
       paymentMethodControl.setValidators([Validators.required]);
+    } else {
+      incomeSourceId.setValidators([Validators.required]);
     }
   }
 
@@ -134,132 +153,94 @@ export function applyTypeValidators(form: FormGroup, type: TransactionType, paym
   if (paymentMethod === 'Check') {
     referenceValidators.push(Validators.required);
   }
-  reference.setValidators(referenceValidators);
+  referenceNumber.setValidators(referenceValidators);
 
-  [category, accountId, fromAccountId, toAccountId, paymentMethodControl, reference].forEach((control) =>
-    control.updateValueAndValidity({ emitEvent: false })
+  [amount, categoryId, accountId, merchantId, incomeSourceId, paymentMethodControl, referenceNumber, fromAccountId, toAccountId].forEach(
+    (control) => control.updateValueAndValidity({ emitEvent: false })
   );
   form.updateValueAndValidity({ emitEvent: false });
 }
 
-// Masks an account number so only the last four digits are shown.
-export function maskAccountNumber(accountNumber: string | undefined): string {
-  const tail = (accountNumber ?? '').slice(-4);
-  return tail ? `**** ${tail}` : '****';
-}
-
-// Builds a create/update payload, including only fields relevant to the type.
-export function buildTransactionPayload(value: TransactionFormValue, accounts: AccountOption[]): CreateTransactionRequest {
-  const base = {
-    date: value.date,
-    amount: Number(value.amount),
-    description: value.description.trim(),
-    merchant: value.description.trim(),
-    type: value.type,
-    tags: value.tags ?? [],
-    referenceNumber: (value.referenceNumber ?? '').trim(),
-    notes: value.notes ?? ''
-  };
-
-  if (value.type === 'Transfer') {
-    const from = accounts.find((account) => account.id === value.fromAccountId);
-    const to = accounts.find((account) => account.id === value.toAccountId);
-    return {
-      ...base,
-      category: '',
-      accountId: value.fromAccountId,
-      accountName: from && to ? `${from.name} → ${to.name}` : from?.name ?? '',
-      fromAccountId: value.fromAccountId,
-      toAccountId: value.toAccountId,
-      paymentMethod: ''
-    };
+// Disables fields the backend marks read-only (readOnlyFieldNames) and the account when not editable.
+export function applyReadOnlyFields(form: FormGroup, readOnlyFieldNames: string[], accountEditable: boolean): void {
+  (readOnlyFieldNames ?? []).forEach((name) => {
+    form.get(FIELD_NAME_MAP[name] ?? name)?.disable({ emitEvent: false });
+  });
+  if (!accountEditable) {
+    form.get('accountId')?.disable({ emitEvent: false });
   }
-
-  const account = accounts.find((item) => item.id === value.accountId);
-  return {
-    ...base,
-    category: value.category,
-    accountId: value.accountId,
-    accountName: account?.name ?? '',
-    paymentMethod: value.paymentMethod || ''
-  };
 }
 
-// Today's date as an ISO yyyy-mm-dd string.
+// Today's date as an ISO yyyy-MM-dd string.
 export function getToday(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-// Category list for the selected transaction type.
-export function categoriesFor(type: TransactionType): string[] {
-  return type === 'Income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+// Maps the raw Add-form value to the typed create request.
+export function buildCreateRequest(value: TransactionFormValue): CreateTransactionRequest {
+  const model: TransactionFormModel = {
+    type: value.type as 'Expense' | 'Income',
+    accountId: value.accountId,
+    categoryId: value.categoryId,
+    merchantId: value.merchantId,
+    incomeSourceId: value.incomeSourceId,
+    paymentMethod: value.paymentMethod,
+    date: value.date,
+    amount: value.amount,
+    description: value.description,
+    notes: value.notes
+  };
+  return mapTransactionFormToRequest(model);
 }
 
-// Maps active accounts to dropdown options with a masked-number label.
-export function mapAccountsToOptions(
-  accounts: { id: string; accountName: string; accountNumber: string; status: string }[]
-): AccountOption[] {
-  return accounts
-    .filter((account) => (account.status || '').toLowerCase() === 'active')
-    .map((account) => ({
-      id: account.id,
-      name: account.accountName,
-      status: account.status,
-      label: `${account.accountName} (${maskAccountNumber(account.accountNumber)})`
-    }));
+// Maps the raw Edit-form value to the typed update request.
+export function buildUpdateRequest(value: TransactionFormValue, updatedBy: number): UpdateTransactionRequest {
+  const model: UpdateFormModel = {
+    date: value.date,
+    accountId: value.accountId,
+    description: value.description,
+    categoryId: value.categoryId,
+    paymentMethod: value.paymentMethod,
+    referenceNumber: value.referenceNumber,
+    notes: value.notes,
+    attachmentUrl: value.attachmentUrl,
+    tagIds: value.tagIds ?? []
+  };
+  return mapFormToUpdateRequest(model, updatedBy);
 }
 
-// Patch object used to populate the form when editing.
-export function transactionToFormPatch(transaction: Transaction): Partial<TransactionFormValue> {
+// Builds the patch to populate the form from edit data (infers Income vs Expense).
+export function editDataToFormPatch(data: EditTransactionData): Partial<TransactionFormValue> {
   return {
-    type: transaction.type,
-    date: transaction.date,
-    amount: transaction.amount,
-    description: transaction.description,
-    category: transaction.category ?? '',
-    accountId: transaction.accountId ?? '',
-    fromAccountId: transaction.fromAccountId ?? '',
-    toAccountId: transaction.toAccountId ?? '',
-    paymentMethod: transaction.paymentMethod ?? '',
-    referenceNumber: transaction.referenceNumber ?? '',
-    notes: transaction.notes ?? '',
-    tags: transaction.tags ?? []
+    type: data.incomeSourceId != null ? 'Income' : 'Expense',
+    date: data.transactionDate,
+    amount: data.amount,
+    description: data.description,
+    categoryId: data.categoryId,
+    accountId: data.accountId,
+    merchantId: data.merchantId ?? null,
+    incomeSourceId: data.incomeSourceId ?? null,
+    paymentMethod: data.paymentMethod ?? '',
+    referenceNumber: data.referenceNumber ?? '',
+    notes: data.notes ?? '',
+    attachmentUrl: data.attachmentUrl ?? '',
+    tagIds: (data.tags ?? []).map((tag) => tag.tagId)
   };
 }
 
-// Adds a trimmed tag (max length/count + case-insensitive uniqueness).
-// Returns the new list, or null when the tag is rejected.
-export function addTagToList(tags: string[], value: string): string[] | null {
-  if (!value || value.length > 30 || tags.length >= 10) {
-    return null;
-  }
-  if (tags.some((tag) => tag.toLowerCase() === value.toLowerCase())) {
-    return null;
-  }
-  return [...tags, value];
+// Disables fields the update contract does not accept (display-only in edit mode).
+export function lockEditOnlyFields(form: FormGroup): void {
+  ['type', 'amount', 'merchantId', 'incomeSourceId'].forEach((name) => form.get(name)?.disable({ emitEvent: false }));
 }
 
-// Disables institution-controlled fields on bank-synced records.
-export function lockBankControlledFields(form: FormGroup): void {
-  BANK_CONTROLLED_FIELDS.forEach((field) => form.get(field)?.disable({ emitEvent: false }));
+// Adds or removes a tag id, returning a new array.
+export function toggleTagId(tagIds: number[], id: number): number[] {
+  return tagIds.includes(id) ? tagIds.filter((tagId) => tagId !== id) : [...tagIds, id];
 }
 
-// True when a field is institution-controlled and cannot be edited.
-export function isReadOnlyField(mode: 'add' | 'edit', source: TransactionSource | undefined, field: string): boolean {
-  return mode === 'edit' && source === 'Bank Sync' && (BANK_CONTROLLED_FIELDS as readonly string[]).includes(field);
-}
-
-// Builds the edit payload, omitting read-only (institution-controlled) fields.
-export function buildEditChanges(value: TransactionFormValue, accounts: AccountOption[], isBankSync: boolean): Partial<Transaction> {
-  const changes: Partial<Transaction> = buildTransactionPayload(value, accounts);
-  if (isBankSync) {
-    delete changes.amount;
-    delete changes.description;
-    delete changes.merchant;
-    delete changes.date;
-    delete changes.accountId;
-    delete changes.accountName;
-    delete changes.referenceNumber;
-  }
-  return changes;
+// Resets the Add form for "Save & New", keeping the selected type.
+export function resetFormForNew(form: FormGroup, keepType: TransactionType): void {
+  form.reset({ type: keepType, date: getToday(), amount: null, paymentMethod: '', tagIds: [] });
+  applyTypeValidators(form, 'add', keepType, '');
+  form.markAsPristine();
 }

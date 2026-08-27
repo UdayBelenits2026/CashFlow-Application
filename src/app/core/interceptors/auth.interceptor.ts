@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
 import { TokenService } from '../auth/services/token.service';
 import { SessionService } from '../auth/services/session.service';
 import { TokenRefreshService } from '../auth/services/token-refresh.service';
+import { UserContextService } from '../services/user-context.service';
 import { AUTH_MESSAGES } from '../auth/constants/auth.constants';
 import * as AuthActions from '../auth/store/actions/auth.actions';
 
@@ -17,17 +18,22 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const tokenService = inject(TokenService);
   const sessionService = inject(SessionService);
   const tokenRefresh = inject(TokenRefreshService);
+  const userContext = inject(UserContextService);
   const store = inject(Store);
 
   const skipAuth = request.context.get(SKIP_AUTH);
-  const isApiRequest = request.url.startsWith(environment.apiBaseUrl);
+  const isApiRequest =
+    request.url.startsWith(environment.apiBaseUrl) ||
+    request.url.startsWith(environment.transactionsApiBaseUrl) ||
+    request.url.startsWith(environment.accountsApiBaseUrl);
 
   const authHeader = !skipAuth && isApiRequest
     ? tokenService.getAuthorizationHeader()
     : null;
 
+  // Centralized auth headers: bearer token + numeric userId (from the JWT).
   const authRequest = authHeader
-    ? request.clone({ setHeaders: { Authorization: authHeader } })
+    ? request.clone({ setHeaders: { Authorization: authHeader, userId: String(userContext.getUserId()) } })
     : request;
 
   return next(authRequest).pipe(

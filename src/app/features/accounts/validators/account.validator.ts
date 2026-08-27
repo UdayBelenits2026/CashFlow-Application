@@ -1,4 +1,3 @@
-/** File purpose: Implements logic for app\validators\account.validators.ts. */
 import { Validators } from '@angular/forms';
 
 // Shared validator sets used by add/edit account forms.

@@ -6,7 +6,6 @@
     "start": "ng serve",
     "server": "npm run server:spending",
     "server:dashboard": "json-server database/dashboard.json --port 3000",
-    "server:transactions": "json-server database/transactions.json --port 3001",
     "server:income": "json-server database/income.json --port 3002",
     "server:spending": "json-server database/spending.json --port 3003",
     "server:cashflow": "json-server database/cashflow.json --port 3004",

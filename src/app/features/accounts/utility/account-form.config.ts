@@ -67,14 +67,6 @@ export const ACCOUNT_CATEGORIES: readonly AccountCategoryConfig[] = [
     requiresAccountNumber: false,
     requiresIfscCode: false,
     showBankName: false
-  },
-  {
-    label: 'Others',
-    description: 'Other account types that do not belong to the predefined account categories.',
-    subTypes: [],
-    requiresAccountNumber: false,
-    requiresIfscCode: false,
-    showBankName: false
   }
 ];
 

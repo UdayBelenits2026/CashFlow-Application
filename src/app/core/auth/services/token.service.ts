@@ -53,6 +53,28 @@ export class TokenService {
     return this.token?.accessToken ? `${this.getTokenType()} ${this.token.accessToken}` : null;
   }
 
+  // Numeric userId claim decoded from the JWT access-token payload (null if unavailable).
+  getUserId(): number | null {
+    const raw = this.decodeAccessTokenPayload()?.['userId'];
+    const id = typeof raw === 'string' ? Number(raw) : raw;
+    return typeof id === 'number' && Number.isFinite(id) ? id : null;
+  }
+
+  // Decodes the JWT payload segment; returns null when the token is missing or malformed.
+  private decodeAccessTokenPayload(): Record<string, unknown> | null {
+    const segment = this.token?.accessToken?.split('.')[1];
+    if (!segment) {
+      return null;
+    }
+    try {
+      const base64 = segment.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+      return JSON.parse(atob(padded)) as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+  }
+
   clearAccessToken(): void {
     this.token = null;
     this.removeFromStorage();
