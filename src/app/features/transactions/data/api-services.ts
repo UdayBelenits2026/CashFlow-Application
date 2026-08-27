@@ -6,20 +6,11 @@ import { environment } from '../../../../environments/environment';
 import { UserContextService } from '../../../core/services/user-context.service';
 import {
   ApiResponse,
-  CategoryOption,
   CreateTransactionRequest,
   CreateTransactionResponse,
   DeleteTransactionData,
   EditTransactionData,
-  ExpenseCreateRequest,
-  ExpenseDetails,
-  ExpenseListPage,
-  ExpenseListQuery,
-  ExpenseMutationResponse,
-  ExpenseUpdateRequest,
   PagedResult,
-  SpendingDashboard,
-  SpendingOverview,
   TransactionDetail,
   TransactionListItem,
   UpdateTransactionRequest,
@@ -109,62 +100,5 @@ export class ApiServices {
     return this.http
       .delete<ApiResponse<DeleteTransactionData>>(`${this.baseUrl}/transactions/${id}`)
       .pipe(map((response) => response.data));
-  }
-
-  // --- Expense controller (Swagger /expenses; responses are not enveloped) ---
-
-  // GET /expenses (paged, filterable list of expense transactions).
-  listExpenses(query: ExpenseListQuery = {}): Observable<ExpenseListPage> {
-    let params = new HttpParams().set('userId', this.userContext.getUserId());
-    for (const [key, value] of Object.entries(query)) {
-      if (value !== undefined && value !== null && value !== '') {
-        params = params.set(key, value as string | number);
-      }
-    }
-    return this.http.get<ExpenseListPage>(`${this.baseUrl}/expenses`, { params });
-  }
-
-  // GET /expenses/{id}.
-  getExpense(id: number): Observable<ExpenseDetails> {
-    const params = new HttpParams().set('userId', this.userContext.getUserId());
-    return this.http.get<ExpenseDetails>(`${this.baseUrl}/expenses/${id}`, { params });
-  }
-
-  // POST /expenses.
-  createExpense(request: ExpenseCreateRequest): Observable<ExpenseMutationResponse> {
-    const params = new HttpParams().set('userId', this.userContext.getUserId());
-    return this.http.post<ExpenseMutationResponse>(`${this.baseUrl}/expenses`, request, { params });
-  }
-
-  // PUT /expenses/{id}.
-  updateExpense(id: number, request: ExpenseUpdateRequest): Observable<ExpenseMutationResponse> {
-    const params = new HttpParams().set('userId', this.userContext.getUserId());
-    return this.http.put<ExpenseMutationResponse>(`${this.baseUrl}/expenses/${id}`, request, { params });
-  }
-
-  // DELETE /expenses/{id}.
-  deleteExpense(id: number): Observable<ExpenseMutationResponse> {
-    const params = new HttpParams().set('userId', this.userContext.getUserId());
-    return this.http.delete<ExpenseMutationResponse>(`${this.baseUrl}/expenses/${id}`, { params });
-  }
-
-  // --- Spending controller (Swagger /spending; responses are not enveloped) ---
-
-  // GET /spending/overview.
-  getSpendingOverview(period = 'this_month'): Observable<SpendingOverview> {
-    const params = new HttpParams().set('userId', this.userContext.getUserId()).set('period', period);
-    return this.http.get<SpendingOverview>(`${this.baseUrl}/spending/overview`, { params });
-  }
-
-  // GET /spending/dashboard.
-  getSpendingDashboard(period = 'this_month'): Observable<SpendingDashboard> {
-    const params = new HttpParams().set('userId', this.userContext.getUserId()).set('period', period);
-    return this.http.get<SpendingDashboard>(`${this.baseUrl}/spending/dashboard`, { params });
-  }
-
-  // GET /spending/categories.
-  getSpendingCategories(): Observable<CategoryOption[]> {
-    const params = new HttpParams().set('userId', this.userContext.getUserId());
-    return this.http.get<CategoryOption[]>(`${this.baseUrl}/spending/categories`, { params });
   }
 }

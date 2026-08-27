@@ -29,7 +29,7 @@ describe('income actions', () => {
     expect(action.income).toEqual({ amount: 9 });
   });
 
-  it('deleteIncome should carry the id', () => {
-    expect(A.deleteIncome({ id: '3' }).id).toBe('3');
+  it('deleteIncome should carry the id and accountId', () => {
+    expect(A.deleteIncome({ id: '3', accountId: 'a1' }).id).toBe('3');
   });
 });

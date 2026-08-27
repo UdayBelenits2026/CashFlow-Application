@@ -22,10 +22,14 @@ describe('spendingDevUserInterceptor', () => {
 
   afterEach(() => httpMock.verify());
 
-  it('should attach X-User-Id header to spending API requests in dev', () => {
+  it('should attach X-User-Id to spending requests only when a dev id is configured', () => {
     http.get(`${environment.spendingApiBaseUrl}/expenses`).subscribe();
     const req = httpMock.expectOne(`${environment.spendingApiBaseUrl}/expenses`);
-    expect(req.request.headers.get('X-User-Id')).toBe(environment.spendingDevUserId);
+    if (environment.spendingDevUserId) {
+      expect(req.request.headers.get('X-User-Id')).toBe(environment.spendingDevUserId);
+    } else {
+      expect(req.request.headers.has('X-User-Id')).toBeFalse();
+    }
     req.flush([]);
   });
 

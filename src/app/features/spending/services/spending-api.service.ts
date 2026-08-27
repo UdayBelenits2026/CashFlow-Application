@@ -9,6 +9,7 @@ import { Tag } from '../models/tag.model';
 import { RecurringExpense } from '../models/recurring-expense.model';
 import {
   SpendingOverviewDto,
+  SpendingDashboardDto,
   CategoryOptionDto,
   ExpenseListItemDto,
   ExpenseListPageDto,
@@ -167,6 +168,14 @@ export class SpendingApiService {
       }),
       catchError((err) => this.handleError(err, 'Failed to load spending dashboard data'))
     );
+  }
+
+  // GET /spending/dashboard — condensed dashboard payload (overview totals, category breakdown
+  // and recent expenses). Exposed typed for single-call summaries; getDashboardData() remains the
+  // primary composed feed for the full spending UI.
+  getSpendingDashboard(period: string = 'this_month'): Observable<SpendingDashboardDto> {
+    const userId = this.getUserId();
+    return this.backendGet<SpendingDashboardDto>(`spending/dashboard?userId=${userId}&period=${period}`);
   }
 
   // --- Expenses CRUD (expense-controller) ---

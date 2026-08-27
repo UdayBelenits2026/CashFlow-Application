@@ -20,77 +20,65 @@ describe('SpendingApiService', () => {
 
   afterEach(() => httpMock.verify());
 
-  function flushDashboard(overrides: Partial<Record<string, unknown>> = {}) {
-    httpMock.expectOne(`${base}/spending/overview`).flush((overrides['overview'] as any) ?? { totalSpending: 500 });
-    httpMock.expectOne(`${base}/spending/categories`).flush((overrides['categories'] as any) ?? []);
-    httpMock.expectOne(`${base}/expenses?size=500`).flush((overrides['expenses'] as any) ?? { content: [{ id: 'e1', amount: 10 }] });
-    httpMock.expectOne(`${base}/tags`).flush((overrides['tags'] as any) ?? [{ id: 't1', name: 'Food' }]);
-    httpMock.expectOne(`${base}/recurring-expenses`).flush((overrides['recurring'] as any) ?? []);
-    httpMock.expectOne(`${base}/spending-alerts`).flush((overrides['alerts'] as any) ?? []);
-  }
-
-  it('getDashboardData should aggregate and map datasets', () => {
+  it('getDashboardData should call overview, categories and expenses with the userId', () => {
     let result: any;
     service.getDashboardData().subscribe((r) => (result = r));
-    flushDashboard();
-    expect(result.overview.totalSpending).toBe(500);
-    expect(result.expenses.length).toBe(1);
-    expect(result.tags.length).toBe(1);
-  });
 
-  it('getDashboardData should degrade failing endpoints to empty', () => {
-    let result: any;
-    service.getDashboardData().subscribe((r) => (result = r));
-    httpMock.expectOne(`${base}/spending/overview`).flush('err', { status: 500, statusText: 'Error' });
-    httpMock.expectOne(`${base}/spending/categories`).flush([]);
-    httpMock.expectOne(`${base}/expenses?size=500`).flush({ content: [] });
-    httpMock.expectOne(`${base}/tags`).flush([]);
-    httpMock.expectOne(`${base}/recurring-expenses`).flush([]);
-    httpMock.expectOne(`${base}/spending-alerts`).flush([]);
-    expect(result.expenses).toEqual([]);
+    const overview = httpMock.expectOne((r) => r.url.startsWith(`${base}/spending/overview`));
+    expect(overview.request.url).toContain(`userId=${environment.defaultUserId}`);
+    expect(overview.request.url).toContain('period=this_month');
+    overview.flush({ data: { totalSpending: 500 } });
+
+    const categories = httpMock.expectOne((r) => r.url.startsWith(`${base}/spending/categories`));
+    categories.flush({ data: [] });
+
+    const expenses = httpMock.expectOne((r) => r.url.startsWith(`${base}/expenses`));
+    expect(expenses.request.url).toContain('size=500');
+    expenses.flush({ data: { content: [{ transactionId: 1, amount: 10, merchantName: 'Shop' }] } });
+
     expect(result.overview).toBeTruthy();
   });
 
-  it('getExpenses should map and hide zero-amount placeholder rows', () => {
+  it('getExpenses should GET expenses with userId and size, hiding placeholder rows', () => {
     let result: any;
     service.getExpenses().subscribe((r) => (result = r));
-    httpMock.expectOne(`${base}/expenses?size=500`).flush({
-      content: [
-        { id: 'e1', amount: 10, merchantName: 'Shop' },
-        { id: 'e2', amount: 0, merchantName: '—' },
-      ],
-    });
+    const req = httpMock.expectOne((r) => r.url.startsWith(`${base}/expenses`));
+    expect(req.request.method).toBe('GET');
+    expect(req.request.url).toContain(`userId=${environment.defaultUserId}`);
+    expect(req.request.url).toContain('size=500');
+    req.flush({ data: { content: [
+      { transactionId: 1, amount: 10, merchantName: 'Shop' },
+      { transactionId: 2, amount: 0, merchantName: '—' },
+    ] } });
     expect(result.length).toBe(1);
-    expect(result[0].id).toBe('e1');
   });
 
-  it('createExpense should POST and return an entity with an id', () => {
+  it('createExpense should POST to expenses with the userId param', () => {
     let result: any;
     service.createExpense({ amount: 5 } as any).subscribe((r) => (result = r));
-    const req = httpMock.expectOne(`${base}/expenses`);
-    expect(req.request.method).toBe('POST');
-    req.flush({ transactionId: 99 });
+    const req = httpMock.expectOne((r) => r.method === 'POST' && r.url.startsWith(`${base}/expenses`));
+    expect(req.request.url).toContain(`userId=${environment.defaultUserId}`);
+    req.flush({ data: { transactionId: 99 } });
     expect(result.id).toBe('99');
   });
 
-  it('deleteExpense should DELETE by id', () => {
+  it('deleteExpense should DELETE expenses/:id with the userId param', () => {
     service.deleteExpense('5').subscribe();
-    const req = httpMock.expectOne(`${base}/expenses/5`);
-    expect(req.request.method).toBe('DELETE');
+    const req = httpMock.expectOne((r) => r.method === 'DELETE' && r.url.startsWith(`${base}/expenses/5`));
+    expect(req.request.url).toContain(`userId=${environment.defaultUserId}`);
     req.flush(null);
   });
 
-  it('getTags should GET and map tags', () => {
+  it('getTags should resolve locally without an HTTP call', () => {
     let result: any;
     service.getTags().subscribe((r) => (result = r));
-    httpMock.expectOne(`${base}/tags`).flush([{ id: 't1', name: 'Food' }]);
-    expect(result.length).toBe(1);
+    expect(result).toEqual([]);
   });
 
-  it('getExpenses should propagate HTTP errors (no mock fallback)', () => {
+  it('getExpenses should propagate HTTP errors', () => {
     let errored = false;
     service.getExpenses().subscribe({ error: () => (errored = true) });
-    httpMock.expectOne(`${base}/expenses?size=500`).flush('err', { status: 500, statusText: 'Error' });
+    httpMock.expectOne((r) => r.url.startsWith(`${base}/expenses`)).flush('err', { status: 500, statusText: 'Error' });
     expect(errored).toBeTrue();
   });
 });

@@ -23,7 +23,9 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const isApiRequest =
     request.url.startsWith(environment.apiBaseUrl) ||
     request.url.startsWith(environment.transactionsApiBaseUrl) ||
-    request.url.startsWith(environment.accountsApiBaseUrl);
+    request.url.startsWith(environment.accountsApiBaseUrl) ||
+    request.url.startsWith(environment.spendingApiBaseUrl) ||
+    request.url.startsWith(environment.incomeApiBaseUrl);
 
   let authRequest = request;
   if (!skipAuth && isApiRequest) {

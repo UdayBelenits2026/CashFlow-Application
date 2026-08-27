@@ -49,9 +49,10 @@ describe('IncomeFacade', () => {
     expect(lastAction().income).toEqual({ amount: 9 });
   });
 
-  it('deleteIncome should dispatch with id', () => {
-    facade.deleteIncome('3');
+  it('deleteIncome should dispatch with id and accountId', () => {
+    facade.deleteIncome('3', 'a1');
     expect(lastAction().id).toBe('3');
+    expect(lastAction().accountId).toBe('a1');
   });
 
   it('toggleSourceStatus should dispatch id and status', () => {

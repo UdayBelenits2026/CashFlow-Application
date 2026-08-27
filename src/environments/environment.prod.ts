@@ -8,6 +8,7 @@ export const environment = {
   spendingApiBaseUrl: 'https://YOUR-PRODUCTION-BACKEND/api/v1',
   incomeApiBaseUrl: 'https://YOUR-PRODUCTION-BACKEND/api/v1/income',
   spendingDevUserId: '',
+  defaultUserId: '1001',
 };
 
 
