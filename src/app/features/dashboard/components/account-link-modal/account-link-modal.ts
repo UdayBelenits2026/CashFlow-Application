@@ -15,11 +15,13 @@ import {
   AccountLinkTab,
   AccountLinkPayload,
   AccountLinkValidationErrors,
+  ACCOUNT_LINK_TAB,
   BANK_OPTIONS,
   ACCOUNT_TYPE_OPTIONS,
   CARD_ISSUER_OPTIONS,
   CARD_TYPE_OPTIONS,
 } from '../../models/account-link.model';
+import { buildAccountLinkErrors } from '../../utility/account-link-validation.util';
 
 @Component({
   selector: 'app-account-link-modal',
@@ -72,7 +74,7 @@ export class AccountLinkModalComponent {
 
   // Current nickname character count computed properties
   readonly currentNickname = computed(() => {
-    return this.activeTab() === 'bank' ? this.bankNickname() : this.cardNickname();
+    return this.activeTab() === ACCOUNT_LINK_TAB.bank ? this.bankNickname() : this.cardNickname();
   });
 
   readonly nicknameLength = computed(() => this.currentNickname().length);
@@ -113,54 +115,17 @@ export class AccountLinkModalComponent {
 
   // Runs full validation rules on current active tab
   validate(): boolean {
-    const errs: AccountLinkValidationErrors = {};
-    const tab = this.activeTab();
-
-    if (tab === 'bank') {
-      const bank = this.bankName().trim();
-      const type = this.accountType().trim();
-      const routing = this.routingNumber().trim();
-      const accNum = this.accountNumber().trim();
-
-      if (!bank) {
-        errs.bankName = 'Bank name is required';
-      }
-      if (!type) {
-        errs.accountType = 'Account type is required';
-      }
-      if (!routing) {
-        errs.routingNumber = 'Routing number is required';
-      } else if (!/^\d{9}$/.test(routing)) {
-        errs.routingNumber = 'Routing number must be 9 digits';
-      }
-      if (!accNum) {
-        errs.accountNumber = 'Account number is required';
-      } else if (!/^\d{4,17}$/.test(accNum)) {
-        errs.accountNumber = 'Account number must be 4 to 17 digits';
-      }
-      if (this.bankNickname().length > 30) {
-        errs.nickname = 'Account nickname cannot exceed 30 characters';
-      }
-    } else {
-      const issuer = this.cardIssuer().trim();
-      const type = this.cardType().trim();
-      const digits = this.last4Digits().trim();
-
-      if (!issuer) {
-        errs.cardIssuer = 'Card issuer is required';
-      }
-      if (!type) {
-        errs.cardType = 'Card type is required';
-      }
-      if (!digits) {
-        errs.last4Digits = 'Last 4 digits are required';
-      } else if (!/^\d{4}$/.test(digits)) {
-        errs.last4Digits = 'Must be exactly 4 digits';
-      }
-      if (this.cardNickname().length > 30) {
-        errs.nickname = 'Account nickname cannot exceed 30 characters';
-      }
-    }
+    const errs = buildAccountLinkErrors(this.activeTab(), {
+      bankName: this.bankName(),
+      accountType: this.accountType(),
+      routingNumber: this.routingNumber(),
+      accountNumber: this.accountNumber(),
+      bankNickname: this.bankNickname(),
+      cardIssuer: this.cardIssuer(),
+      cardType: this.cardType(),
+      last4Digits: this.last4Digits(),
+      cardNickname: this.cardNickname(),
+    });
 
     if (this.isSubmitted()) {
       this.errors.set(errs);
@@ -186,7 +151,7 @@ export class AccountLinkModalComponent {
 
     const payload: AccountLinkPayload = {
       linkType: this.activeTab(),
-      ...(this.activeTab() === 'bank'
+      ...(this.activeTab() === ACCOUNT_LINK_TAB.bank
         ? {
             bankAccount: {
               bankName: this.bankName(),

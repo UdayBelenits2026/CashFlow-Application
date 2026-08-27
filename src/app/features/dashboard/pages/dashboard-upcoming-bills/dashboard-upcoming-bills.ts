@@ -18,8 +18,10 @@ import {
   faCircleQuestion,
   faCalendarDays,
 } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { DashboardFacade } from '../../facades/dashboard.facade';
 import { DashboardItem } from '../../models/dashboard.models';
+import { toInputDateFormat, formatDateDisplay } from '../../utility/date-format.util';
 import { AddReminderModalComponent } from '../../components/add-reminder-modal/add-reminder-modal';
 
 @Component({
@@ -55,7 +57,7 @@ export class DashboardUpcomingBills implements OnInit {
   readonly searchIcon = faSearch;
   readonly calendarIcon = faCalendarDays;
   // Icon lookup map for bill categories
-  readonly icons: Record<string, any> = {
+  readonly icons: Record<string, IconDefinition> = {
     'fa-bolt': faBolt,
     'fa-wifi': faWifi,
     'fa-credit-card': faCreditCard,
@@ -110,7 +112,7 @@ export class DashboardUpcomingBills implements OnInit {
     this.editingBill.set(bill);
     this.editTitle.set(bill.title);
     this.editAmount.set(Math.abs(bill.amount));
-    this.editDueDate.set(this.toInputDateFormat(bill.date));
+    this.editDueDate.set(toInputDateFormat(bill.date));
     this.editIcon.set(bill.icon || 'fa-bolt');
     this.editError.set('');
   }
@@ -150,7 +152,7 @@ export class DashboardUpcomingBills implements OnInit {
       ...current,
       title: titleVal,
       amount: amountVal,
-      date: this.formatDateDisplay(dateVal),
+      date: formatDateDisplay(dateVal),
       icon: this.editIcon(),
     };
     this.facade.updateUpcomingBill(updatedItem);
@@ -173,7 +175,7 @@ export class DashboardUpcomingBills implements OnInit {
     }
   }
   // Retrieves icon object matching category string
-  getIcon(iconKey: string): any {
+  getIcon(iconKey: string): IconDefinition {
     return this.icons[iconKey] || faReceipt;
   }
   // Returns today date formatted as YYYY-MM-DD
@@ -183,24 +185,5 @@ export class DashboardUpcomingBills implements OnInit {
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
-  }
-  // Formats date string to YYYY-MM-DD for date input element
-  private toInputDateFormat(dateStr: string): string {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return '';
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-  // Formats date string to short month display format
-  private formatDateDisplay(dateStr: string): string {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr;
-    return d.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
   }
 }

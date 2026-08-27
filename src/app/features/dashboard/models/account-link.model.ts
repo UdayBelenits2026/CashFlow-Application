@@ -1,4 +1,9 @@
 export type AccountLinkTab = 'bank' | 'credit-card';
+// Account link modal tab identifiers used for comparisons
+export const ACCOUNT_LINK_TAB = {
+  bank: 'bank',
+  creditCard: 'credit-card',
+} as const;
 
 export interface BankAccountForm {
   bankName: string;

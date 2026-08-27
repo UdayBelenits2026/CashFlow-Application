@@ -1,5 +1,5 @@
-import { Injectable, Signal, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Injectable, Signal, inject, signal, DestroyRef } from '@angular/core';
+import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Store } from '@ngrx/store';
 import { DashboardApiService } from '../services/dashboard-api.service';
 import { initialDashboardState } from '../data/dashboard.data';
@@ -20,8 +20,9 @@ import { DashboardWidgetConfig } from '../utility/dashboard-widget-config';
 export class DashboardFacade {
   private readonly store = inject<Store<DashboardState>>(Store, { optional: true });
   private readonly apiService = inject(DashboardApiService);
+  private readonly destroyRef = inject(DestroyRef);
   // Helper to create signals from store selectors with fallback values
-  private select<T>(selector: (state: any) => T, fallback: T): Signal<T> {
+  private select<T>(selector: (state: DashboardState) => T, fallback: T): Signal<T> {
     if (this.store) {
       return toSignal(this.store.select(selector), { initialValue: fallback });
     }
@@ -176,20 +177,24 @@ export class DashboardFacade {
   startOnboarding(actionId: string): void {
     this.store?.dispatch(DashboardActions.selectQuickAction({ actionId }));
   }
-
   // Connects account using API service and updates onboarding state
   connectAccount(payload: AccountLinkPayload): void {
-    this.apiService.connectAccount(payload).subscribe({
-      next: () => this.startOnboarding('connect-account'),
-      error: () => this.startOnboarding('connect-account'),
-    });
+    this.apiService
+      .connectAccount(payload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.startOnboarding('connect-account'),
+        error: () => this.startOnboarding('connect-account'),
+      });
   }
-
   // Saves user profile using API service and updates onboarding state
   saveProfile(payload: ProfileSetupForm): void {
-    this.apiService.saveProfile(payload).subscribe({
-      next: () => this.startOnboarding('complete-profile'),
-      error: () => this.startOnboarding('complete-profile'),
-    });
+    this.apiService
+      .saveProfile(payload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => this.startOnboarding('complete-profile'),
+        error: () => this.startOnboarding('complete-profile'),
+      });
   }
 }

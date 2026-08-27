@@ -22,6 +22,7 @@ import {
   faUtensils,
   faWifi,
 } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { DashboardItem } from '../../models/dashboard.models';
 
 @Component({
@@ -45,7 +46,7 @@ export class TransactionItem {
   readonly absAmount = computed(() => Math.abs(this.item().amount));
   readonly fallbackIcon = faCircleQuestion;
   // FontAwesome icon map for transaction categories
-  readonly icons: Record<string, any> = {
+  readonly icons: Record<string, IconDefinition> = {
     'fa-a': faA,
     'fa-arrow-right-arrow-left': faArrowRightArrowLeft,
     'fa-bolt': faBolt,

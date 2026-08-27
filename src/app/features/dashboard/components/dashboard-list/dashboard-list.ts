@@ -23,6 +23,7 @@ import {
   faCircleXmark,
   faCircleQuestion,
 } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { TransactionItem } from '../transaction-item/transaction-item';
 import { DashboardItem } from '../../models/dashboard.models';
 
@@ -46,7 +47,7 @@ export class DashboardList {
   readonly addReminder = output<void>();
   readonly viewAll = output<void>();
   // Icon lookup map for dashboard transaction/bill items
-  readonly icons: Record<string, any> = {
+  readonly icons: Record<string, IconDefinition> = {
     'fa-mug-hot': faMugHot,
     'fa-a': faA,
     'fa-car': faCar,
