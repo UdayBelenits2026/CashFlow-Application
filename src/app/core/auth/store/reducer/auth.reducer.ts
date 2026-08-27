@@ -14,12 +14,11 @@ export const authReducer = createReducer(
     notice: null,
     operation: action.type.includes('Login') ? 'LOGIN' : 'REGISTER',
   })),
-  on(AuthActions.loginSuccess, AuthActions.restoreSession, (state, { data }) => ({
+  on(AuthActions.loginSuccess, AuthActions.restoreSession, (state, { session }) => ({
     ...state,
-    user: data.user,
-    accessToken: data.accessToken,
-    tokenType: data.tokenType,
-    expiresIn: data.expiresIn,
+    user: session.user,
+    accessToken: session.accessToken,
+    correlationId: session.correlationId,
     isAuthenticated: true,
     loading: false,
     error: null,

@@ -1,6 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideStore } from '@ngrx/store';
 
 import { TransactionDetails } from './transaction-details';
+import { transactionsReducer, transactionsFeatureKey } from '../../store/transactions.reducers';
 
 describe('TransactionDetails', () => {
   let component: TransactionDetails;
@@ -8,7 +13,17 @@ describe('TransactionDetails', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TransactionDetails]
+      imports: [TransactionDetails],
+      providers: [
+        provideStore({ [transactionsFeatureKey]: transactionsReducer }),
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { paramMap: { get: () => 'tx-1' } } }
+        }
+      ]
     })
     .compileComponents();
 
@@ -19,5 +34,10 @@ describe('TransactionDetails', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should initialize with no transaction loaded', () => {
+    expect(component.transaction).toBeNull();
+    expect(component.confirmDeleteOpen).toBeFalse();
   });
 });

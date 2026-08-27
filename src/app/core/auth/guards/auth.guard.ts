@@ -5,7 +5,8 @@ import { TokenService } from '../services/token.service';
 export const authGuard: CanActivateFn = (_route, state): boolean | UrlTree => {
   const tokenService = inject(TokenService);
   const router = inject(Router);
-  if (tokenService.hasAccessToken()) {
+  // A valid access token means present AND not past its JWT expiry.
+  if (tokenService.isAccessTokenValid()) {
     return true;
   }
 

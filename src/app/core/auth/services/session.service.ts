@@ -1,36 +1,44 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { AuthUser, LoginData, StoredSession } from '../models/auth.models';
+import { getTokenExpiryMs, getUserIdFromToken } from '../utility/jwt.util';
+import { TokenService } from './token.service';
 
-// Owns the user session / authentication information only. No token storage here.
+// Owns the user session / authentication profile. Tokens live in TokenService; this
+// service delegates token reads so the app has a single auth query surface.
 @Injectable({ providedIn: 'root' })
 export class SessionService {
   private static readonly storageKey = 'cf.auth.session';
+  private readonly tokenService = inject(TokenService);
   private session: StoredSession | null = this.readFromStorage();
 
-  setSession(data: LoginData): void {
-    const hasExpiry = Number.isFinite(data.expiresIn) && data.expiresIn > 0;
-    this.session = {
-      user: data.user,
-      expiresAt: hasExpiry ? Date.now() + data.expiresIn * 1000 : null,
-      expiresInSeconds: hasExpiry ? data.expiresIn : 0,
+  // Builds and persists the session from the login response `data` plus the
+  // envelope `correlationId`. `userId` and expiry are derived from the JWT.
+  setSession(data: LoginData, correlationId: string): void {
+    const user: AuthUser = {
+      userId: getUserIdFromToken(data.accessToken),
+      publicId: data.publicId,
+      fullName: data.fullName,
+      email: data.email,
+      accountStatus: data.accountStatus,
+      role: data.role,
+      permissions: data.permissions ?? [],
+      sessionId: data.sessionId,
+      correlationId,
     };
+    this.session = { user, expiresAt: getTokenExpiryMs(data.accessToken) };
     this.persist();
   }
 
-  // Extend the session using the original login TTL (refresh responses omit it).
+  // Realigns local expiry with the freshly refreshed access token.
   renew(): void {
-    if (!this.session || this.session.expiresInSeconds <= 0) {
+    if (!this.session) {
       return;
     }
     this.session = {
       ...this.session,
-      expiresAt: Date.now() + this.session.expiresInSeconds * 1000,
+      expiresAt: getTokenExpiryMs(this.tokenService.getAccessToken()),
     };
     this.persist();
-  }
-
-  getTtlSeconds(): number {
-    return this.session?.expiresInSeconds ?? 0;
   }
 
   getSession(): StoredSession | null {
@@ -45,19 +53,64 @@ export class SessionService {
     return this.getValidSession()?.user ?? null;
   }
 
+  // --- Individual field accessors (single source for the whole app) ---
+  getAccessToken(): string | null {
+    return this.tokenService.getAccessToken();
+  }
+
+  getRefreshToken(): string | null {
+    return this.tokenService.getRefreshToken();
+  }
+
+  getUserId(): number | null {
+    return this.getUser()?.userId ?? this.tokenService.getUserId();
+  }
+
+  getPublicId(): string | null {
+    return this.getUser()?.publicId ?? null;
+  }
+
+  getFullName(): string | null {
+    return this.getUser()?.fullName ?? null;
+  }
+
+  getEmail(): string | null {
+    return this.getUser()?.email ?? null;
+  }
+
+  getAccountStatus(): string | null {
+    return this.getUser()?.accountStatus ?? null;
+  }
+
+  getRole(): string | null {
+    return this.getUser()?.role ?? null;
+  }
+
+  getPermissions(): string[] {
+    return this.getUser()?.permissions ?? [];
+  }
+
+  getSessionId(): string | null {
+    return this.getUser()?.sessionId ?? null;
+  }
+
+  getCorrelationId(): string | null {
+    return this.getUser()?.correlationId ?? null;
+  }
+
   hasAnyRole(requiredRoles: readonly string[]): boolean {
     if (!requiredRoles.length) {
       return true;
     }
-    const currentRoles = this.getUser()?.roles ?? [];
-    return requiredRoles.some((role) => currentRoles.includes(role));
+    const currentRole = this.getRole();
+    return currentRole ? requiredRoles.includes(currentRole) : false;
   }
 
   hasAnyPermission(requiredPermissions: readonly string[]): boolean {
     if (!requiredPermissions.length) {
       return true;
     }
-    const currentPermissions = this.getUser()?.permissions ?? [];
+    const currentPermissions = this.getPermissions();
     return requiredPermissions.some((permission) => currentPermissions.includes(permission));
   }
 
@@ -101,10 +154,7 @@ export class SessionService {
         return null;
       }
       const expiresAt = typeof parsed.expiresAt === 'number' ? parsed.expiresAt : null;
-      const expiresInSeconds =
-        parsed.expiresInSeconds ??
-        (expiresAt ? Math.max(1, Math.floor((expiresAt - Date.now()) / 1000)) : 0);
-      return { user: parsed.user, expiresAt, expiresInSeconds };
+      return { user: parsed.user, expiresAt };
     } catch {
       return null;
     }

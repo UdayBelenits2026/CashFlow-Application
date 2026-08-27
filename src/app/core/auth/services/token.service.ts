@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { getTokenExpiryMs, getUserIdFromToken, isTokenExpired } from '../utility/jwt.util';
 
 interface StoredToken {
   accessToken: string;
@@ -51,6 +52,31 @@ export class TokenService {
 
   getAuthorizationHeader(): string | null {
     return this.token?.accessToken ? `${this.getTokenType()} ${this.token.accessToken}` : null;
+  }
+
+  // Numeric backend user id decoded from the access token's `userId` claim.
+  getUserId(): number | null {
+    return getUserIdFromToken(this.token?.accessToken);
+  }
+
+  // Access-token expiry in epoch milliseconds (null when the token has no `exp`).
+  getExpiryMs(): number | null {
+    return getTokenExpiryMs(this.token?.accessToken);
+  }
+
+  // Whole seconds until the access token expires (0 when unknown or already expired).
+  getSecondsUntilExpiry(): number {
+    const expiryMs = this.getExpiryMs();
+    return expiryMs !== null ? Math.max(0, Math.floor((expiryMs - Date.now()) / 1000)) : 0;
+  }
+
+  isAccessTokenExpired(): boolean {
+    return isTokenExpired(this.token?.accessToken);
+  }
+
+  // A usable access token is present and not past its expiry.
+  isAccessTokenValid(): boolean {
+    return this.hasAccessToken() && !this.isAccessTokenExpired();
   }
 
   clearAccessToken(): void {

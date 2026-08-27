@@ -3,14 +3,15 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { CreateTransactionRequest, Transaction } from '../models/models.transaction';
+import { environment } from '../../../../environments/environment';
 
-// HTTP access for transactions served by JSON Server (port 3001).
+// HTTP access for transactions served by the backend API.
 @Injectable({
   providedIn: 'root',
 })
 export class ApiServices {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3001';
+  private readonly baseUrl = environment.apiBaseUrl;
 
   getTransactions(): Observable<Transaction[]> {
     return this.http.get<Transaction[]>(`${this.baseUrl}/transactions`);

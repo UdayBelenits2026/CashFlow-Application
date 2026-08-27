@@ -15,19 +15,19 @@ describe('authGuard', () => {
     );
 
   beforeEach(() => {
-    tokenSpy = jasmine.createSpyObj<TokenService>('TokenService', ['hasAccessToken']);
+    tokenSpy = jasmine.createSpyObj<TokenService>('TokenService', ['isAccessTokenValid']);
     TestBed.configureTestingModule({
       providers: [provideRouter([]), { provide: TokenService, useValue: tokenSpy }],
     });
   });
 
-  it('allows activation when an access token exists', () => {
-    tokenSpy.hasAccessToken.and.returnValue(true);
+  it('allows activation when a valid access token exists', () => {
+    tokenSpy.isAccessTokenValid.and.returnValue(true);
     expect(run()).toBeTrue();
   });
 
-  it('redirects to sign in when there is no access token', () => {
-    tokenSpy.hasAccessToken.and.returnValue(false);
+  it('redirects to sign in when the access token is missing or expired', () => {
+    tokenSpy.isAccessTokenValid.and.returnValue(false);
     expect(run() instanceof UrlTree).toBeTrue();
   });
 });

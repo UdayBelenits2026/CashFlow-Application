@@ -23,31 +23,40 @@ import {
 // against accidental structural changes to the public auth data contracts.
 describe('auth.models', () => {
   const user: AuthUser = {
+    userId: 4,
     publicId: 'usr-1',
     fullName: 'Ada Lovelace',
     email: 'ada@example.com',
     accountStatus: 'ACTIVE',
-    roles: ['ADMIN'],
+    role: 'ADMIN',
     permissions: ['report:view'],
+    sessionId: 'sess-1',
+    correlationId: 'corr-0',
   };
 
   it('builds a valid AuthUser', () => {
-    expect(user.roles).toContain('ADMIN');
+    expect(user.role).toBe('ADMIN');
+    expect(user.userId).toBe(4);
     expect(user.permissions).toContain('report:view');
   });
 
-  it('builds a valid LoginData with an embedded user', () => {
+  it('builds a valid LoginData matching the API data object', () => {
     const loginData: LoginData = {
+      publicId: 'usr-1',
+      fullName: 'Ada Lovelace',
+      email: 'ada@example.com',
+      accountStatus: 'ACTIVE',
+      role: 'USER',
+      permissions: ['DASHBOARD_VIEW'],
       accessToken: 'access-token',
-      tokenType: 'Bearer',
-      expiresIn: 3600,
       refreshToken: 'refresh-token',
-      user,
+      sessionId: 'sess-1',
     };
 
-    expect(loginData.tokenType).toBe('Bearer');
-    expect(loginData.expiresIn).toBe(3600);
-    expect(loginData.user.email).toBe('ada@example.com');
+    expect(loginData.accessToken).toBe('access-token');
+    expect(loginData.refreshToken).toBe('refresh-token');
+    expect(loginData.sessionId).toBe('sess-1');
+    expect(loginData.role).toBe('USER');
   });
 
   it('wraps payloads in a generic ApiResponse', () => {
@@ -70,14 +79,20 @@ describe('auth.models', () => {
       message: 'logged in',
       correlationId: 'corr-2',
       data: {
+        publicId: 'usr-1',
+        fullName: 'Ada Lovelace',
+        email: 'ada@example.com',
+        accountStatus: 'ACTIVE',
+        role: 'USER',
+        permissions: ['DASHBOARD_VIEW'],
         accessToken: 'a',
-        tokenType: 'Bearer',
-        expiresIn: 60,
-        user,
+        refreshToken: 'r',
+        sessionId: 's',
       },
     };
 
     expect(loginResponse.data.accessToken).toBe('a');
+    expect(loginResponse.correlationId).toBe('corr-2');
   });
 
   it('builds request payloads for login and register', () => {
@@ -101,12 +116,10 @@ describe('auth.models', () => {
     const withExpiry: StoredSession = {
       user,
       expiresAt: Date.now() + 1000,
-      expiresInSeconds: 1,
     };
     const withoutExpiry: StoredSession = {
       user,
       expiresAt: null,
-      expiresInSeconds: 0,
     };
 
     expect(withExpiry.expiresAt).not.toBeNull();

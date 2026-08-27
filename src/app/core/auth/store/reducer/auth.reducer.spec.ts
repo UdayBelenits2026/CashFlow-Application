@@ -18,17 +18,19 @@ describe('authReducer', () => {
     const state = authReducer(
       initialAuthState,
       AuthActions.loginSuccess({
-        data: {
+        session: {
           accessToken: 'token-123',
-          tokenType: 'Bearer',
-          expiresIn: 900,
+          correlationId: 'corr-1',
           user: {
+            userId: 4,
             publicId: 'id-1',
             fullName: 'Test User',
             email: 'user@example.com',
             accountStatus: 'ACTIVE',
-            roles: ['USER'],
+            role: 'USER',
             permissions: ['DASHBOARD_VIEW'],
+            sessionId: 'sess-1',
+            correlationId: 'corr-1',
           },
         },
       }),
@@ -36,6 +38,7 @@ describe('authReducer', () => {
 
     expect(state.isAuthenticated).toBeTrue();
     expect(state.accessToken).toBe('token-123');
+    expect(state.correlationId).toBe('corr-1');
     expect(state.user?.email).toBe('user@example.com');
   });
 
@@ -43,17 +46,19 @@ describe('authReducer', () => {
     const authenticatedState = authReducer(
       initialAuthState,
       AuthActions.loginSuccess({
-        data: {
+        session: {
           accessToken: 'token-123',
-          tokenType: 'Bearer',
-          expiresIn: 900,
+          correlationId: 'corr-1',
           user: {
+            userId: 4,
             publicId: 'id-1',
             fullName: 'Test User',
             email: 'user@example.com',
             accountStatus: 'ACTIVE',
-            roles: ['USER'],
+            role: 'USER',
             permissions: ['DASHBOARD_VIEW'],
+            sessionId: 'sess-1',
+            correlationId: 'corr-1',
           },
         },
       }),

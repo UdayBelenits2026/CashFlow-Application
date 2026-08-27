@@ -13,19 +13,26 @@ describe('TokenRefreshService', () => {
   let sessionService: SessionService;
 
   const user: AuthUser = {
+    userId: 4,
     publicId: 'id-1',
     fullName: 'Test User',
     email: 'user@example.com',
     accountStatus: 'ACTIVE',
-    roles: ['USER'],
+    role: 'USER',
     permissions: ['DASHBOARD_VIEW'],
+    sessionId: 'sess-1',
+    correlationId: 'corr-1',
   };
   const loginData: LoginData = {
+    publicId: 'id-1',
+    fullName: 'Test User',
+    email: 'user@example.com',
+    accountStatus: 'ACTIVE',
+    role: 'USER',
+    permissions: ['DASHBOARD_VIEW'],
     accessToken: 'old-access',
-    tokenType: 'Bearer',
-    expiresIn: 3600,
     refreshToken: 'r1',
-    user,
+    sessionId: 'sess-1',
   };
   const refreshResponse: RefreshTokenResponse = {
     success: true,
@@ -64,7 +71,7 @@ describe('TokenRefreshService', () => {
 
   it('refreshes tokens, renews the session and returns the new access token', (done) => {
     tokenService.setTokens({ accessToken: 'old-access', tokenType: 'Bearer', refreshToken: 'r1' });
-    sessionService.setSession(loginData);
+    sessionService.setSession(loginData, 'corr-1');
     authApi.refreshToken.and.returnValue(of(refreshResponse));
 
     service.refreshAccessToken().subscribe((token) => {

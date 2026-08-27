@@ -3,14 +3,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 import { Account, AccountCategory, CreateAccountCategoryRequest, CurrencyOption, Transaction } from '../models/accounts.model';
+import { environment } from '../../../../environments/environment';
 
-// Encapsulates every HTTP call for account resources served by JSON Server (port 3007).
+// Encapsulates every HTTP call for account resources served by the backend API.
 @Injectable({
   providedIn: 'root'
 })
 export class AccountApiService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:3007';
+  private readonly baseUrl = environment.apiBaseUrl;
 
   // Fetches the full account collection.
   getAccounts(): Observable<Account[]> {

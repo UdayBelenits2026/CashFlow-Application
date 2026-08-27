@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, map, of, catchError, throwError, timeout } from 'rxjs';
+import { Observable, forkJoin, map, of, catchError, timeout } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { IncomeOverviewData, IncomeTrendPoint } from '../models/income-summary.model';
 import { IncomeSource, IncomeSourceType, IncomeFrequency, IncomeSourceStatus } from '../models/income-source.model';
@@ -26,32 +26,20 @@ const ACCOUNT_TYPES: AccountRef['type'][] = ['CHECKING', 'SAVINGS', 'INVESTMENT'
 export class IncomeApiService {
   private readonly http: HttpClient = inject(HttpClient);
   private readonly apiBaseUrl: string = environment.incomeApiBaseUrl;
-  private readonly mockBaseUrl: string = environment.incomeMockBaseUrl;
-  // Fail fast when the mock fallback is available (dev); allow longer for a live prod backend.
-  private readonly backendTimeoutMs: number = environment.useMockFallback ? 2000 : 15000;
+  private readonly backendTimeoutMs: number = 15000;
 
   private api(path: string): string {
     return `${this.apiBaseUrl}/${path}`;
   }
 
-  private mock(path: string): string {
-    return `${this.mockBaseUrl}/${path}`;
-  }
-
-  /** GET against the live backend with a fail-fast timeout so a dead backend falls back quickly. */
+  /** GET against the backend with a timeout so a hung request fails instead of waiting forever. */
   private backendGet<T>(path: string): Observable<T> {
     return this.http.get<T>(this.api(path)).pipe(timeout(this.backendTimeoutMs));
   }
 
-  /** Runs the mock fallback when enabled, otherwise rethrows so callers surface the backend error. */
-  private mockOrRethrow<T>(factory: () => Observable<T>): Observable<T> {
-    return environment.useMockFallback
-      ? factory()
-      : throwError(() => new Error('Income backend request failed and mock fallback is disabled.'));
-  }
-
   /**
-   * Fetches all core income datasets. Tries the live backend first, then falls back to json-server.
+   * Fetches all core income datasets from the backend. A failing endpoint degrades to an empty
+   * dataset so a single broken widget does not break the whole dashboard load.
    */
   getDashboardData(): Observable<{
     overview: IncomeOverviewData;
@@ -63,22 +51,22 @@ export class IncomeApiService {
   }> {
     return forkJoin({
       overview: this.backendGet<IncomeOverviewDto>('income-overview').pipe(
-        catchError(() => this.mockOrRethrow(() => this.http.get<IncomeOverviewDto>(this.mock('income-overview')).pipe(catchError(() => of({} as IncomeOverviewDto)))))
+        catchError(() => of({} as IncomeOverviewDto))
       ),
       sources: this.backendGet<IncomeSourceDto[]>('income-sources').pipe(
-        catchError(() => this.mockOrRethrow(() => this.http.get<IncomeSourceDto[]>(this.mock('income-sources')).pipe(catchError(() => of([] as IncomeSourceDto[])))))
+        catchError(() => of([] as IncomeSourceDto[]))
       ),
       trendPoints: this.backendGet<IncomeTrendPointDto[]>('income-trend-points').pipe(
-        catchError(() => this.mockOrRethrow(() => this.http.get<IncomeTrendPointDto[]>(this.mock('income-trend-points')).pipe(catchError(() => of([] as IncomeTrendPointDto[])))))
+        catchError(() => of([] as IncomeTrendPointDto[]))
       ),
       incomes: this.backendGet<IncomeListItemDto[]>('incomes').pipe(
-        catchError(() => this.mockOrRethrow(() => this.http.get<IncomeListItemDto[]>(this.mock('incomes')).pipe(catchError(() => of([] as IncomeListItemDto[])))))
+        catchError(() => of([] as IncomeListItemDto[]))
       ),
       recurringIncomes: this.backendGet<RecurringIncomeDto[]>('recurring-income').pipe(
-        catchError(() => this.mockOrRethrow(() => this.http.get<RecurringIncomeDto[]>(this.mock('recurring-income')).pipe(catchError(() => of([] as RecurringIncomeDto[])))))
+        catchError(() => of([] as RecurringIncomeDto[]))
       ),
       accounts: this.backendGet<AccountRefDto[]>('accounts').pipe(
-        catchError(() => this.mockOrRethrow(() => this.http.get<AccountRefDto[]>(this.mock('accounts')).pipe(catchError(() => of([] as AccountRefDto[])))))
+        catchError(() => of([] as AccountRefDto[]))
       )
     }).pipe(
       map((data) => ({
@@ -96,157 +84,91 @@ export class IncomeApiService {
 
   getIncomes(): Observable<Income[]> {
     return this.backendGet<IncomeListItemDto[]>('incomes').pipe(
-      map((list) => (list || []).map((i) => this.mapIncome(i))),
-      catchError(() =>
-        this.mockOrRethrow(() =>
-          this.http.get<IncomeListItemDto[]>(this.mock('incomes')).pipe(map((list) => (list || []).map((i) => this.mapIncome(i))))
-        )
-      )
+      map((list) => (list || []).map((i) => this.mapIncome(i)))
     );
   }
 
   createIncome(payload: Partial<Income>): Observable<Income> {
     return this.http.post<IncomeListItemDto>(this.api('incomes'), payload).pipe(
-      map((res) => this.mapIncome({ ...(payload as IncomeListItemDto), ...res })),
-      catchError(() =>
-        this.mockOrRethrow(() =>
-          this.http.post<IncomeListItemDto>(this.mock('incomes'), payload).pipe(map((res) => this.mapIncome({ ...(payload as IncomeListItemDto), ...res })))
-        )
-      )
+      map((res) => this.mapIncome({ ...(payload as IncomeListItemDto), ...res }))
     );
   }
 
   updateIncome(id: string, payload: Partial<Income>): Observable<Income> {
     return this.http.put<IncomeListItemDto>(this.api(`incomes/${id}`), payload).pipe(
-      map((res) => this.mapIncome({ ...(payload as IncomeListItemDto), ...res, id })),
-      catchError(() =>
-        this.mockOrRethrow(() =>
-          this.http.put<IncomeListItemDto>(this.mock(`incomes/${id}`), payload).pipe(map((res) => this.mapIncome({ ...(payload as IncomeListItemDto), ...res, id })))
-        )
-      )
+      map((res) => this.mapIncome({ ...(payload as IncomeListItemDto), ...res, id }))
     );
   }
 
   deleteIncome(id: string): Observable<void> {
-    return this.http.delete<void>(this.api(`incomes/${id}`)).pipe(
-      catchError(() => this.mockOrRethrow(() => this.http.delete<void>(this.mock(`incomes/${id}`))))
-    );
+    return this.http.delete<void>(this.api(`incomes/${id}`));
   }
 
   // --- Income Sources CRUD ---
 
   getSources(): Observable<IncomeSource[]> {
     return this.backendGet<IncomeSourceDto[]>('income-sources').pipe(
-      map((list) => (list || []).map((s) => this.mapSource(s))),
-      catchError(() =>
-        this.mockOrRethrow(() =>
-          this.http.get<IncomeSourceDto[]>(this.mock('income-sources')).pipe(map((list) => (list || []).map((s) => this.mapSource(s))))
-        )
-      )
+      map((list) => (list || []).map((s) => this.mapSource(s)))
     );
   }
 
   createSource(source: Partial<IncomeSource>): Observable<IncomeSource> {
     return this.http.post<IncomeSourceDto>(this.api('income-sources'), source).pipe(
-      map((res) => this.mapSource({ ...(source as IncomeSourceDto), ...res })),
-      catchError(() =>
-        this.mockOrRethrow(() =>
-          this.http.post<IncomeSourceDto>(this.mock('income-sources'), source).pipe(map((res) => this.mapSource({ ...(source as IncomeSourceDto), ...res })))
-        )
-      )
+      map((res) => this.mapSource({ ...(source as IncomeSourceDto), ...res }))
     );
   }
 
   updateSource(id: string, source: Partial<IncomeSource>): Observable<IncomeSource> {
     return this.http.put<IncomeSourceDto>(this.api(`income-sources/${id}`), source).pipe(
-      map((res) => this.mapSource({ ...(source as IncomeSourceDto), ...res, id })),
-      catchError(() =>
-        this.mockOrRethrow(() =>
-          this.http.put<IncomeSourceDto>(this.mock(`income-sources/${id}`), source).pipe(map((res) => this.mapSource({ ...(source as IncomeSourceDto), ...res, id })))
-        )
-      )
+      map((res) => this.mapSource({ ...(source as IncomeSourceDto), ...res, id }))
     );
   }
 
   patchSourceStatus(id: string, status: IncomeSourceStatus): Observable<IncomeSource> {
     return this.http.patch<IncomeSourceDto>(this.api(`income-sources/${id}`), { status }).pipe(
-      map((res) => this.mapSource(res)),
-      catchError(() =>
-        this.mockOrRethrow(() =>
-          this.http.patch<IncomeSourceDto>(this.mock(`income-sources/${id}`), { status }).pipe(map((res) => this.mapSource(res)))
-        )
-      )
+      map((res) => this.mapSource(res))
     );
   }
 
   deleteSource(id: string): Observable<void> {
-    return this.http.delete<void>(this.api(`income-sources/${id}`)).pipe(
-      catchError(() => this.mockOrRethrow(() => this.http.delete<void>(this.mock(`income-sources/${id}`))))
-    );
+    return this.http.delete<void>(this.api(`income-sources/${id}`));
   }
 
   // --- Recurring Income Schedules CRUD ---
 
   getRecurringIncomes(): Observable<RecurringIncome[]> {
     return this.backendGet<RecurringIncomeDto[]>('recurring-income').pipe(
-      map((list) => (list || []).map((r) => this.mapRecurring(r))),
-      catchError(() =>
-        this.mockOrRethrow(() =>
-          this.http.get<RecurringIncomeDto[]>(this.mock('recurring-income')).pipe(map((list) => (list || []).map((r) => this.mapRecurring(r))))
-        )
-      )
+      map((list) => (list || []).map((r) => this.mapRecurring(r)))
     );
   }
 
   createRecurringIncome(item: Partial<RecurringIncome>): Observable<RecurringIncome> {
     return this.http.post<RecurringIncomeDto>(this.api('recurring-income'), item).pipe(
-      map((res) => this.mapRecurring({ ...(item as RecurringIncomeDto), ...res })),
-      catchError(() =>
-        this.mockOrRethrow(() =>
-          this.http.post<RecurringIncomeDto>(this.mock('recurring-income'), item).pipe(map((res) => this.mapRecurring({ ...(item as RecurringIncomeDto), ...res })))
-        )
-      )
+      map((res) => this.mapRecurring({ ...(item as RecurringIncomeDto), ...res }))
     );
   }
 
   updateRecurringIncome(id: string, item: Partial<RecurringIncome>): Observable<RecurringIncome> {
     return this.http.put<RecurringIncomeDto>(this.api(`recurring-income/${id}`), item).pipe(
-      map((res) => this.mapRecurring({ ...(item as RecurringIncomeDto), ...res, id })),
-      catchError(() =>
-        this.mockOrRethrow(() =>
-          this.http.put<RecurringIncomeDto>(this.mock(`recurring-income/${id}`), item).pipe(map((res) => this.mapRecurring({ ...(item as RecurringIncomeDto), ...res, id })))
-        )
-      )
+      map((res) => this.mapRecurring({ ...(item as RecurringIncomeDto), ...res, id }))
     );
   }
 
   patchRecurringStatus(id: string, status: RecurringIncomeStatus): Observable<RecurringIncome> {
     return this.http.patch<RecurringIncomeDto>(this.api(`recurring-income/${id}`), { status }).pipe(
-      map((res) => this.mapRecurring(res)),
-      catchError(() =>
-        this.mockOrRethrow(() =>
-          this.http.patch<RecurringIncomeDto>(this.mock(`recurring-income/${id}`), { status }).pipe(map((res) => this.mapRecurring(res)))
-        )
-      )
+      map((res) => this.mapRecurring(res))
     );
   }
 
   deleteRecurringIncome(id: string): Observable<void> {
-    return this.http.delete<void>(this.api(`recurring-income/${id}`)).pipe(
-      catchError(() => this.mockOrRethrow(() => this.http.delete<void>(this.mock(`recurring-income/${id}`))))
-    );
+    return this.http.delete<void>(this.api(`recurring-income/${id}`));
   }
 
   // --- Accounts Reference ---
 
   getAccounts(): Observable<AccountRef[]> {
     return this.backendGet<AccountRefDto[]>('accounts').pipe(
-      map((list) => (list || []).map((a) => this.mapAccount(a))),
-      catchError(() =>
-        this.mockOrRethrow(() =>
-          this.http.get<AccountRefDto[]>(this.mock('accounts')).pipe(map((list) => (list || []).map((a) => this.mapAccount(a))))
-        )
-      )
+      map((list) => (list || []).map((a) => this.mapAccount(a)))
     );
   }
 

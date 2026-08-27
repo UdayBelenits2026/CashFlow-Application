@@ -21,12 +21,15 @@ describe('AuthEffects', () => {
   let sessionService: jasmine.SpyObj<SessionService>;
 
   const user: AuthUser = {
+    userId: 4,
     publicId: 'id-1',
     fullName: 'Test User',
     email: 'user@example.com',
     accountStatus: 'ACTIVE',
-    roles: ['USER'],
+    role: 'USER',
     permissions: ['DASHBOARD_VIEW'],
+    sessionId: 'sess-1',
+    correlationId: 'corr-1',
   };
 
   const request: ResetPasswordRequest = {
@@ -72,9 +75,10 @@ describe('AuthEffects', () => {
           provide: SessionService,
           useValue: jasmine.createSpyObj<SessionService>('SessionService', [
             'getSession',
+            'getUser',
             'setSession',
             'clearSession',
-            'getTtlSeconds',
+            'getCorrelationId',
           ]),
         },
         {
@@ -103,12 +107,7 @@ describe('AuthEffects', () => {
 
   it('should restore the session on init when a token and session exist (browser reload)', (done) => {
     tokenService.getAccessToken.and.returnValue('access-token');
-    tokenService.getTokenType.and.returnValue('Bearer');
-    sessionService.getSession.and.returnValue({
-      user,
-      expiresAt: Date.now() + 3_600_000,
-      expiresInSeconds: 3600,
-    });
+    sessionService.getUser.and.returnValue(user);
     actions$ = of({ type: ROOT_EFFECTS_INIT } as Action);
 
     effects.restoreSession$.subscribe((result) => {
@@ -119,8 +118,7 @@ describe('AuthEffects', () => {
 
   it('should restore the session on reload even when expiry is unknown', (done) => {
     tokenService.getAccessToken.and.returnValue('access-token');
-    tokenService.getTokenType.and.returnValue('Bearer');
-    sessionService.getSession.and.returnValue({ user, expiresAt: null, expiresInSeconds: 0 });
+    sessionService.getUser.and.returnValue(user);
     actions$ = of({ type: ROOT_EFFECTS_INIT } as Action);
 
     effects.restoreSession$.subscribe((result) => {
@@ -131,7 +129,7 @@ describe('AuthEffects', () => {
 
   it('should not restore when no access token is stored', () => {
     tokenService.getAccessToken.and.returnValue(null);
-    sessionService.getSession.and.returnValue({ user, expiresAt: null, expiresInSeconds: 0 });
+    sessionService.getUser.and.returnValue(user);
     actions$ = of({ type: ROOT_EFFECTS_INIT } as Action);
 
     let emitted = false;

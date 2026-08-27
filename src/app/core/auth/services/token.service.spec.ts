@@ -59,4 +59,28 @@ describe('TokenService', () => {
     const service = new TokenService();
     expect(service.getAuthorizationHeader()).toBeNull();
   });
+
+  it('derives the numeric userId from the access token JWT', () => {
+    const b64url = (o: unknown) =>
+      btoa(JSON.stringify(o)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const token = `h.${b64url({ userId: 4, exp: Math.floor(Date.now() / 1000) + 3600 })}.s`;
+    const service = new TokenService();
+    service.setTokens({ accessToken: token });
+
+    expect(service.getUserId()).toBe(4);
+    expect(service.getSecondsUntilExpiry()).toBeGreaterThan(3500);
+    expect(service.isAccessTokenExpired()).toBeFalse();
+    expect(service.isAccessTokenValid()).toBeTrue();
+  });
+
+  it('flags an expired access token as invalid', () => {
+    const b64url = (o: unknown) =>
+      btoa(JSON.stringify(o)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const token = `h.${b64url({ userId: 4, exp: Math.floor(Date.now() / 1000) - 10 })}.s`;
+    const service = new TokenService();
+    service.setTokens({ accessToken: token });
+
+    expect(service.isAccessTokenExpired()).toBeTrue();
+    expect(service.isAccessTokenValid()).toBeFalse();
+  });
 });

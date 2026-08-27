@@ -22,6 +22,7 @@ import {
   timer,
 } from 'rxjs';
 import * as AuthActions from '../actions/auth.actions';
+import { AuthSession } from '../actions/auth.actions';
 import { AuthApiService } from '../../services/auth-api.service';
 import {
   AccountLockData,
@@ -45,12 +46,15 @@ import { TokenRefreshService } from '../../services/token-refresh.service';
 export class AuthEffects {
   // Fallback user when a token is restored but no user profile was persisted.
   private static readonly EMPTY_USER: AuthUser = {
+    userId: null,
     publicId: '',
     fullName: '',
     email: '',
     accountStatus: '',
-    roles: [],
+    role: '',
     permissions: [],
+    sessionId: '',
+    correlationId: '',
   };
 
   private readonly actions$ = inject(Actions);
@@ -66,8 +70,8 @@ export class AuthEffects {
     this.actions$.pipe(
       ofType(ROOT_EFFECTS_INIT),
       map(() => this.readPersistedSession()),
-      filter((data): data is LoginData => Boolean(data)),
-      map((data) => AuthActions.restoreSession({ data })),
+      filter((session): session is AuthSession => Boolean(session)),
+      map((session) => AuthActions.restoreSession({ session })),
     ),
   );
 
@@ -81,6 +85,7 @@ export class AuthEffects {
           map((response: LoginResponse) => {
             // Tolerate the standard envelope and a flat token payload.
             const data = response?.data ?? (response as unknown as LoginData);
+            const correlationId = response?.correlationId ?? '';
             const succeeded = response?.success ?? Boolean(data?.accessToken);
             if (!succeeded || !data?.accessToken) {
               return AuthActions.loginFailure({
@@ -92,12 +97,14 @@ export class AuthEffects {
             }
             this.tokenService.setTokens({
               accessToken: data.accessToken,
-              tokenType: data.tokenType,
               refreshToken: data.refreshToken,
             });
-            this.sessionService.setSession(data);
+            this.sessionService.setSession(data, correlationId);
+            const user = this.sessionService.getUser() ?? AuthEffects.EMPTY_USER;
             void this.router.navigate(['/dashboard/home']);
-            return AuthActions.loginSuccess({ data });
+            return AuthActions.loginSuccess({
+              session: { user, accessToken: data.accessToken, correlationId },
+            });
           }),
           catchError((error: unknown) => {
             const lock = this.extractAccountLock(error);
@@ -189,8 +196,8 @@ export class AuthEffects {
   proactiveRefresh$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.loginSuccess, AuthActions.restoreSession, AuthActions.sessionRenewed),
-      switchMap((action) => {
-        const expiresIn = 'data' in action ? action.data.expiresIn : action.expiresIn;
+      switchMap(() => {
+        const expiresIn = this.tokenService.getSecondsUntilExpiry();
         // Without a known expiry we can't schedule; rely on the 401 refresh path.
         if (!Number.isFinite(expiresIn) || expiresIn <= 0) {
           return EMPTY;
@@ -199,7 +206,7 @@ export class AuthEffects {
         return timer(delayMs).pipe(
           switchMap(() => this.tokenRefresh.refreshAccessToken()),
           map(() =>
-            AuthActions.sessionRenewed({ expiresIn: this.sessionService.getTtlSeconds() || expiresIn }),
+            AuthActions.sessionRenewed({ expiresIn: this.tokenService.getSecondsUntilExpiry() }),
           ),
           catchError(() =>
             of(AuthActions.sessionExpired({ message: AUTH_MESSAGES.unauthorized })),
@@ -235,22 +242,14 @@ export class AuthEffects {
     ),
   );
 
-  private readPersistedSession(): LoginData | null {
+  private readPersistedSession(): AuthSession | null {
     const accessToken = this.tokenService.getAccessToken();
     // The token is the credential; a reload stays authenticated as long as it exists.
     if (!accessToken) {
       return null;
     }
-    const session = this.sessionService.getSession();
-    const expiresIn = session?.expiresAt
-      ? Math.max(1, Math.floor((session.expiresAt - Date.now()) / 1000))
-      : 0;
-    return {
-      accessToken,
-      tokenType: this.tokenService.getTokenType(),
-      expiresIn,
-      user: session?.user ?? AuthEffects.EMPTY_USER,
-    };
+    const user = this.sessionService.getUser() ?? AuthEffects.EMPTY_USER;
+    return { user, accessToken, correlationId: user.correlationId };
   }
 
   // Extracts backend account-lock data from an HTTP 423 ACCOUNT_LOCKED response.

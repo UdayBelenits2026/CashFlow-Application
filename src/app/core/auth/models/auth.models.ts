@@ -14,27 +14,48 @@ export interface RegisteredUser {
   role: string;
 }
 
+// The authenticated user/session profile persisted on the client. `userId` is the
+// numeric id decoded from the JWT (distinct from `publicId`); `correlationId` comes
+// from the login response envelope.
 export interface AuthUser {
+  userId: number | null;
   publicId: string;
   fullName: string;
   email: string;
   accountStatus: string;
-  roles: string[];
+  role: string;
   permissions: string[];
+  sessionId: string;
+  correlationId: string;
 }
 
+// Exactly matches the `data` object of the login API response.
 export interface LoginData {
+  publicId: string;
+  fullName: string;
+  email: string;
+  accountStatus: string;
+  role: string;
+  permissions: string[];
   accessToken: string;
-  tokenType: string;
-  expiresIn: number;
-  refreshToken?: string;
-  user: AuthUser;
+  refreshToken: string;
+  sessionId: string;
+}
+
+// Decoded JWT access-token payload.
+export interface JwtPayload {
+  userId?: number;
+  role?: string;
+  permissions?: string[];
+  sub?: string;
+  iat?: number;
+  exp?: number;
+  [claim: string]: unknown;
 }
 
 export interface StoredSession {
   user: AuthUser;
   expiresAt: number | null;
-  expiresInSeconds: number;
 }
 
 export interface LogoutData {

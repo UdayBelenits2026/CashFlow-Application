@@ -9,12 +9,13 @@ import {
   ProfileSetupForm,
 } from '../models/dashboard.models';
 import { DashboardWidgetConfig } from '../utility/dashboard-widget-config';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DashboardApiService {
-  private readonly baseUrl = 'http://localhost:3000';
+  private readonly baseUrl = environment.apiBaseUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -31,11 +32,11 @@ export class DashboardApiService {
 
     return this.http
       .get<DashboardApiResponse>(`${this.baseUrl}/dashboard`, { params })
-      .pipe(map((data) => this.applyMockDataFilters(data, filters)));
+      .pipe(map((data) => this.applyClientSideFilters(data, filters)));
   }
 
-  // Applies client-side filtering on mock data returned by JSON Server when backend is in progress
-  private applyMockDataFilters(
+  // Applies client-side filtering on the dashboard data for the selected filter state
+  private applyClientSideFilters(
     data: DashboardApiResponse,
     filters?: Partial<DashboardFilterState>,
   ): DashboardApiResponse {
@@ -230,7 +231,6 @@ export class DashboardApiService {
 
   // Connects a bank account or credit card via backend API
   connectAccount(payload: AccountLinkPayload): Observable<AccountLinkPayload> {
-    // When your backend API is ready, simply update `${this.baseUrl}/accounts` to your backend endpoint (e.g., `${this.baseUrl}/api/v1/accounts`)
     return this.http.post<AccountLinkPayload>(`${this.baseUrl}/accounts`, payload).pipe(
       catchError(() =>
         this.http
@@ -244,7 +244,6 @@ export class DashboardApiService {
 
   // Updates user profile setup preferences via backend API
   saveProfile(payload: ProfileSetupForm): Observable<ProfileSetupForm> {
-    // When your backend API is ready, simply update `${this.baseUrl}/profile` to your backend endpoint (e.g., `${this.baseUrl}/api/v1/profile`)
     return this.http.post<ProfileSetupForm>(`${this.baseUrl}/profile`, payload).pipe(
       catchError(() =>
         this.http

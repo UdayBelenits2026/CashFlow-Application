@@ -4,8 +4,7 @@ import { AuthOperation } from '../../constants/auth.constants';
 export interface AuthState {
   user: AuthUser | null;
   accessToken: string | null;
-  tokenType: string | null;
-  expiresIn: number | null;
+  correlationId: string | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: AuthError | null;
@@ -23,8 +22,7 @@ export interface AuthState {
 export const initialAuthState: AuthState = {
   user: null,
   accessToken: null,
-  tokenType: null,
-  expiresIn: null,
+  correlationId: null,
   isAuthenticated: false,
   loading: false,
   error: null,

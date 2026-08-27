@@ -1,5 +1,6 @@
 import {
   selectAccessToken,
+  selectCorrelationId,
   selectIsAuthenticated,
   selectPermissions,
   selectResetPasswordData,
@@ -7,24 +8,27 @@ import {
   selectResetPasswordLoading,
   selectResetPasswordMessage,
   selectResetPasswordSuccess,
-  selectRoles,
+  selectRole,
   selectUser,
+  selectUserId,
 } from './auth.selectors';
 import { AuthState } from '../state/auth.state';
 
 describe('auth.selectors', () => {
   const authState: AuthState = {
     user: {
+      userId: 4,
       publicId: 'id-1',
       fullName: 'Test User',
       email: 'user@example.com',
       accountStatus: 'ACTIVE',
-      roles: ['USER'],
+      role: 'USER',
       permissions: ['DASHBOARD_VIEW'],
+      sessionId: 'sess-1',
+      correlationId: 'corr-1',
     },
     accessToken: 'token-123',
-    tokenType: 'Bearer',
-    expiresIn: 900,
+    correlationId: 'corr-1',
     isAuthenticated: true,
     loading: false,
     error: null,
@@ -42,11 +46,13 @@ describe('auth.selectors', () => {
   it('should select user, token and auth flag', () => {
     expect(selectUser.projector(authState)).toEqual(authState.user);
     expect(selectAccessToken.projector(authState)).toBe('token-123');
+    expect(selectCorrelationId.projector(authState)).toBe('corr-1');
     expect(selectIsAuthenticated.projector(authState)).toBeTrue();
   });
 
-  it('should select roles and permissions from user', () => {
-    expect(selectRoles.projector(authState.user)).toEqual(['USER']);
+  it('should select role, userId and permissions from user', () => {
+    expect(selectRole.projector(authState.user)).toBe('USER');
+    expect(selectUserId.projector(authState.user)).toBe(4);
     expect(selectPermissions.projector(authState.user)).toEqual(['DASHBOARD_VIEW']);
   });
 

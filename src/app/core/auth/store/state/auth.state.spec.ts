@@ -5,8 +5,7 @@ describe('auth.state', () => {
     expect(initialAuthState).toEqual({
       user: null,
       accessToken: null,
-      tokenType: null,
-      expiresIn: null,
+      correlationId: null,
       isAuthenticated: false,
       loading: false,
       error: null,

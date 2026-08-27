@@ -22,13 +22,31 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const skipAuth = request.context.get(SKIP_AUTH);
   const isApiRequest = request.url.startsWith(environment.apiBaseUrl);
 
-  const authHeader = !skipAuth && isApiRequest
-    ? tokenService.getAuthorizationHeader()
-    : null;
+  let authRequest = request;
+  if (!skipAuth && isApiRequest) {
+    const setHeaders: Record<string, string> = {};
 
-  const authRequest = authHeader
-    ? request.clone({ setHeaders: { Authorization: authHeader } })
-    : request;
+    const authHeader = tokenService.getAuthorizationHeader();
+    if (authHeader && !request.headers.has('Authorization')) {
+      setHeaders['Authorization'] = authHeader;
+    }
+
+    // Numeric backend user id (from the JWT) required by authenticated endpoints.
+    const userId = tokenService.getUserId();
+    if (userId !== null && !request.headers.has('userId')) {
+      setHeaders['userId'] = String(userId);
+    }
+
+    // Correlation id captured from the login response envelope.
+    const correlationId = sessionService.getCorrelationId();
+    if (correlationId && !request.headers.has('correlationId')) {
+      setHeaders['correlationId'] = correlationId;
+    }
+
+    if (Object.keys(setHeaders).length > 0) {
+      authRequest = request.clone({ setHeaders });
+    }
+  }
 
   return next(authRequest).pipe(
     catchError((error: unknown) => {

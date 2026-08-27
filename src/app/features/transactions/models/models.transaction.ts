@@ -6,7 +6,7 @@ export type PaymentMethod = 'Debit Card' | 'Credit Card' | 'ACH' | 'Check' | 'Ca
 // Where a transaction originated; institution-controlled records restrict editing.
 export type TransactionSource = 'Manual' | 'File Import' | 'Bank Sync' | 'Admin';
 
-// Canonical transaction shape served by the transactions JSON server.
+// Canonical transaction shape served by the transactions API.
 export interface Transaction {
   id: string;
   date: string;
