@@ -1,5 +1,6 @@
 import * as S from './accounts.selectors';
-import { Account, AccountState, DEFAULT_ACCOUNT, accountsFeatureKey, initialAccountState } from '../../models/accounts.model';
+import { Account, DEFAULT_ACCOUNT } from '../../models/accounts.model';
+import { AccountState, accountsFeatureKey, initialAccountState } from '../state/accounts.state';
 
 function acc(overrides: Partial<Account>): Account {
   return { ...DEFAULT_ACCOUNT, ...overrides };

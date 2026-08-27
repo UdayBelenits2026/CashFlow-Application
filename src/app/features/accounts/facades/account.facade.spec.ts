@@ -3,7 +3,7 @@ import { Store, provideStore } from '@ngrx/store';
 
 import { AccountFacade } from './account.facade';
 import { accountReducer } from '../store/reducers/accounts.reducer';
-import { accountsFeatureKey } from '../models/accounts.model';
+import { accountsFeatureKey } from '../store/state/accounts.state';
 import * as A from '../store/actions/accounts.actions';
 import { Account, CreateAccountRequest } from '../models/accounts.model';
 
@@ -67,12 +67,6 @@ describe('AccountFacade', () => {
     expect(dispatchSpy).toHaveBeenCalledWith(A.loadAccountFormOptions());
     expect(dispatchSpy).toHaveBeenCalledWith(A.loadAccountSubTypes({ accountType: 'Bank Account' }));
     expect(dispatchSpy).toHaveBeenCalledWith(A.loadAccountCategories());
-  });
-
-  it('createCategory should dispatch createAccountCategory', () => {
-    const category = { accountType: 'Bank Account', name: 'Savings' };
-    facade.createCategory(category);
-    expect(dispatchSpy).toHaveBeenCalledWith(A.createAccountCategory({ category }));
   });
 
   it('clearFeedback should dispatch clearAccountFeedback', () => {

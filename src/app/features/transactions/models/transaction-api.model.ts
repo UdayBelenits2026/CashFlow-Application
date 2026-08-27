@@ -146,3 +146,140 @@ export interface DeleteTransactionData {
   transactionId: number;
   status: string;
 }
+
+// --- Expense controller (Swagger /api/v1/expenses) ---
+
+export interface ExpenseListItem {
+  transactionId: number;
+  accountId: number;
+  transactionDate: string;
+  amount: number;
+  merchantId?: number;
+  merchantName?: string;
+  categoryId?: number;
+  categoryName?: string;
+  paymentMethod?: string;
+  status: string;
+}
+
+export interface ExpenseListPage {
+  content: ExpenseListItem[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  filteredOutflow: number;
+}
+
+export interface ExpenseDetails {
+  transactionId: number;
+  accountId: number;
+  transactionDate: string;
+  amount: number;
+  merchantId?: number;
+  merchantName?: string;
+  categoryId?: number;
+  categoryName?: string;
+  paymentMethod?: string;
+  notes?: string;
+  status: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ExpenseCreateRequest {
+  accountId: number;
+  amount: number;
+  transactionDate: string;
+  merchantName?: string;
+  categoryId?: number;
+  paymentMethod?: string;
+  notes?: string;
+}
+
+export type ExpenseUpdateRequest = ExpenseCreateRequest;
+
+export interface ExpenseMutationResponse {
+  transactionId: number;
+  message: string;
+}
+
+export interface ExpenseListQuery {
+  startDate?: string;
+  endDate?: string;
+  categoryId?: number;
+  accountId?: number;
+  paymentMethod?: string;
+  minAmount?: number;
+  maxAmount?: number;
+  searchTerm?: string;
+  page?: number;
+  size?: number;
+  sort?: string;
+}
+
+// --- Spending controller (Swagger /api/v1/spending) ---
+
+export interface TopCategory {
+  categoryId: number;
+  categoryName: string;
+  amount: number;
+}
+
+export interface Comparison {
+  totalSpendingChangePercent: number;
+  transactionCountChange: number;
+}
+
+export interface TrendPoint {
+  date: string;
+  amount: number;
+}
+
+export interface CategorySummary {
+  categoryId: number;
+  categoryName: string;
+  amount: number;
+  percentage: number;
+}
+
+export interface SpendingOverview {
+  period: string;
+  totalSpending: number;
+  transactionCount: number;
+  averageDaily: number;
+  topCategory: TopCategory;
+  comparisonToPrevious: Comparison;
+  trend: TrendPoint[];
+  categorySummary: CategorySummary[];
+}
+
+export interface CategoryBreakdown {
+  categoryId: number;
+  categoryName: string;
+  amount: number;
+  percentage: number;
+}
+
+export interface RecentExpense {
+  transactionId: number;
+  merchantName: string;
+  categoryName: string;
+  amount: number;
+  transactionDate: string;
+}
+
+export interface SpendingDashboard {
+  period: string;
+  totalSpending: number;
+  totalSpendingChangePercent: number;
+  categoryBreakdown: CategoryBreakdown[];
+  recentExpenses: RecentExpense[];
+}
+
+export interface CategoryOption {
+  categoryId: number;
+  categoryName: string;
+  icon?: string;
+  color?: string;
+}

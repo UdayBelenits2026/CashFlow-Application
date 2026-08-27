@@ -1,6 +1,7 @@
 import { accountReducer } from './accounts.reducer';
 import * as A from '../actions/accounts.actions';
-import { Account, DEFAULT_ACCOUNT, initialAccountState } from '../../models/accounts.model';
+import { Account, DEFAULT_ACCOUNT } from '../../models/accounts.model';
+import { initialAccountState } from '../state/accounts.state';
 
 function acc(overrides: Partial<Account>): Account {
   return { ...DEFAULT_ACCOUNT, ...overrides };
