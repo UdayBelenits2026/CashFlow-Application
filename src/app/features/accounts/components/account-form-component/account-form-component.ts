@@ -79,7 +79,11 @@ export class AccountFormComponent implements OnInit {
     if (this.duplicateExists()) { this.submissionMessage = { type: 'error', text: ACCOUNT_FORM_MESSAGES.duplicate }; return; }
     this.isSubmitting = true; this.pendingSubmissionMode = this.mode; this.submissionMessage = null; this.requiredDetailsError = null; this.showValidationErrors = false;
     const payload = buildPayload({ value: this.form.getRawValue() as AccountFormValue, mode: this.mode, accountId: this.accountId, selectedAccount: this.selectedAccount, today: this.today() });
-    this.mode === 'add' ? this.accountFacade.createAccount(payload) : this.accountFacade.updateAccount(payload);
+    if (this.mode === 'add') {
+      this.accountFacade.createAccount(payload);
+    } else {
+      this.accountFacade.updateAccount(payload);
+    }
   }
 
   cancel(): void { this.router.navigate(this.isEditMode() && this.accountId ? ['/accounts', this.accountId] : ['/accounts']); }

@@ -9,16 +9,7 @@
         <p>Manage account categories and types used when creating accounts.</p>
       </div>
     </div>
-    <button type="button" class="primary-button" (click)="openModal()">
-      <i class="fa-solid fa-plus" aria-hidden="true"></i> Add Category
-    </button>
   </header>
-
-  @if (feedback) {
-    <p class="feedback" [class.success]="feedback.type === 'success'" [class.error]="feedback.type === 'error'">
-      {{ feedback.text }}
-    </p>
-  }
 
   <section class="category-list">
     @for (category of categories$ | async; track category.label) {
@@ -45,49 +36,4 @@
   </section>
 </main>
 
-@if (isModalOpen) {
-  <div class="modal-backdrop" (click)="closeModal()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <header class="modal-head">
-        <h2>Add Category</h2>
-        <button type="button" class="icon-button" aria-label="Close" (click)="closeModal()">
-          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
-        </button>
-      </header>
-
-      <form [formGroup]="form" (ngSubmit)="saveCategory()">
-        <label>
-          Category Name <span>*</span>
-          <input type="text" formControlName="categoryName" autocomplete="off">
-          @if (form.controls.categoryName.invalid && form.controls.categoryName.touched) {
-            <small>Category name is required.</small>
-          }
-        </label>
-
-        <label>
-          Category Type <span>*</span>
-          <select formControlName="categoryType">
-            <option value="">Select a category type</option>
-            @for (type of categoryTypes; track type) {
-              <option [value]="type">{{ type }}</option>
-            }
-          </select>
-          @if (form.controls.categoryType.invalid && form.controls.categoryType.touched) {
-            <small>Please select a category type.</small>
-          }
-        </label>
-
-        <label>
-          Description (Optional)
-          <textarea formControlName="description" rows="3" maxlength="200"></textarea>
-        </label>
-
-        <footer class="modal-actions">
-          <button type="button" class="secondary-button" (click)="closeModal()">Cancel</button>
-          <button type="submit" class="primary-button">Save</button>
-        </footer>
-      </form>
-    </div>
-  </div>
-}
 

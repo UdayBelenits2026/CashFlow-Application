@@ -1,49 +1,52 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 
-import { CreateTransactionRequest, Transaction, TransactionFilters, TransactionSort } from '../models/models.transaction';
+import { TransactionSort } from '../models/models.transaction';
+import {
+  CreateTransactionRequest,
+  UpdateTransactionRequest,
+} from '../models/transaction-api.model';
 import * as TransactionsActions from '../store/transactions.actions';
 import * as TransactionsSelectors from '../store/transactions.select';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TransactionsFacade {
   private readonly store = inject(Store);
 
-  // Read-only streams consumed by the transactions page.
-  readonly transactions$ = this.store.select(TransactionsSelectors.selectPagedTransactions);
+  // List streams (server-paged).
+  readonly transactions$ = this.store.select(TransactionsSelectors.selectTransactionContent);
   readonly loading$ = this.store.select(TransactionsSelectors.selectTransactionsLoading);
   readonly error$ = this.store.select(TransactionsSelectors.selectTransactionsError);
   readonly successMessage$ = this.store.select(TransactionsSelectors.selectTransactionsSuccess);
   readonly filters$ = this.store.select(TransactionsSelectors.selectTransactionFilters);
-  readonly search$ = this.store.select(TransactionsSelectors.selectTransactionSearch);
+  readonly accountId$ = this.store.select(TransactionsSelectors.selectTransactionAccountId);
   readonly sort$ = this.store.select(TransactionsSelectors.selectTransactionSort);
-  readonly accountOptions$ = this.store.select(TransactionsSelectors.selectAccountOptions);
-  readonly categoryOptions$ = this.store.select(TransactionsSelectors.selectCategoryOptions);
   readonly pageInfo$ = this.store.select(TransactionsSelectors.selectTransactionPageInfo);
-  readonly totalCount$ = this.store.select(TransactionsSelectors.selectFilteredCount);
+  readonly totalCount$ = this.store.select(TransactionsSelectors.selectTransactionTotalElements);
+
+  // Read-only details streams.
+  readonly detail$ = this.store.select(TransactionsSelectors.selectTransactionDetail);
+  readonly detailLoading$ = this.store.select(TransactionsSelectors.selectTransactionDetailLoading);
+  readonly detailError$ = this.store.select(TransactionsSelectors.selectTransactionDetailError);
 
   // Edit-form streams.
-  readonly selectedTransaction$ = this.store.select(TransactionsSelectors.selectSelectedTransaction);
-  readonly selectedLoading$ = this.store.select(TransactionsSelectors.selectSelectedLoading);
-  readonly selectedError$ = this.store.select(TransactionsSelectors.selectSelectedError);
+  readonly editData$ = this.store.select(TransactionsSelectors.selectTransactionEditData);
+  readonly editLoading$ = this.store.select(TransactionsSelectors.selectTransactionEditLoading);
+  readonly editError$ = this.store.select(TransactionsSelectors.selectTransactionEditError);
   readonly saving$ = this.store.select(TransactionsSelectors.selectTransactionSaving);
 
   loadTransactions(): void {
     this.store.dispatch(TransactionsActions.loadTransactions());
   }
 
-  setFilters(filters: Partial<TransactionFilters>): void {
-    this.store.dispatch(TransactionsActions.setTransactionFilters({ filters }));
+  setAccountFilter(accountId: number | null): void {
+    this.store.dispatch(TransactionsActions.setTransactionAccountFilter({ accountId }));
   }
 
   clearFilters(): void {
     this.store.dispatch(TransactionsActions.clearTransactionFilters());
-  }
-
-  setSearch(search: string): void {
-    this.store.dispatch(TransactionsActions.setTransactionSearch({ search }));
   }
 
   setSort(sort: TransactionSort): void {
@@ -58,35 +61,35 @@ export class TransactionsFacade {
     this.store.dispatch(TransactionsActions.setTransactionPageSize({ pageSize }));
   }
 
-  deleteTransaction(id: string): void {
-    this.store.dispatch(TransactionsActions.deleteTransaction({ id }));
-  }
-
-  duplicateTransaction(transaction: Transaction): void {
-    this.store.dispatch(TransactionsActions.duplicateTransaction({ transaction }));
-  }
-
-  changeCategory(id: string, category: string): void {
-    this.store.dispatch(TransactionsActions.changeTransactionCategory({ id, category }));
-  }
-
   clearFeedback(): void {
     this.store.dispatch(TransactionsActions.clearTransactionFeedback());
   }
 
-  loadTransaction(id: string): void {
-    this.store.dispatch(TransactionsActions.loadTransaction({ id }));
+  loadDetail(id: number): void {
+    this.store.dispatch(TransactionsActions.loadTransactionDetail({ id }));
   }
 
-  clearSelected(): void {
-    this.store.dispatch(TransactionsActions.clearSelectedTransaction());
+  clearDetail(): void {
+    this.store.dispatch(TransactionsActions.clearTransactionDetail());
   }
 
-  createTransaction(transaction: CreateTransactionRequest, idempotencyKey: string): void {
-    this.store.dispatch(TransactionsActions.createTransaction({ transaction, idempotencyKey }));
+  loadForEdit(id: number): void {
+    this.store.dispatch(TransactionsActions.loadTransactionForEdit({ id }));
   }
 
-  updateTransaction(id: string, changes: Partial<Transaction>): void {
-    this.store.dispatch(TransactionsActions.updateTransaction({ id, changes }));
+  clearEdit(): void {
+    this.store.dispatch(TransactionsActions.clearTransactionEdit());
+  }
+
+  createTransaction(request: CreateTransactionRequest, idempotencyKey: string): void {
+    this.store.dispatch(TransactionsActions.createTransaction({ request, idempotencyKey }));
+  }
+
+  updateTransaction(id: number, request: UpdateTransactionRequest): void {
+    this.store.dispatch(TransactionsActions.updateTransaction({ id, request }));
+  }
+
+  deleteTransaction(id: number): void {
+    this.store.dispatch(TransactionsActions.deleteTransaction({ id }));
   }
 }

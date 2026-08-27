@@ -1,4 +1,3 @@
-/** File purpose: Implements logic for app\features\accounts\facades\account.facade.ts. */
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 
@@ -12,10 +11,9 @@ import {
   clearAccountFeedback,
   loadAccountFormOptions,
   loadAccountSubTypes,
-  loadAccountCategories,
-  createAccountCategory
+  loadAccountCategories
 } from '../store/actions/accounts.actions';
-import { Account, AccountCategory, CreateAccountCategoryRequest, CreateAccountRequest } from '../models/accounts.model';
+import { Account, AccountCategory, CreateAccountRequest } from '../models/accounts.model';
 
 import {
   selectAccounts,
@@ -139,11 +137,6 @@ export class AccountFacade {
   // Loads all account categories for the categories page.
   loadCategories(): void {
     this.store.dispatch(loadAccountCategories());
-  }
-
-  // Creates a new account category.
-  createCategory(category: CreateAccountCategoryRequest): void {
-    this.store.dispatch(createAccountCategory({ category }));
   }
 }
 

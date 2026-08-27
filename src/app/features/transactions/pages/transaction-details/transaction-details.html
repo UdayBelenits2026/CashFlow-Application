@@ -25,7 +25,7 @@
 
     <section class="details-card">
       <div class="detail-row">
-        <span class="detail-label">Merchant / Description</span>
+        <span class="detail-label">Description</span>
         <span class="detail-value strong">{{ transaction.description }}</span>
       </div>
 
@@ -34,15 +34,14 @@
           <span class="detail-label">Amount</span>
           <span
             class="detail-value amount"
-            [class.income]="transaction.type === 'Income'"
-            [class.expense]="transaction.type === 'Expense'"
-            [class.transfer]="transaction.type === 'Transfer'">
-            @if (transaction.type === 'Income') {
-              +{{ transaction.amount | currency: 'INR' }}
-            } @else if (transaction.type === 'Expense') {
-              ({{ transaction.amount | currency: 'INR' }})
+            [class.income]="transaction.transactionType === 'INCOME'"
+            [class.expense]="transaction.transactionType === 'EXPENSE'">
+            @if (transaction.transactionType === 'INCOME') {
+              +{{ transaction.amount | currency: transaction.currency }}
+            } @else if (transaction.transactionType === 'EXPENSE') {
+              ({{ transaction.amount | currency: transaction.currency }})
             } @else {
-              {{ transaction.amount | currency: 'INR' }}
+              {{ transaction.amount | currency: transaction.currency }}
             }
           </span>
         </div>
@@ -52,38 +51,46 @@
           <span class="detail-value">
             <span
               class="type-badge"
-              [class.income]="transaction.type === 'Income'"
-              [class.expense]="transaction.type === 'Expense'"
-              [class.transfer]="transaction.type === 'Transfer'">
-              {{ transaction.type }}
+              [class.income]="transaction.transactionType === 'INCOME'"
+              [class.expense]="transaction.transactionType === 'EXPENSE'">
+              {{ transaction.transactionType }}
             </span>
           </span>
         </div>
 
         <div class="detail-row">
           <span class="detail-label">Date</span>
-          <span class="detail-value">{{ transaction.date | date: 'MMM d, y' }}</span>
+          <span class="detail-value">{{ transaction.transactionDate | date: 'MMM d, y' }}</span>
         </div>
 
-        <div class="detail-row">
-          <span class="detail-label">Account</span>
-          <span class="detail-value">
-            {{ transaction.accountName }}
-            <small class="account-mask">{{ maskedAccount }}</small>
-          </span>
-        </div>
-
-        @if (transaction.type !== 'Transfer') {
+        @if (transaction.postingDate) {
           <div class="detail-row">
-            <span class="detail-label">Category</span>
-            <span class="detail-value">{{ transaction.category || '—' }}</span>
+            <span class="detail-label">Posting Date</span>
+            <span class="detail-value">{{ transaction.postingDate | date: 'MMM d, y' }}</span>
           </div>
         }
 
-        @if (transaction.merchant) {
+        <div class="detail-row">
+          <span class="detail-label">Account</span>
+          <span class="detail-value">{{ accountName() }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Category</span>
+          <span class="detail-value">{{ categoryName() }}</span>
+        </div>
+
+        @if (transaction.merchantId != null) {
           <div class="detail-row">
             <span class="detail-label">Merchant</span>
-            <span class="detail-value">{{ transaction.merchant }}</span>
+            <span class="detail-value">{{ merchantName() }}</span>
+          </div>
+        }
+
+        @if (transaction.incomeSourceId != null) {
+          <div class="detail-row">
+            <span class="detail-label">Income Source</span>
+            <span class="detail-value">{{ incomeSourceName() }}</span>
           </div>
         }
 
@@ -94,24 +101,10 @@
           </div>
         }
 
-        @if (transaction.referenceNumber) {
-          <div class="detail-row">
-            <span class="detail-label">Reference / Check #</span>
-            <span class="detail-value">{{ transaction.referenceNumber }}</span>
-          </div>
-        }
-
         @if (transaction.status) {
           <div class="detail-row">
             <span class="detail-label">Status</span>
             <span class="detail-value">{{ transaction.status }}</span>
-          </div>
-        }
-
-        @if (transaction.source) {
-          <div class="detail-row">
-            <span class="detail-label">Source</span>
-            <span class="detail-value">{{ transaction.source }}</span>
           </div>
         }
       </div>
@@ -123,12 +116,12 @@
         </div>
       }
 
-      @if (transaction.tags?.length) {
+      @if (transaction.tags.length) {
         <div class="detail-row">
           <span class="detail-label">Tags</span>
           <span class="detail-value tag-list">
-            @for (tag of transaction.tags; track tag) {
-              <span class="tag-chip">{{ tag }}</span>
+            @for (tag of transaction.tags; track tag.tagId) {
+              <span class="tag-chip">{{ tag.tagName }}</span>
             }
           </span>
         </div>

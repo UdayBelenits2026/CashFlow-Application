@@ -2,12 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
-import { AccountApiService } from '../../../accounts/data/account-api.service';
-import { maskAccountNumber } from '../../components/transaction-form/transaction-form.util';
+import { LookupService } from '../../data/lookup.service';
 import { TransactionsFacade } from '../../facades/transactions.facade';
-import { Transaction } from '../../models/models.transaction';
+import { LookupItem, TransactionDetail } from '../../models/transaction-api.model';
 
 // Read-only details view for a single transaction with edit/delete actions.
 @Component({
@@ -21,41 +20,43 @@ export class TransactionDetails implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly facade = inject(TransactionsFacade);
-  private readonly accountApi = inject(AccountApiService);
+  private readonly lookup = inject(LookupService);
   private readonly destroyRef = inject(DestroyRef);
 
-  transaction: Transaction | null = null;
+  transaction: TransactionDetail | null = null;
   loading = false;
   loadError: string | null = null;
-  maskedAccount = '';
 
   confirmDeleteOpen = false;
   deleting = false;
   deleteError: string | null = null;
 
-  private id = '';
+  private accounts: LookupItem[] = [];
+  private categories: LookupItem[] = [];
+  private merchants: LookupItem[] = [];
+  private incomeSources: LookupItem[] = [];
+
+  private id = 0;
   private pendingDelete = false;
 
   ngOnInit(): void {
-    this.id = this.route.snapshot.paramMap.get('id') ?? '';
-    this.facade.loadTransaction(this.id);
+    this.facade.clearFeedback();
+    this.id = Number(this.route.snapshot.paramMap.get('id'));
 
-    this.facade.selectedLoading$
+    this.loadLookups();
+    this.facade.loadDetail(this.id);
+
+    this.facade.detailLoading$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((loading) => (this.loading = loading));
 
-    this.facade.selectedError$
+    this.facade.detailError$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((error) => (this.loadError = error));
 
-    this.facade.selectedTransaction$
+    this.facade.detail$
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((transaction) => {
-        this.transaction = transaction;
-        if (transaction) {
-          this.resolveMaskedAccount(transaction.accountId);
-        }
-      });
+      .subscribe((detail) => (this.transaction = detail));
 
     // Delete outcome (only reacts once the user confirms a delete).
     this.facade.successMessage$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((message) => {
@@ -70,9 +71,26 @@ export class TransactionDetails implements OnInit {
         this.pendingDelete = false;
         this.deleting = false;
         this.confirmDeleteOpen = false;
-        this.deleteError = 'We couldn’t delete the transaction. Please try again.';
+        this.deleteError = error;
       }
     });
+  }
+
+  // Resolve IDs to names via lookups; falls back to #id when the lookup is unavailable.
+  accountName(): string {
+    return this.nameFor(this.accounts, this.transaction?.accountId);
+  }
+
+  categoryName(): string {
+    return this.nameFor(this.categories, this.transaction?.categoryId);
+  }
+
+  merchantName(): string {
+    return this.nameFor(this.merchants, this.transaction?.merchantId);
+  }
+
+  incomeSourceName(): string {
+    return this.nameFor(this.incomeSources, this.transaction?.incomeSourceId);
   }
 
   goBack(): void {
@@ -101,15 +119,26 @@ export class TransactionDetails implements OnInit {
     this.facade.deleteTransaction(this.id);
   }
 
-  private resolveMaskedAccount(accountId: string): void {
-    this.accountApi
-      .getAccountById(accountId)
-      .pipe(
-        catchError(() => of(null)),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe((account) => {
-        this.maskedAccount = maskAccountNumber(account?.accountNumber ?? accountId);
-      });
+  private loadLookups(): void {
+    this.bind(() => this.lookup.getAccounts(), (items) => (this.accounts = items));
+    this.bind(() => this.lookup.getCategories(), (items) => (this.categories = items));
+    this.bind(() => this.lookup.getMerchants(), (items) => (this.merchants = items));
+    this.bind(() => this.lookup.getIncomeSources(), (items) => (this.incomeSources = items));
+  }
+
+  private bind(
+    source: () => Observable<LookupItem[]>,
+    assign: (items: LookupItem[]) => void
+  ): void {
+    source()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({ next: assign, error: () => assign([]) });
+  }
+
+  private nameFor(list: LookupItem[], id: number | undefined): string {
+    if (id == null) {
+      return '—';
+    }
+    return list.find((item) => item.id === id)?.name ?? `#${id}`;
   }
 }

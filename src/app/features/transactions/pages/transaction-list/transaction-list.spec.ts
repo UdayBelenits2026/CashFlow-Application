@@ -1,12 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { TransactionList } from './transaction-list';
-import { provideStore } from '@ngrx/store';
-import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { transactionsReducer, transactionsFeatureKey } from '../../store/transactions.reducers';
+import { provideRouter } from '@angular/router';
+import { provideStore } from '@ngrx/store';
+
+import { TransactionList } from './transaction-list';
+import { transactionsFeatureKey, transactionsReducer } from '../../store/transactions.reducers';
 
 describe('TransactionList', () => {
   let component: TransactionList;
@@ -17,10 +16,9 @@ describe('TransactionList', () => {
       imports: [TransactionList],
       providers: [
         provideStore({ [transactionsFeatureKey]: transactionsReducer }),
-        provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideNoopAnimations()
+        provideRouter([])
       ]
     })
     .compileComponents();

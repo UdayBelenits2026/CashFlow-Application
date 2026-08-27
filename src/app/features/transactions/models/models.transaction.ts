@@ -1,47 +1,20 @@
+// UI-only view models for the transactions feature.
+// Backend request/response contracts live in transaction-api.model.ts.
+// Transaction type shown in the form. 'Transfer' is UI-only (no backend contract yet).
 export type TransactionType = 'Income' | 'Expense' | 'Transfer';
 
-// Payment methods available for expense/income transactions.
-export type PaymentMethod = 'Debit Card' | 'Credit Card' | 'ACH' | 'Check' | 'Cash' | 'Transfer' | 'Wallet' | 'Other';
+// Payment methods offered for expense transactions.
+export type PaymentMethod =
+  | 'Debit Card'
+  | 'Credit Card'
+  | 'ACH'
+  | 'Check'
+  | 'Cash'
+  | 'Transfer'
+  | 'Wallet'
+  | 'Other';
 
-// Where a transaction originated; institution-controlled records restrict editing.
-export type TransactionSource = 'Manual' | 'File Import' | 'Bank Sync' | 'Admin';
-
-// Canonical transaction shape served by the transactions API.
-export interface Transaction {
-  id: string;
-  date: string;
-  description: string;
-  category: string;
-  accountId: string;
-  accountName: string;
-  type: TransactionType;
-  amount: number;
-  merchant?: string;
-  paymentMethod?: PaymentMethod | '';
-  referenceNumber?: string;
-  notes?: string;
-  tags?: string[];
-  fromAccountId?: string;
-  toAccountId?: string;
-  source?: TransactionSource;
-  status?: string;
-}
-
-// Active filters applied to the transaction list ('' / null means "all").
-export interface TransactionFilters {
-  accountId: string;
-  category: string;
-  type: TransactionType | '';
-  startDate: string;
-  endDate: string;
-  minAmount: number | null;
-  maxAmount: number | null;
-}
-
-// Payload sent when creating (or duplicating) a transaction; the backend assigns the id.
-export type CreateTransactionRequest = Omit<Transaction, 'id'>;
-
-// Sortable columns and direction for the transaction list.
+// Sortable columns for the server-paged list.
 export type TransactionSortField = 'date' | 'description' | 'amount' | 'category' | 'accountName';
 export type SortDirection = 'asc' | 'desc';
 
@@ -50,13 +23,12 @@ export interface TransactionSort {
   direction: SortDirection;
 }
 
-// Account option used by the account filter dropdown.
-export interface AccountOption {
-  id: string;
-  name: string;
+// List filters mapped to backend query params. Only accountId is server-supported today.
+export interface TransactionFilters {
+  accountId: number | null;
 }
 
-// Pagination summary consumed by the list template.
+// Pagination summary consumed by the list template (derived from server totals).
 export interface TransactionPageInfo {
   page: number;
   pageSize: number;
@@ -65,4 +37,50 @@ export interface TransactionPageInfo {
   from: number;
   to: number;
   pages: number[];
+}
+
+// Raw value produced by the transaction reactive form (form.getRawValue()).
+export interface TransactionFormValue {
+  type: TransactionType;
+  date: string;
+  amount: number | null;
+  description: string;
+  categoryId: number | null;
+  accountId: number | null;
+  merchantId: number | null;
+  incomeSourceId: number | null;
+  paymentMethod: string;
+  referenceNumber: string;
+  notes: string;
+  attachmentUrl: string;
+  tagIds: number[];
+  fromAccountId: number | null;
+  toAccountId: number | null;
+}
+
+// User-friendly Add-Transaction form values; dropdowns store numeric IDs (null = not selected yet).
+export interface TransactionFormModel {
+  type: 'Expense' | 'Income';
+  accountId: number | null;
+  categoryId: number | null;
+  merchantId: number | null;
+  incomeSourceId: number | null;
+  paymentMethod: string;
+  date: string;
+  amount: number | null;
+  description: string;
+  notes?: string;
+}
+
+// Edit-form values mapped to the PUT contract.
+export interface UpdateFormModel {
+  date: string;
+  accountId: number | null;
+  description: string;
+  categoryId: number | null;
+  paymentMethod: string;
+  referenceNumber?: string;
+  notes?: string;
+  attachmentUrl?: string;
+  tagIds: number[];
 }

@@ -1,4 +1,3 @@
-/** File purpose: Implements logic for app\features\accounts\models\accounts.model.ts. */
 import { ChartConfiguration } from 'chart.js';
 
 // Canonical account shape used across UI, store, and API boundaries.
@@ -66,10 +65,6 @@ export interface AccountCategory {
 // Payload accepted when creating a category (id is assigned by the backend).
 export type CreateAccountCategoryRequest = { accountType: string; name: string };
 
-// --- NgRx feature state ---
-// Feature key used to register and select the accounts slice of the store.
-export const accountsFeatureKey = 'accounts';
-
 // Selectable currency option (code is the form value, label is the display text).
 export interface CurrencyOption {
   code: string;
@@ -90,30 +85,6 @@ export const initialAccountFormOptions: AccountFormOptions = {
   banks: [],
   currencies: [],
   subTypes: []
-};
-
-// Shape of the accounts feature state.
-export interface AccountState {
-  accounts: Account[];
-  transactions: Transaction[];
-  categories: AccountCategory[];
-  selectedAccountId: string | null;
-  loading: boolean;
-  error: string | null;
-  successMessage: string | null;
-  formOptions: AccountFormOptions;
-}
-
-// Default state used before any data is loaded.
-export const initialAccountState: AccountState = {
-  accounts: [],
-  transactions: [],
-  categories: [],
-  selectedAccountId: null,
-  loading: false,
-  error: null,
-  successMessage: null,
-  formOptions: initialAccountFormOptions
 };
 
 // --- Account form models ---

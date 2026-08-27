@@ -1,161 +1,100 @@
 import { createReducer, on } from '@ngrx/store';
-import { Transaction, TransactionFilters, TransactionSort } from '../models/models.transaction';
 import * as TransactionsActions from './transactions.actions';
+import { initialTransactionFilters, initialTransactionsState } from './transactions.state';
 
-export const transactionsFeatureKey = 'transactions';
-
-export interface TransactionsState {
-  transactions: Transaction[];
-  selectedTransaction: Transaction | null;
-  selectedLoading: boolean;
-  selectedError: string | null;
-  saving: boolean;
-  filters: TransactionFilters;
-  search: string;
-  sort: TransactionSort;
-  page: number;
-  pageSize: number;
-  loading: boolean;
-  error: string | null;
-  successMessage: string | null;
-}
-
-export const initialTransactionFilters: TransactionFilters = {
-  accountId: '',
-  category: '',
-  type: '',
-  startDate: '',
-  endDate: '',
-  minAmount: null,
-  maxAmount: null
-};
-
-export const initialTransactionsState: TransactionsState = {
-  transactions: [],
-  selectedTransaction: null,
-  selectedLoading: false,
-  selectedError: null,
-  saving: false,
-  filters: initialTransactionFilters,
-  search: '',
-  sort: { field: 'date', direction: 'desc' },
-  page: 1,
-  pageSize: 10,
-  loading: false,
-  error: null,
-  successMessage: null
-};
+// Re-export state so existing importers (selectors, routes, specs) keep resolving from here.
+export * from './transactions.state';
 
 export const transactionsReducer = createReducer(
   initialTransactionsState,
 
+  // --- List ---
   on(TransactionsActions.loadTransactions, (state) => ({ ...state, loading: true, error: null })),
-  on(TransactionsActions.loadTransactionsSuccess, (state, { transactions }) => ({
+  on(TransactionsActions.loadTransactionsSuccess, (state, { result }) => ({
     ...state,
-    transactions,
+    content: result.content ?? [],
+    page: result.page,
+    size: result.size,
+    totalElements: result.totalElements,
+    totalPages: result.totalPages,
     loading: false,
     error: null
   })),
   on(TransactionsActions.loadTransactionsFailure, (state, { error }) => ({ ...state, loading: false, error })),
 
-  // Merge new filter values and reset to the first page.
-  on(TransactionsActions.setTransactionFilters, (state, { filters }) => ({
+  on(TransactionsActions.setTransactionAccountFilter, (state, { accountId }) => ({
     ...state,
-    filters: { ...state.filters, ...filters },
-    page: 1
+    filters: { ...state.filters, accountId },
+    page: 0
   })),
-
-  // Reset every filter + search and return to the first page.
   on(TransactionsActions.clearTransactionFilters, (state) => ({
     ...state,
     filters: initialTransactionFilters,
-    search: '',
-    page: 1
+    page: 0
   })),
-
-  // Update the search term and reset to the first page.
-  on(TransactionsActions.setTransactionSearch, (state, { search }) => ({ ...state, search, page: 1 })),
-
-  // Update sort field/direction and reset to the first page.
-  on(TransactionsActions.setTransactionSort, (state, { sort }) => ({ ...state, sort, page: 1 })),
-
+  on(TransactionsActions.setTransactionSort, (state, { sort }) => ({ ...state, sort, page: 0 })),
   on(TransactionsActions.setTransactionPage, (state, { page }) => ({ ...state, page })),
-  on(TransactionsActions.setTransactionPageSize, (state, { pageSize }) => ({ ...state, pageSize, page: 1 })),
-
-  on(TransactionsActions.deleteTransaction, (state) => ({ ...state, loading: true, error: null, successMessage: null })),
-  on(TransactionsActions.deleteTransactionSuccess, (state, { id }) => ({
-    ...state,
-    transactions: state.transactions.filter((transaction) => transaction.id !== id),
-    loading: false,
-    error: null,
-    successMessage: 'Transaction deleted successfully.'
-  })),
-  on(TransactionsActions.deleteTransactionFailure, (state, { error }) => ({ ...state, loading: false, error })),
-
-  on(TransactionsActions.duplicateTransaction, (state) => ({ ...state, loading: true, error: null, successMessage: null })),
-  on(TransactionsActions.duplicateTransactionSuccess, (state, { transactions }) => ({
-    ...state,
-    transactions,
-    loading: false,
-    error: null,
-    successMessage: 'Transaction duplicated successfully.'
-  })),
-  on(TransactionsActions.duplicateTransactionFailure, (state, { error }) => ({ ...state, loading: false, error })),
-
-  on(TransactionsActions.changeTransactionCategory, (state) => ({ ...state, loading: true, error: null, successMessage: null })),
-  on(TransactionsActions.changeTransactionCategorySuccess, (state, { transactions }) => ({
-    ...state,
-    transactions,
-    loading: false,
-    error: null,
-    successMessage: 'Category updated successfully.'
-  })),
-  on(TransactionsActions.changeTransactionCategoryFailure, (state, { error }) => ({ ...state, loading: false, error })),
+  on(TransactionsActions.setTransactionPageSize, (state, { pageSize }) => ({ ...state, size: pageSize, page: 0 })),
 
   on(TransactionsActions.clearTransactionFeedback, (state) => ({ ...state, error: null, successMessage: null })),
 
-  // Edit-form: load a single transaction.
-  on(TransactionsActions.loadTransaction, (state) => ({
+  // --- Details ---
+  on(TransactionsActions.loadTransactionDetail, (state) => ({
     ...state,
-    selectedTransaction: null,
-    selectedLoading: true,
-    selectedError: null
+    detail: null,
+    detailLoading: true,
+    detailError: null
   })),
-  on(TransactionsActions.loadTransactionSuccess, (state, { transaction }) => ({
+  on(TransactionsActions.loadTransactionDetailSuccess, (state, { detail }) => ({
     ...state,
-    selectedTransaction: transaction,
-    selectedLoading: false,
-    selectedError: null
+    detail,
+    detailLoading: false,
+    detailError: null
   })),
-  on(TransactionsActions.loadTransactionFailure, (state, { error }) => ({
+  on(TransactionsActions.loadTransactionDetailFailure, (state, { error }) => ({
     ...state,
-    selectedTransaction: null,
-    selectedLoading: false,
-    selectedError: error
+    detail: null,
+    detailLoading: false,
+    detailError: error
   })),
-  on(TransactionsActions.clearSelectedTransaction, (state) => ({
-    ...state,
-    selectedTransaction: null,
-    selectedError: null
-  })),
+  on(TransactionsActions.clearTransactionDetail, (state) => ({ ...state, detail: null, detailError: null })),
 
-  // Create / update from the form.
+  // --- Edit-form data ---
+  on(TransactionsActions.loadTransactionForEdit, (state) => ({
+    ...state,
+    editData: null,
+    editLoading: true,
+    editError: null
+  })),
+  on(TransactionsActions.loadTransactionForEditSuccess, (state, { editData }) => ({
+    ...state,
+    editData,
+    editLoading: false,
+    editError: null
+  })),
+  on(TransactionsActions.loadTransactionForEditFailure, (state, { error }) => ({
+    ...state,
+    editData: null,
+    editLoading: false,
+    editError: error
+  })),
+  on(TransactionsActions.clearTransactionEdit, (state) => ({ ...state, editData: null, editError: null })),
+
+  // --- Create / update ---
   on(TransactionsActions.createTransaction, TransactionsActions.updateTransaction, (state) => ({
     ...state,
     saving: true,
     error: null,
     successMessage: null
   })),
-  on(TransactionsActions.createTransactionSuccess, (state, { transactions }) => ({
+  on(TransactionsActions.createTransactionSuccess, (state) => ({
     ...state,
-    transactions,
     saving: false,
     error: null,
-    successMessage: 'Transaction added successfully.'
+    successMessage: 'Transaction created successfully.'
   })),
-  on(TransactionsActions.updateTransactionSuccess, (state, { transactions }) => ({
+  on(TransactionsActions.updateTransactionSuccess, (state) => ({
     ...state,
-    transactions,
     saving: false,
     error: null,
     successMessage: 'Transaction updated successfully.'
@@ -164,5 +103,14 @@ export const transactionsReducer = createReducer(
     TransactionsActions.createTransactionFailure,
     TransactionsActions.updateTransactionFailure,
     (state, { error }) => ({ ...state, saving: false, error })
-  )
+  ),
+
+  // --- Delete (soft-cancel; the list reloads via effect) ---
+  on(TransactionsActions.deleteTransaction, (state) => ({ ...state, loading: true, error: null, successMessage: null })),
+  on(TransactionsActions.deleteTransactionSuccess, (state) => ({
+    ...state,
+    error: null,
+    successMessage: 'Transaction deleted successfully.'
+  })),
+  on(TransactionsActions.deleteTransactionFailure, (state, { error }) => ({ ...state, loading: false, error }))
 );

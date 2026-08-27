@@ -1,4 +1,3 @@
-/** File purpose: Implements logic for app\features\accounts\pages\account-list\account-list.ts. */
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -25,10 +24,9 @@ import { DoughnutChart } from '../../../../shared/charts/doughnut-chart/doughnut
 export class AccountListComponent implements OnInit {
   // Facade centralizes store interaction for this page.
   private readonly accountFacade = inject(AccountFacade);
+  private readonly router = inject(Router);
   // Account types + colors used to aggregate balances for the chart.
   private readonly accountTypes = ACCOUNT_TYPE_CHART_CONFIG;
-
-  constructor(private router: Router) {}
 
   // Reactive view state streams consumed by the template.
   accounts$ = this.accountFacade.accounts$;
