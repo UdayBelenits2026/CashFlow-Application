@@ -1,6 +1,6 @@
 import { IncomeSourceType } from './income-source.model';
 
-export type IncomeTransactionStatus = 'RECORDED' | 'PENDING' | 'CLEARED' | 'CANCELLED';
+export type IncomeTransactionStatus = 'RECORDED' | 'POSTED' | 'PENDING' | 'CLEARED' | 'CANCELLED';
 
 export type SortField = 'date' | 'amount' | 'source' | 'description';
 
@@ -20,6 +20,7 @@ export interface Income {
   taxable: boolean;
   isRecurring?: boolean;
   status: IncomeTransactionStatus;
+  paymentMethod?: string;
   receiptUrl?: string;
   receiptFileName?: string;
   createdAt?: string;

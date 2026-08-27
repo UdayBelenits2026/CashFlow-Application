@@ -35,10 +35,11 @@ export class SpendingEffects {
           catchError((err) =>
             of(
               SpendingActions.loadSpendingDashboardFailure({
-                error: err?.message || 'Unable to connect to mock backend. Please verify that JSON Server is running.'
+                error: err?.message || 'Unable to connect to the Spending backend service.'
               })
             )
           )
+
         )
       )
     )

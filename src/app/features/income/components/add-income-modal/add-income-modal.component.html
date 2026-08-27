@@ -90,6 +90,15 @@
           </div>
 
           <div class="form-group">
+            <label class="form-label">Payment Method *</label>
+            <select class="form-input" formControlName="paymentMethod">
+              @for (pm of paymentMethodOptions; track pm.value) {
+                <option [value]="pm.value">{{ pm.label }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
             <label class="form-label">Description *</label>
             <input
               type="text"

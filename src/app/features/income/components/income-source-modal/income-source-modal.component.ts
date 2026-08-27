@@ -32,24 +32,24 @@ export class IncomeSourceModalComponent implements OnInit {
     const src = this.source();
     if (src) {
       this.sourceForm = this.fb.group({
-        name: [src.name, [Validators.required, Validators.minLength(2)]],
+        name: [src.name, [Validators.required, Validators.minLength(3)]],
         type: [src.type || 'Salary', Validators.required],
         description: [src.description || ''],
-        expectedAmount: [src.expectedAmount || null],
-        frequency: [src.frequency || 'MONTHLY'],
         taxable: [src.taxable ?? true],
         isRecurring: [src.isRecurring ?? false],
+        frequency: [src.frequency || 'MONTHLY'],
+        expectedAmount: [src.expectedAmount || null],
         accountId: [src.accountId || 'acc-1']
       });
     } else {
       this.sourceForm = this.fb.group({
-        name: ['', [Validators.required, Validators.minLength(2)]],
+        name: ['', [Validators.required, Validators.minLength(3)]],
         type: ['Salary', Validators.required],
         description: [''],
-        expectedAmount: [null],
-        frequency: ['MONTHLY'],
         taxable: [true],
-        isRecurring: [true],
+        isRecurring: [false],
+        frequency: ['MONTHLY'],
+        expectedAmount: [null],
         accountId: ['acc-1']
       });
     }
@@ -62,22 +62,25 @@ export class IncomeSourceModalComponent implements OnInit {
     }
 
     const formVal = this.sourceForm.value;
-    const selectedAcc = this.accounts().find((a) => a.id === formVal.accountId);
-    const accountName = formatAccountLabel(selectedAcc);
 
     const payload: Partial<IncomeSource> = {
       name: formVal.name,
       type: formVal.type,
       description: formVal.description,
-      expectedAmount: formVal.expectedAmount ? Number(formVal.expectedAmount) : undefined,
-      frequency: formVal.frequency,
       taxable: formVal.taxable,
       isRecurring: formVal.isRecurring,
-      accountId: formVal.accountId,
-      accountName,
       color: getSourceTypeColor(formVal.type),
       status: 'ACTIVE'
     };
+
+    // Only attach schedule/amount details when the source is marked recurring.
+    if (formVal.isRecurring) {
+      const selectedAcc = this.accounts().find((a) => a.id === formVal.accountId);
+      payload.frequency = formVal.frequency;
+      payload.expectedAmount = formVal.expectedAmount ? Number(formVal.expectedAmount) : undefined;
+      payload.accountId = formVal.accountId;
+      payload.accountName = formatAccountLabel(selectedAcc);
+    }
 
     const currentSrc = this.source();
     if (currentSrc) {

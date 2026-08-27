@@ -1,10 +1,11 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://YOUR-PRODUCTION-BACKEND/api/v1',
-  spendingApiBaseUrl: 'https://YOUR-PRODUCTION-BACKEND/api/v1',
-  spendingMockBaseUrl: 'https://YOUR-PRODUCTION-BACKEND/api/v1',
-  incomeApiBaseUrl: 'https://YOUR-PRODUCTION-BACKEND/api/v1/income',
-  incomeMockBaseUrl: 'https://YOUR-PRODUCTION-BACKEND/api/v1/income',
+  apiBaseUrl: 'http://18.61.201.228:8080/api/v1',
+  spendingApiBaseUrl: 'http://18.61.201.228:8080/api/v1',
+  incomeApiBaseUrl: 'http://18.61.201.228:8080/api/v1',
+  defaultUserId: '1',
   spendingDevUserId: '',
-  useMockFallback: false,
 };
+
+
+

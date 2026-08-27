@@ -25,7 +25,7 @@ import {
 import { Income } from '../../models/income.model';
 import { IncomeSource, IncomeSourceType } from '../../models/income-source.model';
 import { AccountRef } from '../../models/account-ref.model';
-import { INCOME_TYPE_OPTIONS } from '../../utility/income.constants';
+import { INCOME_TYPE_OPTIONS, PAYMENT_METHOD_OPTIONS } from '../../utility/income.constants';
 import { getSourceTypeColor, formatAccountLabel } from '../../utility/income.helpers';
 
 const MAX_INCOME_AMOUNT = 10_000_000;
@@ -88,6 +88,7 @@ export class AddIncomeModalComponent implements OnInit {
   readonly availableAccounts: Signal<AccountRef[]> = computed(() => this.accounts());
 
   readonly typeOptions = INCOME_TYPE_OPTIONS;
+  readonly paymentMethodOptions = PAYMENT_METHOD_OPTIONS;
 
   ngOnInit(): void {
     const inc = this.income();
@@ -101,6 +102,7 @@ export class AddIncomeModalComponent implements OnInit {
         accountId: [inc.accountId || '', Validators.required],
         amount: [inc.amount, [Validators.required, amountValidator]],
         date: [inc.date, Validators.required],
+        paymentMethod: [inc.paymentMethod || 'BANK_TRANSFER', Validators.required],
         description: [inc.description, [Validators.required, Validators.maxLength(100)]],
         notes: [inc.notes || '', Validators.maxLength(500)],
         taxable: [inc.taxable ?? true],
@@ -120,6 +122,7 @@ export class AddIncomeModalComponent implements OnInit {
         accountId: [defaultAcc, Validators.required],
         amount: [null, [Validators.required, amountValidator]],
         date: [today, Validators.required],
+        paymentMethod: ['BANK_TRANSFER', Validators.required],
         description: ['', [Validators.required, Validators.maxLength(100)]],
         notes: ['', Validators.maxLength(500)],
         taxable: [true],
@@ -240,6 +243,7 @@ export class AddIncomeModalComponent implements OnInit {
       sourceColor: this.selectedSourceColor(),
       amount: Number(formValues.amount),
       date: formValues.date,
+      paymentMethod: formValues.paymentMethod,
       description: formValues.description,
       notes: formValues.notes,
       taxable: formValues.taxable,

@@ -24,49 +24,13 @@
         }
       </div>
 
-      <div class="form-row">
-        <div class="form-group flex-1">
-          <label class="form-label">Source Category / Type *</label>
-          <select class="form-input" formControlName="type">
-            @for (opt of typeOptions; track opt.type) {
-              <option [value]="opt.type">{{ opt.label }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="form-group flex-1">
-          <label class="form-label">Expected Frequency</label>
-          <select class="form-input" formControlName="frequency">
-            <option value="MONTHLY">Monthly</option>
-            <option value="BI_WEEKLY">Bi-Weekly</option>
-            <option value="WEEKLY">Weekly</option>
-            <option value="QUARTERLY">Quarterly</option>
-            <option value="ANNUALLY">Annually</option>
-            <option value="IRREGULAR">Irregular / As Received</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group flex-1">
-          <label class="form-label">Estimated / Baseline Amount (₹)</label>
-          <input
-            type="number"
-            step="0.01"
-            placeholder="0.00"
-            class="form-input"
-            formControlName="expectedAmount"
-          />
-        </div>
-
-        <div class="form-group flex-1">
-          <label class="form-label">Default Receiving Account</label>
-          <select class="form-input" formControlName="accountId">
-            @for (acc of accounts(); track acc.id) {
-              <option [value]="acc.id">{{ acc.name }} (••••{{ acc.accountNumberLast4 }})</option>
-            }
-          </select>
-        </div>
+      <div class="form-group">
+        <label class="form-label">Source Category / Type *</label>
+        <select class="form-input" formControlName="type">
+          @for (opt of typeOptions; track opt.type) {
+            <option [value]="opt.type">{{ opt.label }}</option>
+          }
+        </select>
       </div>
 
       <div class="form-group">
@@ -89,6 +53,42 @@
           <span>Recurring Schedule Active</span>
         </label>
       </div>
+
+      @if (sourceForm.get('isRecurring')?.value) {
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label">Expected Frequency</label>
+            <select class="form-input" formControlName="frequency">
+              <option value="MONTHLY">Monthly</option>
+              <option value="BI_WEEKLY">Bi-Weekly</option>
+              <option value="WEEKLY">Weekly</option>
+              <option value="QUARTERLY">Quarterly</option>
+              <option value="ANNUALLY">Annually</option>
+              <option value="IRREGULAR">Irregular / As Received</option>
+            </select>
+          </div>
+
+          <div class="form-group flex-1">
+            <label class="form-label">Estimated / Baseline Amount (₹)</label>
+            <input
+              type="number"
+              step="0.01"
+              placeholder="0.00"
+              class="form-input"
+              formControlName="expectedAmount"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Default Receiving Account</label>
+          <select class="form-input" formControlName="accountId">
+            @for (acc of accounts(); track acc.id) {
+              <option [value]="acc.id">{{ acc.name }} (••••{{ acc.accountNumberLast4 }})</option>
+            }
+          </select>
+        </div>
+      }
 
       <div class="modal-footer">
         <button type="button" class="btn-secondary" (click)="onClose()">Cancel</button>

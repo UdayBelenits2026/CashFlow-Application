@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { catchError, map, Observable, switchMap } from 'rxjs';
+import { catchError, map, Observable, switchMap, of } from 'rxjs';
+
+
 import {
   AccountLinkPayload,
   DashboardApiResponse,
@@ -31,8 +33,20 @@ export class DashboardApiService {
 
     return this.http
       .get<DashboardApiResponse>(`${this.baseUrl}/dashboard`, { params })
-      .pipe(map((data) => this.applyMockDataFilters(data, filters)));
+      .pipe(
+        map((data) => this.applyMockDataFilters(data, filters)),
+        catchError(() =>
+          of({
+            overview: { totalBalance: 0, totalIncome: 0, totalExpenses: 0, netSavings: 0 },
+            recentTransactions: [],
+            recentIncome: [],
+            recentExpenses: [],
+            upcomingBills: []
+          } as unknown as DashboardApiResponse)
+        )
+      );
   }
+
 
   // Applies client-side filtering on mock data returned by JSON Server when backend is in progress
   private applyMockDataFilters(

@@ -5,9 +5,8 @@ export type IncomeSourceType =
   | 'Rental'
   | 'Investment'
   | 'Dividend'
-  | 'Interest'
-  | 'Gift'
-  | 'Refund'
+  | 'Pension'
+  | 'Royalty'
   | 'Other';
 
 export type IncomeSourceStatus = 'ACTIVE' | 'INACTIVE';
